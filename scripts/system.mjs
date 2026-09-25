@@ -74,8 +74,21 @@ class CharacterSheet extends HandlebarsSheet {
   }
   _onRender(context, options) {
     super._onRender(context, options);
+    const scroller = this.element.querySelector(".tbe-sheet-body");
+    if (scroller) {
+      scroller.scrollTop = this._savedScrollTop ?? 0;
+      scroller.addEventListener("scroll", () => { this._savedScrollTop = scroller.scrollTop; }, { passive: true });
+    }
+    this.element.querySelectorAll("[data-section]").forEach(button => button.addEventListener("click", event => {
+      event.preventDefault();
+      const target = this.element.querySelector(`#tbe-${button.dataset.section}`);
+      if (!scroller || !target) return;
+      scroller.scrollTop += target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 44;
+      this._savedScrollTop = scroller.scrollTop;
+    }));
     this.element.querySelectorAll("[data-add]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
+      this._savedScrollTop = scroller?.scrollTop ?? 0;
       const collection = button.dataset.add;
       if (collection === "talent" || collection === "weapon") {
         await this.actor.createEmbeddedDocuments("Item", [{ name: collection === "talent" ? "New Talent" : "New Weapon", type: collection }]);
@@ -86,17 +99,19 @@ class CharacterSheet extends HandlebarsSheet {
     }));
     this.element.querySelectorAll("[data-remove]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
+      this._savedScrollTop = scroller?.scrollTop ?? 0;
       const [collection, index] = button.dataset.remove.split(":");
       await this.actor.update({ [`system.${collection}`]: this.actor.system[collection].filter((_, i) => i !== Number(index)) });
     }));
     this.element.querySelectorAll("[data-delete-item]").forEach(button => button.addEventListener("click", async event => {
-      event.preventDefault(); await this.actor.deleteEmbeddedDocuments("Item", [button.dataset.deleteItem]);
+      event.preventDefault(); this._savedScrollTop = scroller?.scrollTop ?? 0; await this.actor.deleteEmbeddedDocuments("Item", [button.dataset.deleteItem]);
     }));
     this.element.querySelectorAll("[data-open-item]").forEach(button => button.addEventListener("click", event => {
       event.preventDefault(); this.actor.items.get(button.dataset.openItem)?.sheet.render(true);
     }));
   }
   async _onDrop(event) {
+    this._savedScrollTop = this.element.querySelector(".tbe-sheet-body")?.scrollTop ?? 0;
     const data = foundry.applications.ux.TextEditor.getDragEventData(event);
     if (data.type !== "Item" || !this.actor.isOwner) return;
     const item = await Item.implementation.fromDropData(data);

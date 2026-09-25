@@ -28,3 +28,30 @@
 .tbe .tbe-item-link { text-align:left; flex:1; }
 .tbe .tbe-wound > input:nth-child(2) { flex:2; }
 @media(max-width:650px) { .tbe .tbe-grid, .tbe .tbe-skill-list { grid-template-columns:1fr; } }
+/* The navigation uses buttons so Foundry never interprets it as a world URL. */
+.tbe .tbe-nav { gap:.3rem; background:var(--color-bg-primary, #242424); }
+.tbe .tbe-nav button { flex:1; min-width:4.5rem; padding:.25rem .4rem; cursor:pointer; }
+.tbe h3:has(>button) { display:flex; justify-content:space-between; align-items:center; gap:.5rem; }
+.tbe h3 > button { float:none; flex:none; }
+.tbe .tbe-row { min-width:0; }
+.tbe .tbe-row > span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.tbe .tbe-skill { display:grid; grid-template-columns:minmax(6rem,1fr) 3.8rem 3.8rem 2.5rem; gap:.35rem; }
+.tbe .tbe-skill > input[type=number] { width:100%; }
+.tbe .tbe-skill-head { display:grid; grid-template-columns:minmax(6rem,1fr) 3.8rem 3.8rem 2.5rem; gap:.35rem; width:calc(50% - .4rem); font-size:.8rem; opacity:.8; font-weight:600; }
+.tbe .tbe-skill-head > span:not(:first-child) { text-align:center; }
+.tbe .tbe-custom { grid-template-columns:minmax(8rem,1fr) 7rem 3.8rem 3.8rem 2.5rem 2rem; }
+.tbe .tbe-custom > input:nth-child(2) { width:100%; }
+.tbe .tbe-custom-head { display:grid; grid-template-columns:minmax(8rem,1fr) 7rem 3.8rem 3.8rem 2.5rem 2rem; gap:.35rem; font-size:.8rem; opacity:.8; font-weight:600; }
+.tbe .tbe-talent-head, .tbe .tbe-talent-row { display:grid; grid-template-columns:minmax(8rem,2fr) minmax(7rem,1fr) minmax(10rem,2fr) 2rem; align-items:center; gap:.5rem; margin:.25rem 0; }
+.tbe .tbe-talent-head { font-size:.8rem; font-weight:600; opacity:.8; }
+.tbe .tbe-talent-row > span { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.tbe .tbe-talent-row > button { min-width:0; }
+.tbe .tbe-talent-row .tbe-item-link { text-align:left; padding:.3rem .5rem; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+@media(max-width:650px) { .tbe .tbe-skill-head { width:100%; } .tbe .tbe-talent-head, .tbe .tbe-talent-row { grid-template-columns:minmax(5rem,1fr) minmax(4rem,1fr) minmax(5rem,1fr) 2rem; } }
+.tbe .tbe-label-row { display:flex; gap:.5rem; padding:0 .2rem; margin:.3rem 0; font-size:.8rem; font-weight:600; opacity:.8; }
+.tbe .tbe-label-row > span { flex:1; min-width:0; }
+.tbe .tbe-label-row > span:nth-child(3), .tbe .tbe-label-row > span:nth-child(4) { flex:0 0 4.5rem; }
+.tbe .tbe-label-row > span:nth-child(n+5) { flex:0 0 4.2rem; }
+.tbe.item-sheet .tbe-sheet-body { padding:1.2rem; gap:.9rem; }
+.tbe.item-sheet label { gap:.35rem; }
+.tbe.item-sheet textarea { min-height:6rem; }
