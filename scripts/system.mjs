@@ -23,6 +23,7 @@ const HandlebarsSheet = foundry.applications.api.HandlebarsApplicationMixin(
 class CharacterSheet extends HandlebarsSheet {
   static DEFAULT_OPTIONS = {
     classes: ["tbe", "character-sheet"],
+    tag: "form",
     position: { width: 620, height: 610 },
     window: { resizable: true },
     form: { submitOnChange: true, closeOnSubmit: false }
