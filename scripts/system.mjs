@@ -81,6 +81,11 @@ class CharacterSheet extends HandlebarsSheet {
       scroller.scrollTop = this._savedScrollTop ?? 0;
       scroller.addEventListener("scroll", () => { this._savedScrollTop = scroller.scrollTop; }, { passive: true });
     }
+    // Keep prose fields as short as their content, growing them as the user types.
+    this.element.querySelectorAll("textarea.tbe-grow").forEach(field => {
+      const size = () => { field.style.height = "auto"; field.style.height = `${Math.max(field.scrollHeight, 34)}px`; };
+      size(); field.addEventListener("input", size);
+    });
     this.element.querySelectorAll("[data-section]").forEach(button => button.addEventListener("click", event => {
       event.preventDefault();
       const target = this.element.querySelector(`#tbe-${button.dataset.section}`);
@@ -127,6 +132,13 @@ class TBEItemSheet extends ItemSheet {
   static DEFAULT_OPTIONS = { classes: ["tbe", "item-sheet"], tag: "form", position: { width: 540, height: 460 }, window: { resizable: true }, form: { submitOnChange: true, closeOnSubmit: false } };
   static PARTS = { main: { template: "systems/broken-empires-foundry/templates/item.hbs" } };
   async _prepareContext(options) { const context = await super._prepareContext(options); context.system = this.item.system; return context; }
+  _onRender(context, options) {
+    super._onRender(context, options);
+    this.element.querySelectorAll("textarea.tbe-grow").forEach(field => {
+      const size = () => { field.style.height = "auto"; field.style.height = `${Math.max(field.scrollHeight, 50)}px`; };
+      size(); field.addEventListener("input", size);
+    });
+  }
 }
 Hooks.once("init", () => {
   CONFIG.Actor.dataModels.character = CharacterData;

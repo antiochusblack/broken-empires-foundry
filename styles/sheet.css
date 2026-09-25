@@ -41,17 +41,25 @@
 .tbe .tbe-skill-piety { grid-template-columns:minmax(8rem,1fr) 4.5rem 4.5rem 3.5rem; }
 .tbe .tbe-skill-strand { grid-template-columns:minmax(8rem,1fr) 4.5rem 4.5rem 3.5rem; }
 .tbe .tbe-skill-strand > label { grid-column:3; }
-.tbe .tbe-talent-head, .tbe .tbe-talent-row { display:grid; grid-template-columns:minmax(8rem,2fr) minmax(7rem,1fr) minmax(10rem,2fr) 2rem; align-items:center; gap:.5rem; margin:.25rem 0; }
-.tbe .tbe-talent-head { font-size:.8rem; font-weight:600; opacity:.85; }
-.tbe .tbe-talent-row > span { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-.tbe .tbe-talent-row > button { min-width:0; }
-
-.tbe .tbe-weapon-scroll, .tbe .tbe-armor-table, .tbe .tbe-inventory-table { overflow-x:auto; max-width:100%; }
-.tbe .tbe-weapon-table { min-width:1080px; }
-.tbe .tbe-weapon-row { display:grid; grid-template-columns:minmax(120px,1.35fr) 3rem 3rem 3.5rem 3rem 3rem 3rem 3rem 3rem 3.5rem minmax(150px,2fr) 2rem; align-items:center; gap:.35rem; margin:.3rem 0; }
-.tbe .tbe-weapon-row > span { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-.tbe .tbe-weapon-row > button { min-width:0; }
-.tbe .tbe-table-heading, .tbe .tbe-weapon-heading { font-size:.8rem; font-weight:600; opacity:.85; }
+/* Talent effects remain fully readable on the character, even when they are long. */
+.tbe .tbe-talent-cards { display:grid; gap:.65rem; }
+.tbe .tbe-talent-card { border:1px solid var(--color-border-light-primary); border-radius:5px; padding:.5rem .65rem; min-width:0; }
+.tbe .tbe-talent-title { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.35rem; }
+.tbe .tbe-talent-title .tbe-item-link { flex:1; font-weight:700; }
+.tbe .tbe-talent-detail { display:grid; grid-template-columns:6rem minmax(0,1fr); gap:.4rem; margin:.25rem 0; align-items:start; }
+.tbe .tbe-talent-detail b { font-size:.8rem; opacity:.8; }
+.tbe .tbe-talent-detail span { white-space:pre-wrap; overflow-wrap:anywhere; }
+/* Full weapon statistics wrap into compact blocks at the default sheet width. */
+.tbe .tbe-weapon-cards { display:grid; gap:.65rem; }
+.tbe .tbe-weapon-card { border:1px solid var(--color-border-light-primary); border-radius:5px; padding:.5rem .65rem; min-width:0; }
+.tbe .tbe-weapon-title { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.35rem; }
+.tbe .tbe-weapon-title .tbe-item-link { flex:1; font-weight:700; }
+.tbe .tbe-weapon-facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(4.5rem,1fr)); gap:.35rem; }
+.tbe .tbe-weapon-facts > div { display:flex; flex-direction:column; min-width:0; padding:.2rem .35rem; background:var(--color-bg-primary,#242424); border-radius:3px; }
+.tbe .tbe-weapon-facts b, .tbe .tbe-weapon-notes b { font-size:.75rem; opacity:.75; }
+.tbe .tbe-weapon-facts span, .tbe .tbe-weapon-notes span { white-space:normal; overflow-wrap:anywhere; }
+.tbe .tbe-weapon-notes { display:grid; gap:.15rem; margin-top:.4rem; }
+.tbe .tbe-table-heading { font-size:.8rem; font-weight:600; opacity:.85; }
 .tbe .tbe-armor-row, .tbe .tbe-inventory-row { display:grid; align-items:center; gap:.5rem; margin:.3rem 0; }
 .tbe .tbe-armor-row { grid-template-columns:minmax(110px,1fr) minmax(110px,1fr) 4.5rem 4.5rem minmax(110px,1fr) 2rem; min-width:630px; }
 .tbe .tbe-inventory-row { grid-template-columns:minmax(140px,1fr) 4.5rem 4.5rem minmax(140px,1.4fr) 2rem; min-width:530px; }
@@ -59,4 +67,20 @@
 .tbe .tbe-armor-row > button, .tbe .tbe-inventory-row > button { min-width:0; }
 .tbe.item-sheet .tbe-sheet-body { padding:1.2rem; gap:.9rem; }
 .tbe.item-sheet textarea { min-height:6rem; }
-@media(max-width:650px) { .tbe .tbe-grid { grid-template-columns:1fr; } .tbe .tbe-talent-head, .tbe .tbe-talent-row { grid-template-columns:minmax(5rem,1fr) minmax(4rem,1fr) minmax(5rem,1fr) 2rem; } }
+@media(max-width:650px) { .tbe .tbe-grid { grid-template-columns:1fr; }  }
+
+.tbe textarea.tbe-grow { min-height:2.2rem; height:auto; resize:none; overflow:hidden; line-height:1.35; overflow-wrap:anywhere; }
+.tbe .tbe-list-row { align-items:start; }
+.tbe .tbe-list-heading { align-items:end; }
+.tbe .tbe-armor-table, .tbe .tbe-inventory-table { overflow-x:visible; }
+/* The resizable window can be narrower than the usual 850px opening width. */
+.tbe .tbe-sheet-body { container-type:inline-size; }
+@container (max-width:700px) {
+  .tbe .tbe-list-heading, .tbe .tbe-table-heading { display:none; }
+  .tbe .tbe-list-row, .tbe .tbe-armor-row, .tbe .tbe-inventory-row { display:flex; flex-wrap:wrap; min-width:0; align-items:start; }
+  .tbe .tbe-list-row > input, .tbe .tbe-list-row > textarea,
+  .tbe .tbe-armor-row > input, .tbe .tbe-armor-row > textarea,
+  .tbe .tbe-inventory-row > input, .tbe .tbe-inventory-row > textarea { flex:1 1 9rem; width:auto; }
+  .tbe .tbe-list-row > input[type=number], .tbe .tbe-armor-row > input[type=number], .tbe .tbe-inventory-row > input[type=number] { flex:0 1 4.5rem; }
+  .tbe .tbe-list-row > button, .tbe .tbe-armor-row > button, .tbe .tbe-inventory-row > button { flex:0 0 auto; }
+}

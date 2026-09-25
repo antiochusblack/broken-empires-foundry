@@ -2,8 +2,8 @@
   <label>Name <input name="name" type="text" value="{{document.name}}"></label>
   {{#if (eq document.type "talent")}}
     <label>Source (how gained) <input name="system.source" type="text" value="{{system.source}}"></label>
-    <label>Effect <textarea name="system.effect">{{system.effect}}</textarea></label>
-    <label>Requirements <textarea name="system.requirements">{{system.requirements}}</textarea></label>
+    <label>Effect <textarea class="tbe-grow" rows="2" name="system.effect">{{system.effect}}</textarea></label>
+    <label>Requirements <textarea class="tbe-grow" rows="2" name="system.requirements">{{system.requirements}}</textarea></label>
   {{else}}
     <p>Attack and Parry use the character’s skills. The manoeuvre numbers below are required Success Levels.</p>
     <div class="tbe-grid">
@@ -13,6 +13,6 @@
       <label>Trip (T) <input name="system.trip" value="{{system.trip}}"></label><label>ENC <input name="system.encumbrance" type="number" value="{{system.encumbrance}}"></label>
       <label>Range (RNG) <input name="system.range" value="{{system.range}}"></label>
     </div>
-    <label>Notes <textarea name="system.notes">{{system.notes}}</textarea></label>
+    <label>Notes <textarea class="tbe-grow" rows="2" name="system.notes">{{system.notes}}</textarea></label>
   {{/if}}
 </div>
