@@ -1,0 +1,36 @@
+<form class="tbe-sheet-body">
+  <header class="tbe-header">
+    <img src="{{document.img}}" alt="{{document.name}}" width="72" height="72">
+    <label>Character name
+      <input type="text" name="name" value="{{document.name}}" {{#unless editable}}disabled{{/unless}}>
+    </label>
+  </header>
+
+  <label>Concept
+    <input type="text" name="system.description" value="{{system.description}}" {{#unless editable}}disabled{{/unless}}>
+  </label>
+
+  <section>
+    <h2>Resources</h2>
+    <div class="tbe-resolve">
+      <label>Resolve <input type="number" name="system.resolve.value" value="{{system.resolve.value}}" min="0" {{#unless editable}}disabled{{/unless}}></label>
+      <span>/</span>
+      <label>Maximum <input type="number" name="system.resolve.max" value="{{system.resolve.max}}" min="0" {{#unless editable}}disabled{{/unless}}></label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Starter skill fields</h2>
+    <p>These three fields prove that the sheet saves values. The full skill list comes next.</p>
+    <div class="tbe-skills">
+      <label>Melee <input type="number" name="system.skills.melee" value="{{system.skills.melee}}" min="0" {{#unless editable}}disabled{{/unless}}></label>
+      <label>Ranged <input type="number" name="system.skills.ranged" value="{{system.skills.ranged}}" min="0" {{#unless editable}}disabled{{/unless}}></label>
+      <label>Dodge <input type="number" name="system.skills.dodge" value="{{system.skills.dodge}}" min="0" {{#unless editable}}disabled{{/unless}}></label>
+    </div>
+  </section>
+
+  <section class="tbe-notes">
+    <h2>Notes</h2>
+    <textarea name="system.notes" {{#unless editable}}disabled{{/unless}}>{{system.notes}}</textarea>
+  </section>
+</form>
