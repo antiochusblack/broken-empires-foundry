@@ -1,27 +1,25 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.4.0 provides a manually editable character sheet and Item-based talents, weapons, armour, shields, and gear. Character creation calculations, combat, and rolls remain manual.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.5.0 has an editable character sheet, owned Item sheets, and a starter equipment compendium. Character creation, combat and rolls remain manual.
 
 ## Install or update on Forge
 
-Install or update a **Game System** using this manifest URL:
+Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main` and create a GitHub release tagged `v0.4.0` with the asset `broken-empires-foundry-v0.4.0.zip`. The archive contains a top-level `broken-empires-foundry/` folder with `system.json` immediately inside. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.5.0` and attach `broken-empires-foundry-v0.5.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+
+When the first GM opens a world, the system creates a **TBE Starter Equipment** world compendium with 14 sample Items from the rulebook. It does not replace a compendium you have already edited. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
 ## Equipment
 
-The character sheet groups Items as Held and Ready, At Hand, Inventory (Stored), At Home / Elsewhere, and Worn Armour. Change an owned Item’s location from its selector on the character sheet; it moves to the selected area. The Item sheet also has this selector. Set an armour Item’s body location on the Item before adding it to a character. An owned piece is worn only when its placement is Worn. Only worn armour appears in a body protection slot; a sundered piece grants zero AP. The sheet flags two pieces assigned to the same slot.
+The character sheet has Held and Ready, At Hand, Worn, Inventory (Stored), and At Home / Elsewhere areas. Every area accepts a dropped Item and has **+ Item**, which makes a new owned Item directly in that area. The location selector moves owned Items between areas. The Worn area also shows armour missing a valid body location so it can be repaired or deleted. The protection slots show worn armour by body location; two pieces in one slot are flagged.
 
-Weapon ENC counts ready and at-hand weapons and shields (capacity 6). Inventory ENC counts stored items, one point per carried armour piece, and one point per 500 sp. Worn armor contributes Bulk to the displayed armour Initiative penalty (Bulk / 3, rounded up). Gear uses quantity × ENC per item. The four standard Supply Dice have d12, d10, d8, d6, and Depleted choices and use no Inventory ENC. A spare Supply Die can be entered as a Gear Item with ENC 2.
+Weapon ENC includes Held and Ready and At Hand weapons and shields. One weapon marked as free At Hand (such as the first dagger) uses no ENC there. Inventory ENC includes stored items, non-armour worn Items, carried armour (1 ENC per piece), ready or at-hand gear, and one point per 500 sp. Worn armour contributes Bulk to the displayed Initiative penalty (Bulk / 3, rounded up). Gear uses quantity × ENC per Item. **At Home / Elsewhere** contributes zero. The displayed total carried burden adds Weapon ENC, Inventory ENC and worn Bulk for reference; the separate limits still apply. The four standard Supply Dice use no Inventory ENC.
 
-Filled armour and inventory rows from earlier versions are copied to embedded Items once when a GM opens the world. Their original row data remains in the actor record as a backup. New characters start with Fists/Kicks, a blank weapon and talent, plus empty armour, shield, and gear Items kept away from the character until placed. Previously entered weapons and talents remain in place.
+New characters start with Fists/Kicks and a blank Talent. Equipment areas start empty. Existing placeholder Items remain editable; you may remove any you no longer need. Filled armour and equipment rows from versions before 0.3.0 migrate once into owned Items, leaving their original rows in the actor data as a backup.
 
-Wounds track infection and septic status individually, with a character-level in-game sepsis deadline field.
+## Wounds and deletion
 
-## Wounds and Item copies
-
-The combat section totals lethal and nonlethal Wound Points at each of six body locations. Choose a general location on every wound; existing detailed locations are inferred where possible. LL is a character-wide limit, shown beside each location as a reference. Unassigned wounds still count toward overall lethal and nonlethal totals.
-
-Use **+ Item** to create an owned Item and open its editor. Item cards can be dragged between character sheets. The GM can use **Copy to Items** on a card to create a reusable world Item, with character-specific placement and damage state cleared.
+The sheet shows lethal WP, nonlethal WP and their combined total at each body location. That location total is used for the Wound Die impairment check. Overall lethal WP is displayed against the character-wide LL. Wounds without a recognised general location still contribute to overall totals and are flagged for assignment. Item and wound deletion ask for confirmation. Wounds also track ritual damage, infection and septic status individually.

@@ -56,7 +56,7 @@ class WeaponData extends foundry.abstract.TypeDataModel {
     return { price: number(), reach: string(), damage: string(), chooseLocation: string(), circumventShield: string(), disarm: string(), trip: string(), encumbrance: number(), range: string(), notes: string(),
       // Keep prototype values in existing worlds, even though they are not weapon statistics.
       attack: string(), parry: string(), clash: string(), counterstrike: string(), disruption: string(), threat: string(),
-      placement: new StringField({ required: true, initial: "atHand" }) };
+      freeAtHand: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }) };
   }
 }
 class ArmorData extends foundry.abstract.TypeDataModel {
@@ -69,12 +69,12 @@ class GearData extends foundry.abstract.TypeDataModel {
   static defineSchema() { return { price: number(), encumbrance: decimal(), quantity: number(1), placement: new StringField({ required: true, initial: "inventory" }), notes: string() }; }
 }
 const BODY_LOCATIONS = ["Head", "Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg"];
-const PLACEMENTS = {
-  weapon: [{ value: "ready", label: "Held and Ready" }, { value: "atHand", label: "At Hand" }, { value: "inventory", label: "Inventory (Stored)" }, { value: "away", label: "At Home / Elsewhere" }],
-  shield: [{ value: "ready", label: "Held and Ready" }, { value: "atHand", label: "At Hand" }, { value: "inventory", label: "Inventory (Stored)" }, { value: "away", label: "At Home / Elsewhere" }],
-  armor: [{ value: "worn", label: "Worn" }, { value: "inventory", label: "Inventory" }, { value: "away", label: "At Home / Elsewhere" }],
-  gear: [{ value: "inventory", label: "Inventory" }, { value: "away", label: "At Home / Elsewhere" }]
-};
+const LOCATION_OPTIONS = [
+  { value: "ready", label: "Held and Ready" }, { value: "atHand", label: "At Hand" },
+  { value: "worn", label: "Worn" }, { value: "inventory", label: "Inventory (Stored)" },
+  { value: "away", label: "At Home / Elsewhere" }
+];
+const PLACEMENTS = Object.fromEntries(["weapon", "shield", "armor", "gear"].map(type => [type, LOCATION_OPTIONS]));
 const inferWoundLocation = wound => {
   if (BODY_LOCATIONS.includes(wound.generalLocation)) return wound.generalLocation;
   const value = String(wound.location ?? "").toLowerCase();
@@ -111,6 +111,7 @@ class CharacterSheet extends HandlebarsSheet {
     context.equipmentAreas = [
       { key: "ready", title: "Held and Ready", items: equipment.filter(i => itemPlacement(i) === "ready") },
       { key: "atHand", title: "At Hand", items: equipment.filter(i => itemPlacement(i) === "atHand") },
+      { key: "worn", title: "Worn", items: equipment.filter(i => itemPlacement(i) === "worn") },
       { key: "inventory", title: "Inventory (Stored)", items: equipment.filter(i => itemPlacement(i) === "inventory") },
       { key: "away", title: "At Home / Elsewhere", items: equipment.filter(i => itemPlacement(i) === "away") }
     ];
@@ -121,8 +122,9 @@ class CharacterSheet extends HandlebarsSheet {
     });
     context.unassignedArmor = worn.filter(i => !BODY_LOCATIONS.includes(i.system.location));
     const carried = this.actor.items.filter(i => ["weapon", "shield"].includes(i.type) && ["ready", "atHand"].includes(itemPlacement(i)));
-    const inventory = this.actor.items.filter(i => itemPlacement(i) === "inventory" && ["weapon", "shield", "armor", "gear"].includes(i.type));
-    context.weaponENC = carried.reduce((sum, i) => sum + itemENC(i), 0);
+    const inventory = equipment.filter(i => itemPlacement(i) === "inventory" || (itemPlacement(i) === "worn" && i.type !== "armor") || (["ready", "atHand"].includes(itemPlacement(i)) && ["gear", "armor"].includes(i.type)));
+    const freeAtHandWeapon = carried.find(i => i.type === "weapon" && i.system.freeAtHand && itemPlacement(i) === "atHand");
+    context.weaponENC = carried.reduce((sum, i) => sum + (i === freeAtHandWeapon ? 0 : itemENC(i)), 0);
     context.inventoryENC = inventory.reduce((sum, i) => sum + (i.type === "armor" ? 1 : itemENC(i) * (i.type === "gear" ? Math.max(0, Number(i.system.quantity) || 0) : 1)), 0) + Math.max(0, Math.ceil((Number(this.actor.system.silver) || 0) / 500));
     context.wornBulk = worn.reduce((sum, i) => sum + (Number(i.system.bulk) || 0), 0);
     context.armorInitiativePenalty = Math.ceil(context.wornBulk / 3);
@@ -130,12 +132,13 @@ class CharacterSheet extends HandlebarsSheet {
     context.weaponOver = context.weaponENC > 6;
     context.inventoryOver = context.inventoryENC > context.inventoryMax;
     context.carriedBurden = context.weaponENC + context.inventoryENC + context.wornBulk;
-    context.isGM = game.user.isGM;
     context.supplyDisplay = Object.fromEntries(["gear", "ammo", "rations", "medical"].map(type => [type, this.actor.system.supply[type] || "d12"]));
     const ll = Number(this.actor.system.attributes.lethalityLevel) || 0;
     context.woundSummary = BODY_LOCATIONS.map(location => {
       const wounds = this.actor.system.wounds.filter(w => inferWoundLocation(w) === location);
-      return { location, lethal: wounds.filter(w => w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0), nonlethal: wounds.filter(w => !w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0), ll };
+      const lethal = wounds.filter(w => w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0);
+      const nonlethal = wounds.filter(w => !w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0);
+      return { location, lethal, nonlethal, total: lethal + nonlethal };
     });
     context.unassignedWounds = this.actor.system.wounds.filter(w => Number(w.points) > 0 && !inferWoundLocation(w));
     context.totalLethalWP = this.actor.system.wounds.filter(w => w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0);
@@ -168,7 +171,9 @@ class CharacterSheet extends HandlebarsSheet {
       const collection = button.dataset.add;
       if (["item", "talent", "weapon", "armor", "shield", "gear"].includes(collection)) {
         const typeOptions = ["weapon", "armor", "shield", "gear", "talent"];
-        const typeSelect = collection === "item" ? `<label>Type <select name="type">${typeOptions.map(type => `<option value="${type}">${type === "armor" ? "Armour" : type[0].toUpperCase() + type.slice(1)}</option>`).join("")}</select></label>` : "";
+        const area = button.dataset.area;
+        const allowedTypes = area ? typeOptions.filter(type => type !== "talent") : typeOptions;
+        const typeSelect = collection === "item" ? `<label>Type <select name="type">${allowedTypes.map(type => `<option value="${type}">${type === "armor" ? "Armour" : type[0].toUpperCase() + type.slice(1)}</option>`).join("")}</select></label>` : "";
         const details = await foundry.applications.api.DialogV2.input({
           window: { title: `Add ${collection === "item" ? "Item" : collection === "armor" ? "Armour" : collection}` },
           content: `${typeSelect}<label>Name <input name="itemName" required autofocus placeholder="Item name"></label>`,
@@ -177,8 +182,8 @@ class CharacterSheet extends HandlebarsSheet {
         if (!details) return;
         const type = collection === "item" ? details.type : collection;
         const name = String(details.itemName ?? "").trim();
-        if (!typeOptions.includes(type) || !name) return;
-        const created = await this.actor.createEmbeddedDocuments("Item", [{ name, type }]);
+        if (!allowedTypes.includes(type) || !name || (area && !LOCATION_OPTIONS.some(p => p.value === area))) return;
+        const created = await this.actor.createEmbeddedDocuments("Item", [{ name, type, ...(area ? { system: { placement: area } } : {}) }]);
         created[0]?.sheet.render(true);
       } else {
         const defaults = { customSkills: { name: "", category: "Other", value: 0, expertise: 0, savvy: false }, resources: { name: "", value: 0, max: 0 }, abilityScores: { name: "", descriptor: "" }, racialTraits: { name: "", effect: "" }, personalityTraits: { name: "", description: "" }, goals: { text: "", shared: false }, sharedHistories: { character: "", event: "", skill: "", story: "" }, relationships: { name: "", type: "", notes: "" }, wounds: { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }, equipment: { name: "", quantity: 1, encumbrance: 0, notes: "" }, armor: { location: "", name: "", protection: 0, bulk: 0, notes: "" } };
@@ -189,6 +194,10 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       this._savedScrollTop = scroller?.scrollTop ?? 0;
       const [collection, index] = button.dataset.remove.split(":");
+      if (collection === "wounds") {
+        const confirmed = await foundry.applications.api.DialogV2.confirm({ window: { title: "Delete wound?" }, content: "Are you sure you want to delete this wound?", yes: { label: "Delete wound" }, no: { label: "Cancel" } });
+        if (!confirmed) return;
+      }
       await this.actor.update({ [`system.${collection}`]: this.actor.system[collection].filter((_, i) => i !== Number(index)) });
     }));
     this.element.querySelectorAll("[data-item-placement]").forEach(select => select.addEventListener("change", async event => {
@@ -199,24 +208,12 @@ class CharacterSheet extends HandlebarsSheet {
       if (!valid) return;
       await item.update({ "system.placement": event.target.value });
     }));
-    this.element.querySelectorAll("[data-copy-item]").forEach(button => button.addEventListener("click", async event => {
-      event.preventDefault();
-      const source = this.actor.items.get(button.dataset.copyItem);
-      if (!source || !game.user.isGM) return;
-      const data = source.toObject();
-      delete data._id;
-      if (data.system) {
-        delete data.system.placement;
-        if (source.type === "armor") data.system.sundered = false;
-        if (source.type === "shield") data.system.split = false;
-        if (source.type === "gear") data.system.quantity = 1;
-        if (source.type === "talent") data.system.source = "";
-      }
-      const copied = await Item.implementation.create(data);
-      copied?.sheet.render(true);
-    }));
     this.element.querySelectorAll("[data-delete-item]").forEach(button => button.addEventListener("click", async event => {
-      event.preventDefault(); this._savedScrollTop = scroller?.scrollTop ?? 0; await this.actor.deleteEmbeddedDocuments("Item", [button.dataset.deleteItem]);
+      event.preventDefault(); this._savedScrollTop = scroller?.scrollTop ?? 0;
+      const item = this.actor.items.get(button.dataset.deleteItem);
+      if (!item) return;
+      const confirmed = await foundry.applications.api.DialogV2.confirm({ window: { title: "Delete Item?" }, content: `Are you sure you want to delete ${foundry.utils.escapeHTML(item.name)}?`, yes: { label: "Delete Item" }, no: { label: "Cancel" } });
+      if (confirmed) await this.actor.deleteEmbeddedDocuments("Item", [item.id]);
     }));
     this.element.querySelectorAll("[data-open-item]").forEach(button => button.addEventListener("click", event => {
       event.preventDefault(); this.actor.items.get(button.dataset.openItem)?.sheet.render(true);
@@ -228,9 +225,14 @@ class CharacterSheet extends HandlebarsSheet {
     if (data.type !== "Item" || !this.actor.isOwner) return;
     const item = await Item.implementation.fromDropData(data);
     if (item && ["talent", "weapon", "armor", "shield", "gear"].includes(item.type)) {
-      if (item.parent?.documentName === "Actor" && item.parent.id === this.actor.id) return;
+      const area = event.target.closest("[data-drop-area]")?.dataset.dropArea;
+      if (item.parent?.documentName === "Actor" && item.parent.id === this.actor.id) {
+        if (area && item.type !== "talent") await item.update({ "system.placement": area });
+        return;
+      }
       const copy = item.toObject();
       delete copy._id;
+      if (area && item.type !== "talent") copy.system.placement = area;
       await this.actor.createEmbeddedDocuments("Item", [copy]);
     }
   }
@@ -269,12 +271,24 @@ Hooks.once("init", () => {
 // Preserve the three values entered on the 0.1.x test sheet when opening an old world.
 Hooks.once("ready", async () => {
   if (!game.user.isGM) return;
+  // Populate a world compendium once so Forge installs do not need a bundled LevelDB database.
+  if (!game.users.activeGM || game.users.activeGM.id === game.user.id) {
+    try {
+      let pack = game.packs.get("world.tbe-starter-equipment");
+      if (!pack) pack = await foundry.documents.collections.CompendiumCollection.createCompendium({ name: "tbe-starter-equipment", label: "TBE Starter Equipment", type: "Item" });
+      const index = await pack.getIndex();
+      if (index.size === 0) {
+        const response = await fetch("systems/broken-empires-foundry/packs-src/example-items.json");
+        if (!response.ok) throw new Error(`Starter equipment HTTP ${response.status}`);
+        await Item.implementation.createDocuments(await response.json(), { pack: pack.collection });
+      }
+    } catch (error) { console.error("TBE: failed to initialise the starter equipment compendium", error); }
+  }
   for (const actor of game.actors.filter(a => a.type === "character")) {
     if (!actor.getFlag("broken-empires-foundry", "startingItemsAdded")) {
       const existing = actor.items.contents;
       const additions = [];
       if (!existing.some(i => i.type === "weapon" && i.name === "Fists/Kicks")) additions.push(STARTING_ITEMS[0]);
-      if (!existing.some(i => i.type === "weapon" && i.name === "New Weapon")) additions.push(STARTING_ITEMS[1]);
       if (!existing.some(i => i.type === "talent" && i.name === "New Talent")) additions.push(STARTING_ITEMS[2]);
       try {
         if (additions.length) await actor.createEmbeddedDocuments("Item", additions);
@@ -297,13 +311,6 @@ Hooks.once("ready", async () => {
         await actor.setFlag("broken-empires-foundry", "equipmentItemsMigrated", true);
       } catch (error) { console.error(`TBE: failed to migrate equipment for ${actor.name}`, error); }
     }
-    if (!actor.getFlag("broken-empires-foundry", "equipmentPlaceholdersAdded")) {
-      const placeholders = ["armor", "shield", "gear"].filter(type => !actor.items.contents.some(i => i.type === type && i.name === `New ${type[0].toUpperCase()}${type.slice(1)}`)).map(type => ({ name: type === "armor" ? "New Armour" : `New ${type[0].toUpperCase()}${type.slice(1)}`, type, system: { placement: "away" } }));
-      try {
-        if (placeholders.length) await actor.createEmbeddedDocuments("Item", placeholders);
-        await actor.setFlag("broken-empires-foundry", "equipmentPlaceholdersAdded", true);
-      } catch (error) { console.error(`TBE: failed to add equipment placeholders for ${actor.name}`, error); }
-    }
     const original = actor._source.system?.skills ?? {};
     if (original.melee === undefined && original.ranged === undefined && original.dodge === undefined) continue;
     const updates = { "system.skills.-=melee": null, "system.skills.-=ranged": null, "system.skills.-=dodge": null };
@@ -317,11 +324,7 @@ Hooks.once("ready", async () => {
 
 const STARTING_ITEMS = [
   { name: "Fists/Kicks", type: "weapon", system: { price: 0, reach: "0", damage: "0 NL", chooseLocation: "1", circumventShield: "3", disarm: "2", trip: "4", encumbrance: 0, range: "-", notes: "Unarmed Might attacks; -20 vs armed foes" } },
-  { name: "New Weapon", type: "weapon" },
-  { name: "New Talent", type: "talent" },
-  { name: "New Armour", type: "armor", system: { placement: "away" } },
-  { name: "New Shield", type: "shield", system: { placement: "away" } },
-  { name: "New Gear", type: "gear", system: { placement: "away" } }
+  { name: "New Talent", type: "talent" }
 ];
 
 // Only the client creating a new character adds these embedded Items.

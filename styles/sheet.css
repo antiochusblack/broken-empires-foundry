@@ -117,6 +117,13 @@
 .tbe .tbe-equipment-title > select { max-width:12rem; flex:0 1 12rem; }
 .tbe .tbe-slot-item > select { max-width:11rem; flex:0 1 11rem; }
 .tbe .tbe-talent-card, .tbe .tbe-equipment-card, .tbe .tbe-slot-item { cursor:grab; }
+.tbe .tbe-slot-item { min-width:0; }
+.tbe .tbe-slot-item .tbe-item-link { white-space:normal; overflow-wrap:anywhere; }
+.tbe .tbe-equipment-title { flex-wrap:wrap; }
+.tbe .tbe-equipment-title .tbe-item-link { flex:1 1 11rem; white-space:normal; overflow-wrap:anywhere; }
+.tbe .tbe-equipment-title > select { flex:0 0 10rem; width:10rem; }
+.tbe .tbe-inventory-area { min-height:4.5rem; padding:.2rem .4rem .6rem; border:1px dashed var(--color-border-light-primary); border-radius:5px; }
+.tbe .tbe-inventory-area .tbe-equipment-cards { min-height:2rem; }
 @container (max-width:700px) {
   .tbe .tbe-wound-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .tbe .tbe-wound-overall { grid-template-columns:1fr; }

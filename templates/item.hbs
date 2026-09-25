@@ -18,6 +18,7 @@
         <label>Circumvent Shield (CS) <input name="system.circumventShield" value="{{system.circumventShield}}"></label><label>Disarm (DIS) <input name="system.disarm" value="{{system.disarm}}"></label>
         <label>Trip (T) <input name="system.trip" value="{{system.trip}}"></label><label>Weapon ENC <input name="system.encumbrance" type="number" value="{{system.encumbrance}}"></label>
         <label>Range (RNG) <input name="system.range" value="{{system.range}}"></label>
+        <label class="tbe-check">One copy At Hand has no ENC <input type="checkbox" name="system.freeAtHand" {{#if system.freeAtHand}}checked{{/if}}></label>
       </div>
     {{/if}}
     {{#if (eq document.type "armor")}}

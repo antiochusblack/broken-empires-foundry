@@ -1,0 +1,197 @@
+[
+  {
+    "name": "Dagger",
+    "type": "weapon",
+    "system": {
+      "price": 20,
+      "reach": "0",
+      "damage": "1",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "0",
+      "notes": "Thrown. ENC is 0 for one dagger At Hand; otherwise 1. Piercing 5 against a prone or grappled foe.",
+      "freeAtHand": true
+    }
+  },
+  {
+    "name": "Cutlass",
+    "type": "weapon",
+    "system": {
+      "price": 60,
+      "reach": "0",
+      "damage": "2",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Broadsword",
+    "type": "weapon",
+    "system": {
+      "price": 100,
+      "reach": "0",
+      "damage": "4",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Spear",
+    "type": "weapon",
+    "system": {
+      "price": 60,
+      "reach": "1",
+      "damage": "3",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "1",
+      "notes": "Piercing 1; Unwieldy; Thrown."
+    }
+  },
+  {
+    "name": "Staff",
+    "type": "weapon",
+    "system": {
+      "price": 50,
+      "reach": "1",
+      "damage": "4 NL",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "4",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": "Two-handed; Defensive."
+    }
+  },
+  {
+    "name": "Buckler",
+    "type": "shield",
+    "system": {
+      "price": 25,
+      "size": "Buckler",
+      "protection": 1,
+      "shieldBash": "-",
+      "encumbrance": 1,
+      "notes": "Can be used while wielding a bow; cannot be split."
+    }
+  },
+  {
+    "name": "Small Shield",
+    "type": "shield",
+    "system": {
+      "price": 50,
+      "size": "Small",
+      "protection": 3,
+      "shieldBash": "7",
+      "encumbrance": 1,
+      "notes": ""
+    }
+  },
+  {
+    "name": "Medium Shield",
+    "type": "shield",
+    "system": {
+      "price": 75,
+      "size": "Medium",
+      "protection": 4,
+      "shieldBash": "6",
+      "encumbrance": 2,
+      "notes": ""
+    }
+  },
+  {
+    "name": "Leather Cap",
+    "type": "armor",
+    "system": {
+      "price": 60,
+      "protection": 3,
+      "bulk": 2,
+      "training": false,
+      "canSunder": true,
+      "location": "Head",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Leather Jerkin",
+    "type": "armor",
+    "system": {
+      "price": 60,
+      "protection": 3,
+      "bulk": 2,
+      "training": false,
+      "canSunder": true,
+      "location": "Body",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Mail Hauberk",
+    "type": "armor",
+    "system": {
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Body",
+      "penalties": "Stealth, Dodge, Rise from Prone -10."
+    }
+  },
+  {
+    "name": "Mail Sleeve (Right)",
+    "type": "armor",
+    "system": {
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Arm",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Padding (Left Leg)",
+    "type": "armor",
+    "system": {
+      "price": 20,
+      "protection": 1,
+      "bulk": 0.5,
+      "training": false,
+      "canSunder": false,
+      "location": "Left Leg",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Reinforced Leather (Right Leg)",
+    "type": "armor",
+    "system": {
+      "price": 100,
+      "protection": 4,
+      "bulk": 3,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Leg",
+      "penalties": "Athletics -5 if worn on either leg."
+    }
+  }
+]
