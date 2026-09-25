@@ -22,20 +22,20 @@
     {{/if}}
     {{#if (eq document.type "armor")}}
       <div class="tbe-grid">
-        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Armor Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label>
+        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Armour Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label>
         <label>Bulk per piece <input name="system.bulk" type="number" step="0.5" min="0" value="{{system.bulk}}"></label>
-        {{#if owned}}<label>Body location when worn <select name="system.location"><option value="">Choose location</option>{{#each locations as |location|}}<option value="{{location}}" {{#if (eq location ../system.location)}}selected{{/if}}>{{location}}</option>{{/each}}</select></label>{{/if}}
-        <label class="tbe-check">Requires armor training <input type="checkbox" name="system.training" {{#if system.training}}checked{{/if}}></label>
+        <label>Body location for this armour piece <select name="system.location"><option value="">Choose location</option>{{#each locations as |location|}}<option value="{{location}}" {{#if (eq location ../system.location)}}selected{{/if}}>{{location}}</option>{{/each}}</select></label>
+        <label class="tbe-check">Requires armour training <input type="checkbox" name="system.training" {{#if system.training}}checked{{/if}}></label>
         <label class="tbe-check">Can be sundered <input type="checkbox" name="system.canSunder" {{#if system.canSunder}}checked{{/if}}></label>
         {{#if owned}}<label class="tbe-check">Currently sundered <input type="checkbox" name="system.sundered" {{#if system.sundered}}checked{{/if}}></label>{{/if}}
       </div>
-      <label>Armor skill penalties <textarea class="tbe-grow" rows="2" name="system.penalties">{{system.penalties}}</textarea></label>
-      <p>Only one armor piece can protect each location. Carried armor costs 1 Inventory ENC per piece.</p>
+      <label>Armour skill penalties <textarea class="tbe-grow" rows="2" name="system.penalties">{{system.penalties}}</textarea></label>
+      <p>Only one armour piece can protect each location. Carried armour costs 1 Inventory ENC per piece.</p>
     {{/if}}
     {{#if (eq document.type "shield")}}
       <div class="tbe-grid">
         <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Size <input name="system.size" value="{{system.size}}" placeholder="Buckler, Small, Medium, Large"></label>
-        <label>Armor Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label><label>Shield Bash SL (ShB) <input name="system.shieldBash" value="{{system.shieldBash}}"></label>
+        <label>Armour Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label><label>Shield Bash SL (ShB) <input name="system.shieldBash" value="{{system.shieldBash}}"></label>
         <label>Weapon ENC <input name="system.encumbrance" type="number" value="{{system.encumbrance}}"></label>
         {{#if owned}}<label class="tbe-check">Split (broken) <input type="checkbox" name="system.split" {{#if system.split}}checked{{/if}}></label>{{/if}}
       </div>

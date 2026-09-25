@@ -37,13 +37,13 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       resolve: entry({ value: number(10), max: number(10), fatigue: number(), permanentFatigue: number() }),
       attributes: entry({ initiative: number(10), initiativePenalty: number(), toughness: number(), deathThreshold: number(), lethalityLevel: number() }),
       sepsisDeadline: string(),
-      wounds: list({ location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }), septic: new BooleanField({ initial: false }) }, { location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }),
+      wounds: list({ generalLocation: string(), location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }), septic: new BooleanField({ initial: false }) }, { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }),
       skills: new SchemaField(skills),
       customSkills: list({ name: string(), category: string(), value: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }, { name: "", category: "Other", value: 0, expertise: 0, savvy: false }),
       resources: list({ name: string(), value: number(), max: number() }, { name: "", value: 0, max: 0 }),
       equipment: list({ name: string(), quantity: number(1), encumbrance: number(), notes: string() }),
       armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }),
-      supply: entry({ gear: string(), ammo: string(), rations: string(), medical: string() }),
+      supply: entry({ gear: new StringField({ initial: "d12" }), ammo: new StringField({ initial: "d12" }), rations: new StringField({ initial: "d12" }), medical: new StringField({ initial: "d12" }) }),
       encumbranceMax: number(6), fraying: number(), trueName: string(), threads: string()
     };
   }
@@ -75,6 +75,15 @@ const PLACEMENTS = {
   armor: [{ value: "worn", label: "Worn" }, { value: "inventory", label: "Inventory" }, { value: "away", label: "At Home / Elsewhere" }],
   gear: [{ value: "inventory", label: "Inventory" }, { value: "away", label: "At Home / Elsewhere" }]
 };
+const inferWoundLocation = wound => {
+  if (BODY_LOCATIONS.includes(wound.generalLocation)) return wound.generalLocation;
+  const value = String(wound.location ?? "").toLowerCase();
+  if (/head|skull|\beye\b|\bear\b|face|nose|neck/.test(value)) return "Head";
+  if (/arm|shoulder|bicep|elbow|forearm|hand/.test(value)) return value.includes("left") ? "Left Arm" : value.includes("right") ? "Right Arm" : "";
+  if (/leg|hip|thigh|knee|shin|foot/.test(value)) return value.includes("left") ? "Left Leg" : value.includes("right") ? "Right Leg" : "";
+  if (/body|chest|stomach|groin/.test(value)) return "Body";
+  return "";
+};
 const itemENC = item => Math.max(0, Number(item.system.encumbrance) || 0);
 const itemPlacement = item => item.system.placement || (item.type === "armor" || item.type === "gear" ? "inventory" : "atHand");
 const HandlebarsSheet = foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2);
@@ -82,7 +91,7 @@ class CharacterSheet extends HandlebarsSheet {
   static DEFAULT_OPTIONS = {
     classes: ["tbe", "character-sheet"], tag: "form", position: { width: 850, height: 760 },
     window: { resizable: true }, form: { submitOnChange: true, closeOnSubmit: false },
-    dragDrop: [{ dropSelector: ".tbe-sheet-body" }]
+    dragDrop: [{ dragSelector: "[data-item-id]", dropSelector: ".tbe-sheet-body" }]
   };
   static PARTS = { main: { template: "systems/broken-empires-foundry/templates/character.hbs" } };
   async _prepareContext(options) {
@@ -98,6 +107,7 @@ class CharacterSheet extends HandlebarsSheet {
     context.gearItems = this.actor.items.filter(i => i.type === "gear");
     context.placementOptions = PLACEMENTS;
     const equipment = this.actor.items.filter(i => ["weapon", "armor", "shield", "gear"].includes(i.type));
+    context.itemPlacements = Object.fromEntries(equipment.map(i => [i.id, itemPlacement(i)]));
     context.equipmentAreas = [
       { key: "ready", title: "Held and Ready", items: equipment.filter(i => itemPlacement(i) === "ready") },
       { key: "atHand", title: "At Hand", items: equipment.filter(i => itemPlacement(i) === "atHand") },
@@ -119,6 +129,18 @@ class CharacterSheet extends HandlebarsSheet {
     context.inventoryMax = this.actor.system.encumbranceMax || 6;
     context.weaponOver = context.weaponENC > 6;
     context.inventoryOver = context.inventoryENC > context.inventoryMax;
+    context.carriedBurden = context.weaponENC + context.inventoryENC + context.wornBulk;
+    context.isGM = game.user.isGM;
+    context.supplyDisplay = Object.fromEntries(["gear", "ammo", "rations", "medical"].map(type => [type, this.actor.system.supply[type] || "d12"]));
+    const ll = Number(this.actor.system.attributes.lethalityLevel) || 0;
+    context.woundSummary = BODY_LOCATIONS.map(location => {
+      const wounds = this.actor.system.wounds.filter(w => inferWoundLocation(w) === location);
+      return { location, lethal: wounds.filter(w => w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0), nonlethal: wounds.filter(w => !w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0), ll };
+    });
+    context.unassignedWounds = this.actor.system.wounds.filter(w => Number(w.points) > 0 && !inferWoundLocation(w));
+    context.totalLethalWP = this.actor.system.wounds.filter(w => w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0);
+    context.totalNonlethalWP = this.actor.system.wounds.filter(w => !w.lethal).reduce((sum, w) => sum + Math.max(0, Number(w.points) || 0), 0);
+    context.ll = ll;
     return context;
   }
   _onRender(context, options) {
@@ -144,10 +166,22 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       this._savedScrollTop = scroller?.scrollTop ?? 0;
       const collection = button.dataset.add;
-      if (["talent", "weapon", "armor", "shield", "gear"].includes(collection)) {
-        await this.actor.createEmbeddedDocuments("Item", [{ name: `New ${collection[0].toUpperCase()}${collection.slice(1)}`, type: collection }]);
+      if (["item", "talent", "weapon", "armor", "shield", "gear"].includes(collection)) {
+        const typeOptions = ["weapon", "armor", "shield", "gear", "talent"];
+        const typeSelect = collection === "item" ? `<label>Type <select name="type">${typeOptions.map(type => `<option value="${type}">${type === "armor" ? "Armour" : type[0].toUpperCase() + type.slice(1)}</option>`).join("")}</select></label>` : "";
+        const details = await foundry.applications.api.DialogV2.input({
+          window: { title: `Add ${collection === "item" ? "Item" : collection === "armor" ? "Armour" : collection}` },
+          content: `${typeSelect}<label>Name <input name="itemName" required autofocus placeholder="Item name"></label>`,
+          ok: { label: "Create on character" }
+        });
+        if (!details) return;
+        const type = collection === "item" ? details.type : collection;
+        const name = String(details.itemName ?? "").trim();
+        if (!typeOptions.includes(type) || !name) return;
+        const created = await this.actor.createEmbeddedDocuments("Item", [{ name, type }]);
+        created[0]?.sheet.render(true);
       } else {
-        const defaults = { customSkills: { name: "", category: "Other", value: 0, expertise: 0, savvy: false }, resources: { name: "", value: 0, max: 0 }, abilityScores: { name: "", descriptor: "" }, racialTraits: { name: "", effect: "" }, personalityTraits: { name: "", description: "" }, goals: { text: "", shared: false }, sharedHistories: { character: "", event: "", skill: "", story: "" }, relationships: { name: "", type: "", notes: "" }, wounds: { location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }, equipment: { name: "", quantity: 1, encumbrance: 0, notes: "" }, armor: { location: "", name: "", protection: 0, bulk: 0, notes: "" } };
+        const defaults = { customSkills: { name: "", category: "Other", value: 0, expertise: 0, savvy: false }, resources: { name: "", value: 0, max: 0 }, abilityScores: { name: "", descriptor: "" }, racialTraits: { name: "", effect: "" }, personalityTraits: { name: "", description: "" }, goals: { text: "", shared: false }, sharedHistories: { character: "", event: "", skill: "", story: "" }, relationships: { name: "", type: "", notes: "" }, wounds: { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }, equipment: { name: "", quantity: 1, encumbrance: 0, notes: "" }, armor: { location: "", name: "", protection: 0, bulk: 0, notes: "" } };
         await this.actor.update({ [`system.${collection}`]: [...this.actor.system[collection], defaults[collection]] });
       }
     }));
@@ -156,6 +190,30 @@ class CharacterSheet extends HandlebarsSheet {
       this._savedScrollTop = scroller?.scrollTop ?? 0;
       const [collection, index] = button.dataset.remove.split(":");
       await this.actor.update({ [`system.${collection}`]: this.actor.system[collection].filter((_, i) => i !== Number(index)) });
+    }));
+    this.element.querySelectorAll("[data-item-placement]").forEach(select => select.addEventListener("change", async event => {
+      this._savedScrollTop = scroller?.scrollTop ?? 0;
+      const item = this.actor.items.get(select.dataset.itemPlacement);
+      if (!item) return;
+      const valid = PLACEMENTS[item.type]?.some(option => option.value === event.target.value);
+      if (!valid) return;
+      await item.update({ "system.placement": event.target.value });
+    }));
+    this.element.querySelectorAll("[data-copy-item]").forEach(button => button.addEventListener("click", async event => {
+      event.preventDefault();
+      const source = this.actor.items.get(button.dataset.copyItem);
+      if (!source || !game.user.isGM) return;
+      const data = source.toObject();
+      delete data._id;
+      if (data.system) {
+        delete data.system.placement;
+        if (source.type === "armor") data.system.sundered = false;
+        if (source.type === "shield") data.system.split = false;
+        if (source.type === "gear") data.system.quantity = 1;
+        if (source.type === "talent") data.system.source = "";
+      }
+      const copied = await Item.implementation.create(data);
+      copied?.sheet.render(true);
     }));
     this.element.querySelectorAll("[data-delete-item]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault(); this._savedScrollTop = scroller?.scrollTop ?? 0; await this.actor.deleteEmbeddedDocuments("Item", [button.dataset.deleteItem]);
@@ -170,7 +228,10 @@ class CharacterSheet extends HandlebarsSheet {
     if (data.type !== "Item" || !this.actor.isOwner) return;
     const item = await Item.implementation.fromDropData(data);
     if (item && ["talent", "weapon", "armor", "shield", "gear"].includes(item.type)) {
-      await this.actor.createEmbeddedDocuments("Item", [item.toObject()]);
+      if (item.parent?.documentName === "Actor" && item.parent.id === this.actor.id) return;
+      const copy = item.toObject();
+      delete copy._id;
+      await this.actor.createEmbeddedDocuments("Item", [copy]);
     }
   }
 }
@@ -188,11 +249,6 @@ class TBEItemSheet extends ItemSheet {
   }
   _onRender(context, options) {
     super._onRender(context, options);
-    // Choosing an armor slot also marks this owned piece as worn.
-    this.element.querySelector('select[name="system.location"]')?.addEventListener("change", event => {
-      const placement = this.element.querySelector('select[name="system.placement"]');
-      if (placement && event.target.value) placement.value = "worn";
-    }, { capture: true });
     this.element.querySelectorAll("textarea.tbe-grow").forEach(field => {
       const size = () => { field.style.height = "auto"; field.style.height = `${Math.max(field.scrollHeight, 50)}px`; };
       size(); field.addEventListener("input", size);
@@ -242,7 +298,7 @@ Hooks.once("ready", async () => {
       } catch (error) { console.error(`TBE: failed to migrate equipment for ${actor.name}`, error); }
     }
     if (!actor.getFlag("broken-empires-foundry", "equipmentPlaceholdersAdded")) {
-      const placeholders = ["armor", "shield", "gear"].filter(type => !actor.items.contents.some(i => i.type === type && i.name === `New ${type[0].toUpperCase()}${type.slice(1)}`)).map(type => ({ name: `New ${type[0].toUpperCase()}${type.slice(1)}`, type, system: { placement: "away" } }));
+      const placeholders = ["armor", "shield", "gear"].filter(type => !actor.items.contents.some(i => i.type === type && i.name === `New ${type[0].toUpperCase()}${type.slice(1)}`)).map(type => ({ name: type === "armor" ? "New Armour" : `New ${type[0].toUpperCase()}${type.slice(1)}`, type, system: { placement: "away" } }));
       try {
         if (placeholders.length) await actor.createEmbeddedDocuments("Item", placeholders);
         await actor.setFlag("broken-empires-foundry", "equipmentPlaceholdersAdded", true);
@@ -263,7 +319,7 @@ const STARTING_ITEMS = [
   { name: "Fists/Kicks", type: "weapon", system: { price: 0, reach: "0", damage: "0 NL", chooseLocation: "1", circumventShield: "3", disarm: "2", trip: "4", encumbrance: 0, range: "-", notes: "Unarmed Might attacks; -20 vs armed foes" } },
   { name: "New Weapon", type: "weapon" },
   { name: "New Talent", type: "talent" },
-  { name: "New Armor", type: "armor", system: { placement: "away" } },
+  { name: "New Armour", type: "armor", system: { placement: "away" } },
   { name: "New Shield", type: "shield", system: { placement: "away" } },
   { name: "New Gear", type: "gear", system: { placement: "away" } }
 ];

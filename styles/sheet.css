@@ -103,3 +103,23 @@
 @container (max-width:600px) {
   .tbe .tbe-armor-slots, .tbe .tbe-enc-totals { grid-template-columns:1fr; }
 }
+.tbe .tbe-wound-overall { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; margin:.7rem 0; }
+.tbe .tbe-wound-overall > div { display:grid; gap:.2rem; padding:.45rem; border:1px solid var(--color-border-light-primary); border-radius:4px; }
+.tbe .tbe-wound-summary { display:grid; gap:.15rem; margin:.65rem 0; }
+.tbe .tbe-wound-summary-row { display:grid; grid-template-columns:minmax(9rem,1fr) repeat(3,minmax(4rem,.45fr)); gap:.5rem; padding:.3rem .45rem; border-bottom:1px solid var(--color-border-light-primary); }
+.tbe .tbe-wound-summary-heading { font-weight:700; font-size:.8rem; }
+.tbe .tbe-wound-summary-row > span:not(:first-child) { text-align:center; }
+.tbe .tbe-wound-cards { display:grid; gap:.65rem; }
+.tbe .tbe-wound-card { border:1px solid var(--color-border-light-primary); border-radius:5px; padding:.5rem .65rem; min-width:0; }
+.tbe .tbe-wound-fields { display:grid; grid-template-columns:minmax(9rem,1fr) minmax(9rem,1fr) minmax(10rem,1.5fr) 4.5rem; gap:.5rem; align-items:start; }
+.tbe .tbe-wound-flags { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:1rem; margin-top:.55rem; }
+.tbe .tbe-wound-flags > button { margin-left:auto; }
+.tbe .tbe-equipment-title > select { max-width:12rem; flex:0 1 12rem; }
+.tbe .tbe-slot-item > select { max-width:11rem; flex:0 1 11rem; }
+.tbe .tbe-talent-card, .tbe .tbe-equipment-card, .tbe .tbe-slot-item { cursor:grab; }
+@container (max-width:700px) {
+  .tbe .tbe-wound-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tbe .tbe-wound-overall { grid-template-columns:1fr; }
+  .tbe .tbe-equipment-title, .tbe .tbe-slot-item { flex-wrap:wrap; }
+  .tbe .tbe-equipment-title > select, .tbe .tbe-slot-item > select { flex:1 1 10rem; max-width:none; }
+}

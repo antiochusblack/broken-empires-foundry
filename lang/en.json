@@ -1,0 +1,12 @@
+{
+  "TYPES": {
+    "Actor": { "character": "Character" },
+    "Item": {
+      "talent": "Talent",
+      "weapon": "Weapon",
+      "armor": "Armour",
+      "shield": "Shield",
+      "gear": "Gear"
+    }
+  }
+}

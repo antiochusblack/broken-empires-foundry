@@ -2,7 +2,7 @@
   "id": "broken-empires-foundry",
   "title": "The Broken Empires (Prototype)",
   "description": "A lightweight, unofficial character sheet for The Broken Empires.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "authors": [
     {
       "name": "antiochusblack"
@@ -18,6 +18,9 @@
   "styles": [
     "styles/sheet.css"
   ],
+  "languages": [
+    { "lang": "en", "name": "English", "path": "lang/en.json" }
+  ],
   "documentTypes": {
     "Actor": {
       "character": {}
@@ -31,5 +34,5 @@
     }
   },
   "manifest": "https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json",
-  "download": "https://github.com/antiochusblack/broken-empires-foundry/releases/download/v0.3.0/broken-empires-foundry-v0.3.0.zip"
+  "download": "https://github.com/antiochusblack/broken-empires-foundry/releases/download/v0.4.0/broken-empires-foundry-v0.4.0.zip"
 }
