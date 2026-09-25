@@ -1,0 +1,17 @@
+<div class="tbe-sheet-body">
+  <label>Name <input name="name" type="text" value="{{document.name}}"></label>
+  {{#if (eq document.type "talent")}}
+    <label>Source (how gained) <input name="system.source" type="text" value="{{system.source}}"></label>
+    <label>Effect <textarea name="system.effect">{{system.effect}}</textarea></label>
+    <label>Requirements <textarea name="system.requirements">{{system.requirements}}</textarea></label>
+  {{else}}
+    <div class="tbe-grid">
+      <label>Attack <input name="system.attack" value="{{system.attack}}"></label><label>Parry <input name="system.parry" value="{{system.parry}}"></label>
+      <label>Reach <input name="system.reach" value="{{system.reach}}"></label><label>Damage <input name="system.damage" value="{{system.damage}}"></label>
+      <label>Clash <input name="system.clash" value="{{system.clash}}"></label><label>Counterstrike <input name="system.counterstrike" value="{{system.counterstrike}}"></label>
+      <label>Disruption <input name="system.disruption" value="{{system.disruption}}"></label><label>Threat <input name="system.threat" value="{{system.threat}}"></label>
+      <label>ENC <input name="system.encumbrance" type="number" value="{{system.encumbrance}}"></label><label>Range <input name="system.range" value="{{system.range}}"></label>
+    </div>
+    <label>Notes <textarea name="system.notes">{{system.notes}}</textarea></label>
+  {{/if}}
+</div>

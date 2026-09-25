@@ -1,10 +1,30 @@
-.tbe.character-sheet .tbe-sheet-body { display: grid; gap: 1rem; padding: 1rem; overflow: auto; height: 100%; }
-.tbe.character-sheet .tbe-header { display: flex; align-items: center; gap: 1rem; }
-.tbe.character-sheet .tbe-header img { object-fit: cover; border: 1px solid var(--color-border-light-primary); border-radius: 4px; }
-.tbe.character-sheet label { display: grid; gap: .3rem; flex: 1; font-weight: 600; }
-.tbe.character-sheet input, .tbe.character-sheet textarea { width: 100%; font-weight: 400; }
-.tbe.character-sheet h2 { margin: 0 0 .5rem; font-size: 1.15rem; }
-.tbe.character-sheet p { margin: 0 0 .5rem; opacity: .8; }
-.tbe.character-sheet .tbe-resolve, .tbe.character-sheet .tbe-skills { display: flex; align-items: end; gap: .75rem; }
-.tbe.character-sheet .tbe-skills input, .tbe.character-sheet .tbe-resolve input { max-width: 7rem; }
-.tbe.character-sheet .tbe-notes textarea { min-height: 8rem; resize: vertical; }
+.tbe .tbe-sheet-body { display:grid; gap:1rem; padding:1rem; overflow:auto; height:100%; align-content:start; }
+.tbe .tbe-header, .tbe .tbe-row { display:flex; align-items:center; gap:.5rem; }
+.tbe .tbe-header img { object-fit:cover; border-radius:4px; }
+.tbe label { display:grid; gap:.25rem; min-width:0; font-weight:600; }
+.tbe input, .tbe textarea { width:100%; min-width:0; font-weight:400; }
+.tbe textarea { min-height:5rem; resize:vertical; }
+.tbe .tbe-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
+.tbe section { border-top:1px solid var(--color-border-light-primary); padding-top:.65rem; scroll-margin-top:.6rem; }
+.tbe h2 { margin:.2rem 0 .6rem; font-size:1.25rem; }
+.tbe h3 { margin:.8rem 0 .4rem; font-size:1.05rem; }
+.tbe h3 button { float:right; font-size:.85rem; }
+.tbe p { margin:.2rem 0 .5rem; opacity:.8; }
+.tbe .tbe-nav { display:flex; flex-wrap:wrap; gap:.75rem; position:sticky; top:0; z-index:1; padding:.45rem; background:var(--color-bg-primary, #242424); }
+.tbe .tbe-row { margin:.3rem 0; }
+.tbe .tbe-row > input { flex:1; }
+.tbe .tbe-row > input[type=number] { flex:0 0 4.5rem; }
+.tbe .tbe-row > button:last-child { flex:0 0 auto; }
+.tbe .tbe-check { display:flex; gap:.25rem; align-items:center; flex:none; white-space:nowrap; }
+.tbe .tbe-check input { width:auto; }
+.tbe .tbe-skill-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.25rem .8rem; }
+.tbe .tbe-skill { display:flex; align-items:center; gap:.35rem; min-width:0; }
+.tbe .tbe-skill > span { flex:1; }
+.tbe .tbe-skill > input[type=number] { width:3.8rem; }
+.tbe .tbe-custom { grid-column:1 / -1; }
+.tbe .tbe-custom > input:first-child { flex:1; }
+.tbe .tbe-custom > input:nth-child(2) { width:7rem; }
+.tbe .tbe-event { display:grid; gap:.35rem; }
+.tbe .tbe-item-link { text-align:left; flex:1; }
+.tbe .tbe-wound > input:nth-child(2) { flex:2; }
+@media(max-width:650px) { .tbe .tbe-grid, .tbe .tbe-skill-list { grid-template-columns:1fr; } }
