@@ -28,7 +28,7 @@
 .tbe .tbe-list-row > button { min-width:0; }
 .tbe .tbe-abilities, .tbe .tbe-traits { --columns:minmax(10rem,1fr) minmax(10rem,1fr) 4.5rem; }
 .tbe .tbe-custom-table { --columns:minmax(9rem,2fr) minmax(7rem,1fr) 4rem 4rem 3rem 2rem; --table-width:560px; }
-.tbe .tbe-wounds { --columns:minmax(7rem,1fr) minmax(10rem,2fr) 4rem 4rem 4rem 4.5rem 2rem; --table-width:700px; }
+.tbe .tbe-wounds { --columns:minmax(7rem,1fr) minmax(10rem,2fr) 4rem 4rem 4rem 4.5rem 4rem 2rem; --table-width:750px; }
 .tbe .tbe-resources { --columns:minmax(10rem,1fr) 5.5rem 1rem 5.5rem 2rem; }
 .tbe .tbe-histories { --columns:minmax(7rem,1fr) minmax(7rem,1fr) minmax(7rem,1fr) minmax(10rem,1.5fr) 2rem; --table-width:650px; }
 .tbe .tbe-relationships { --columns:minmax(8rem,1fr) minmax(9rem,1fr) minmax(10rem,2fr) 2rem; }
@@ -83,4 +83,23 @@
   .tbe .tbe-inventory-row > input, .tbe .tbe-inventory-row > textarea { flex:1 1 9rem; width:auto; }
   .tbe .tbe-list-row > input[type=number], .tbe .tbe-armor-row > input[type=number], .tbe .tbe-inventory-row > input[type=number] { flex:0 1 4.5rem; }
   .tbe .tbe-list-row > button, .tbe .tbe-armor-row > button, .tbe .tbe-inventory-row > button { flex:0 0 auto; }
+}
+/* Equipment is grouped by readiness; armor slots remain visible above carried items. */
+.tbe .tbe-enc-totals { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.45rem; margin:.7rem 0; }
+.tbe .tbe-enc-totals > div { display:flex; justify-content:space-between; gap:.35rem; padding:.45rem; border:1px solid var(--color-border-light-primary); border-radius:4px; }
+.tbe .tbe-over { color:var(--color-text-danger,#e96b65); font-weight:700; }
+.tbe .tbe-add-items { display:flex; flex-wrap:wrap; gap:.4rem; margin:.6rem 0; }
+.tbe .tbe-armor-slots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+.tbe .tbe-armor-slot { border:1px solid var(--color-border-light-primary); border-radius:4px; padding:.45rem; min-width:0; }
+.tbe .tbe-armor-slot > b { display:inline-block; min-width:7rem; }
+.tbe .tbe-slot-item { display:flex; gap:.3rem; align-items:center; margin-top:.3rem; }
+.tbe .tbe-slot-item .tbe-item-link { flex:1; }
+.tbe .tbe-equipment-cards { display:grid; gap:.65rem; }
+.tbe .tbe-equipment-card { border:1px solid var(--color-border-light-primary); border-radius:5px; padding:.5rem .65rem; min-width:0; }
+.tbe .tbe-equipment-title { display:flex; align-items:center; gap:.5rem; margin-bottom:.35rem; }
+.tbe .tbe-equipment-title .tbe-item-link { flex:1; font-weight:700; }
+.tbe .tbe-equipment-title > span { text-transform:capitalize; opacity:.8; }
+.tbe select { width:100%; min-width:0; }
+@container (max-width:600px) {
+  .tbe .tbe-armor-slots, .tbe .tbe-enc-totals { grid-template-columns:1fr; }
 }

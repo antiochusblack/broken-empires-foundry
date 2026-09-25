@@ -2,7 +2,7 @@
   "id": "broken-empires-foundry",
   "title": "The Broken Empires (Prototype)",
   "description": "A lightweight, unofficial character sheet for The Broken Empires.",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "authors": [
     {
       "name": "antiochusblack"
@@ -24,9 +24,12 @@
     },
     "Item": {
       "talent": {},
-      "weapon": {}
+      "weapon": {},
+      "armor": {},
+      "shield": {},
+      "gear": {}
     }
   },
   "manifest": "https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json",
-  "download": "https://github.com/antiochusblack/broken-empires-foundry/releases/download/v0.2.6/broken-empires-foundry-v0.2.6.zip"
+  "download": "https://github.com/antiochusblack/broken-empires-foundry/releases/download/v0.3.0/broken-empires-foundry-v0.3.0.zip"
 }

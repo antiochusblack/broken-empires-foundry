@@ -1,6 +1,7 @@
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
 const number = (initial = 0) => new NumberField({ required: true, integer: true, initial });
+const decimal = () => new NumberField({ required: true, min: 0, initial: 0 });
 const entry = (fields) => new SchemaField(fields);
 const list = (fields, first = null) => new ArrayField(entry(fields), { initial: first ? [first] : [] });
 
@@ -35,14 +36,15 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       relationships: list({ name: string(), type: string(), notes: string() }, { name: "", type: "", notes: "" }),
       resolve: entry({ value: number(10), max: number(10), fatigue: number(), permanentFatigue: number() }),
       attributes: entry({ initiative: number(10), initiativePenalty: number(), toughness: number(), deathThreshold: number(), lethalityLevel: number() }),
-      wounds: list({ location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }) }, { location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false }),
+      sepsisDeadline: string(),
+      wounds: list({ location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }), septic: new BooleanField({ initial: false }) }, { location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }),
       skills: new SchemaField(skills),
       customSkills: list({ name: string(), category: string(), value: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }, { name: "", category: "Other", value: 0, expertise: 0, savvy: false }),
       resources: list({ name: string(), value: number(), max: number() }, { name: "", value: 0, max: 0 }),
-      equipment: list({ name: string(), quantity: number(1), encumbrance: number(), notes: string() }, { name: "", quantity: 1, encumbrance: 0, notes: "" }),
-      armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }, { location: "", name: "", protection: 0, bulk: 0, notes: "" }),
+      equipment: list({ name: string(), quantity: number(1), encumbrance: number(), notes: string() }),
+      armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }),
       supply: entry({ gear: string(), ammo: string(), rations: string(), medical: string() }),
-      encumbranceMax: number(), fraying: number(), trueName: string(), threads: string()
+      encumbranceMax: number(6), fraying: number(), trueName: string(), threads: string()
     };
   }
 }
@@ -53,9 +55,28 @@ class WeaponData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     return { price: number(), reach: string(), damage: string(), chooseLocation: string(), circumventShield: string(), disarm: string(), trip: string(), encumbrance: number(), range: string(), notes: string(),
       // Keep prototype values in existing worlds, even though they are not weapon statistics.
-      attack: string(), parry: string(), clash: string(), counterstrike: string(), disruption: string(), threat: string() };
+      attack: string(), parry: string(), clash: string(), counterstrike: string(), disruption: string(), threat: string(),
+      placement: new StringField({ required: true, initial: "atHand" }) };
   }
 }
+class ArmorData extends foundry.abstract.TypeDataModel {
+  static defineSchema() { return { price: number(), protection: number(), bulk: decimal(), training: new BooleanField({ initial: false }), canSunder: new BooleanField({ initial: false }), sundered: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "inventory" }), location: string(), penalties: string(), notes: string() }; }
+}
+class ShieldData extends foundry.abstract.TypeDataModel {
+  static defineSchema() { return { price: number(), size: string(), protection: number(), shieldBash: string(), encumbrance: number(), split: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }), notes: string() }; }
+}
+class GearData extends foundry.abstract.TypeDataModel {
+  static defineSchema() { return { price: number(), encumbrance: decimal(), quantity: number(1), placement: new StringField({ required: true, initial: "inventory" }), notes: string() }; }
+}
+const BODY_LOCATIONS = ["Head", "Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg"];
+const PLACEMENTS = {
+  weapon: [{ value: "ready", label: "Held and Ready" }, { value: "atHand", label: "At Hand" }, { value: "inventory", label: "Inventory (Stored)" }, { value: "away", label: "At Home / Elsewhere" }],
+  shield: [{ value: "ready", label: "Held and Ready" }, { value: "atHand", label: "At Hand" }, { value: "inventory", label: "Inventory (Stored)" }, { value: "away", label: "At Home / Elsewhere" }],
+  armor: [{ value: "worn", label: "Worn" }, { value: "inventory", label: "Inventory" }, { value: "away", label: "At Home / Elsewhere" }],
+  gear: [{ value: "inventory", label: "Inventory" }, { value: "away", label: "At Home / Elsewhere" }]
+};
+const itemENC = item => Math.max(0, Number(item.system.encumbrance) || 0);
+const itemPlacement = item => item.system.placement || (item.type === "armor" || item.type === "gear" ? "inventory" : "atHand");
 const HandlebarsSheet = foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2);
 class CharacterSheet extends HandlebarsSheet {
   static DEFAULT_OPTIONS = {
@@ -72,6 +93,32 @@ class CharacterSheet extends HandlebarsSheet {
     }));
     context.talents = this.actor.items.filter(i => i.type === "talent");
     context.weapons = this.actor.items.filter(i => i.type === "weapon");
+    context.shields = this.actor.items.filter(i => i.type === "shield");
+    context.armorItems = this.actor.items.filter(i => i.type === "armor");
+    context.gearItems = this.actor.items.filter(i => i.type === "gear");
+    context.placementOptions = PLACEMENTS;
+    const equipment = this.actor.items.filter(i => ["weapon", "armor", "shield", "gear"].includes(i.type));
+    context.equipmentAreas = [
+      { key: "ready", title: "Held and Ready", items: equipment.filter(i => itemPlacement(i) === "ready") },
+      { key: "atHand", title: "At Hand", items: equipment.filter(i => itemPlacement(i) === "atHand") },
+      { key: "inventory", title: "Inventory (Stored)", items: equipment.filter(i => itemPlacement(i) === "inventory") },
+      { key: "away", title: "At Home / Elsewhere", items: equipment.filter(i => itemPlacement(i) === "away") }
+    ];
+    const worn = context.armorItems.filter(i => itemPlacement(i) === "worn");
+    context.armorSlots = BODY_LOCATIONS.map(location => {
+      const pieces = worn.filter(i => i.system.location === location);
+      return { location, items: pieces, conflict: pieces.length > 1, protection: pieces.length === 1 ? (pieces[0].system.sundered ? 0 : pieces[0].system.protection) : 0 };
+    });
+    context.unassignedArmor = worn.filter(i => !BODY_LOCATIONS.includes(i.system.location));
+    const carried = this.actor.items.filter(i => ["weapon", "shield"].includes(i.type) && ["ready", "atHand"].includes(itemPlacement(i)));
+    const inventory = this.actor.items.filter(i => itemPlacement(i) === "inventory" && ["weapon", "shield", "armor", "gear"].includes(i.type));
+    context.weaponENC = carried.reduce((sum, i) => sum + itemENC(i), 0);
+    context.inventoryENC = inventory.reduce((sum, i) => sum + (i.type === "armor" ? 1 : itemENC(i) * (i.type === "gear" ? Math.max(0, Number(i.system.quantity) || 0) : 1)), 0) + Math.max(0, Math.ceil((Number(this.actor.system.silver) || 0) / 500));
+    context.wornBulk = worn.reduce((sum, i) => sum + (Number(i.system.bulk) || 0), 0);
+    context.armorInitiativePenalty = Math.ceil(context.wornBulk / 3);
+    context.inventoryMax = this.actor.system.encumbranceMax || 6;
+    context.weaponOver = context.weaponENC > 6;
+    context.inventoryOver = context.inventoryENC > context.inventoryMax;
     return context;
   }
   _onRender(context, options) {
@@ -97,10 +144,10 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       this._savedScrollTop = scroller?.scrollTop ?? 0;
       const collection = button.dataset.add;
-      if (collection === "talent" || collection === "weapon") {
-        await this.actor.createEmbeddedDocuments("Item", [{ name: collection === "talent" ? "New Talent" : "New Weapon", type: collection }]);
+      if (["talent", "weapon", "armor", "shield", "gear"].includes(collection)) {
+        await this.actor.createEmbeddedDocuments("Item", [{ name: `New ${collection[0].toUpperCase()}${collection.slice(1)}`, type: collection }]);
       } else {
-        const defaults = { customSkills: { name: "", category: "Other", value: 0, expertise: 0, savvy: false }, resources: { name: "", value: 0, max: 0 }, abilityScores: { name: "", descriptor: "" }, racialTraits: { name: "", effect: "" }, personalityTraits: { name: "", description: "" }, goals: { text: "", shared: false }, sharedHistories: { character: "", event: "", skill: "", story: "" }, relationships: { name: "", type: "", notes: "" }, wounds: { location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false }, equipment: { name: "", quantity: 1, encumbrance: 0, notes: "" }, armor: { location: "", name: "", protection: 0, bulk: 0, notes: "" } };
+        const defaults = { customSkills: { name: "", category: "Other", value: 0, expertise: 0, savvy: false }, resources: { name: "", value: 0, max: 0 }, abilityScores: { name: "", descriptor: "" }, racialTraits: { name: "", effect: "" }, personalityTraits: { name: "", description: "" }, goals: { text: "", shared: false }, sharedHistories: { character: "", event: "", skill: "", story: "" }, relationships: { name: "", type: "", notes: "" }, wounds: { location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }, equipment: { name: "", quantity: 1, encumbrance: 0, notes: "" }, armor: { location: "", name: "", protection: 0, bulk: 0, notes: "" } };
         await this.actor.update({ [`system.${collection}`]: [...this.actor.system[collection], defaults[collection]] });
       }
     }));
@@ -122,7 +169,7 @@ class CharacterSheet extends HandlebarsSheet {
     const data = foundry.applications.ux.TextEditor.getDragEventData(event);
     if (data.type !== "Item" || !this.actor.isOwner) return;
     const item = await Item.implementation.fromDropData(data);
-    if (item && ["talent", "weapon"].includes(item.type)) {
+    if (item && ["talent", "weapon", "armor", "shield", "gear"].includes(item.type)) {
       await this.actor.createEmbeddedDocuments("Item", [item.toObject()]);
     }
   }
@@ -131,9 +178,21 @@ const ItemSheet = foundry.applications.api.HandlebarsApplicationMixin(foundry.ap
 class TBEItemSheet extends ItemSheet {
   static DEFAULT_OPTIONS = { classes: ["tbe", "item-sheet"], tag: "form", position: { width: 540, height: 460 }, window: { resizable: true }, form: { submitOnChange: true, closeOnSubmit: false } };
   static PARTS = { main: { template: "systems/broken-empires-foundry/templates/item.hbs" } };
-  async _prepareContext(options) { const context = await super._prepareContext(options); context.system = this.item.system; return context; }
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    context.system = this.item.system;
+    context.placements = PLACEMENTS[this.item.type] ?? [];
+    context.locations = BODY_LOCATIONS;
+    context.owned = this.item.parent?.documentName === "Actor";
+    return context;
+  }
   _onRender(context, options) {
     super._onRender(context, options);
+    // Choosing an armor slot also marks this owned piece as worn.
+    this.element.querySelector('select[name="system.location"]')?.addEventListener("change", event => {
+      const placement = this.element.querySelector('select[name="system.placement"]');
+      if (placement && event.target.value) placement.value = "worn";
+    }, { capture: true });
     this.element.querySelectorAll("textarea.tbe-grow").forEach(field => {
       const size = () => { field.style.height = "auto"; field.style.height = `${Math.max(field.scrollHeight, 50)}px`; };
       size(); field.addEventListener("input", size);
@@ -144,8 +203,11 @@ Hooks.once("init", () => {
   CONFIG.Actor.dataModels.character = CharacterData;
   CONFIG.Item.dataModels.talent = TalentData;
   CONFIG.Item.dataModels.weapon = WeaponData;
+  CONFIG.Item.dataModels.armor = ArmorData;
+  CONFIG.Item.dataModels.shield = ShieldData;
+  CONFIG.Item.dataModels.gear = GearData;
   foundry.documents.collections.Actors.registerSheet("broken-empires-foundry", CharacterSheet, { types: ["character"], makeDefault: true, label: "TBE Character" });
-  foundry.documents.collections.Items.registerSheet("broken-empires-foundry", TBEItemSheet, { types: ["talent", "weapon"], makeDefault: true, label: "TBE Item" });
+  foundry.documents.collections.Items.registerSheet("broken-empires-foundry", TBEItemSheet, { types: ["talent", "weapon", "armor", "shield", "gear"], makeDefault: true, label: "TBE Item" });
 });
 
 // Preserve the three values entered on the 0.1.x test sheet when opening an old world.
@@ -163,6 +225,29 @@ Hooks.once("ready", async () => {
         await actor.setFlag("broken-empires-foundry", "startingItemsAdded", true);
       } catch (error) { console.error(`TBE: failed to add starting items for ${actor.name}`, error); }
     }
+    // Convert populated legacy sheet rows once. Keep the old arrays as a recoverable backup.
+    if (!actor.getFlag("broken-empires-foundry", "equipmentItemsMigrated")) {
+      const previous = actor._source.system ?? {};
+      const converted = [
+        ...(previous.armor ?? []).filter(row => row.name?.trim()).map(row => ({
+          name: row.name, type: "armor", system: { placement: row.location ? "worn" : "inventory", location: BODY_LOCATIONS.find(location => location.toLowerCase() === row.location?.toLowerCase()) ?? "", protection: row.protection ?? 0, bulk: row.bulk ?? 0, notes: row.notes ?? "" }
+        })),
+        ...(previous.equipment ?? []).filter(row => row.name?.trim()).map(row => ({
+          name: row.name, type: "gear", system: { placement: "inventory", quantity: row.quantity ?? 1, encumbrance: row.encumbrance ?? 0, notes: row.notes ?? "" }
+        }))
+      ];
+      try {
+        if (converted.length) await actor.createEmbeddedDocuments("Item", converted);
+        await actor.setFlag("broken-empires-foundry", "equipmentItemsMigrated", true);
+      } catch (error) { console.error(`TBE: failed to migrate equipment for ${actor.name}`, error); }
+    }
+    if (!actor.getFlag("broken-empires-foundry", "equipmentPlaceholdersAdded")) {
+      const placeholders = ["armor", "shield", "gear"].filter(type => !actor.items.contents.some(i => i.type === type && i.name === `New ${type[0].toUpperCase()}${type.slice(1)}`)).map(type => ({ name: `New ${type[0].toUpperCase()}${type.slice(1)}`, type, system: { placement: "away" } }));
+      try {
+        if (placeholders.length) await actor.createEmbeddedDocuments("Item", placeholders);
+        await actor.setFlag("broken-empires-foundry", "equipmentPlaceholdersAdded", true);
+      } catch (error) { console.error(`TBE: failed to add equipment placeholders for ${actor.name}`, error); }
+    }
     const original = actor._source.system?.skills ?? {};
     if (original.melee === undefined && original.ranged === undefined && original.dodge === undefined) continue;
     const updates = { "system.skills.-=melee": null, "system.skills.-=ranged": null, "system.skills.-=dodge": null };
@@ -177,7 +262,10 @@ Hooks.once("ready", async () => {
 const STARTING_ITEMS = [
   { name: "Fists/Kicks", type: "weapon", system: { price: 0, reach: "0", damage: "0 NL", chooseLocation: "1", circumventShield: "3", disarm: "2", trip: "4", encumbrance: 0, range: "-", notes: "Unarmed Might attacks; -20 vs armed foes" } },
   { name: "New Weapon", type: "weapon" },
-  { name: "New Talent", type: "talent" }
+  { name: "New Talent", type: "talent" },
+  { name: "New Armor", type: "armor", system: { placement: "away" } },
+  { name: "New Shield", type: "shield", system: { placement: "away" } },
+  { name: "New Gear", type: "gear", system: { placement: "away" } }
 ];
 
 // Only the client creating a new character adds these embedded Items.
