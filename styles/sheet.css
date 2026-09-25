@@ -1,57 +1,62 @@
-.tbe .tbe-sheet-body { display:grid; gap:1rem; padding:1rem; overflow:auto; height:100%; align-content:start; }
-.tbe .tbe-header, .tbe .tbe-row { display:flex; align-items:center; gap:.5rem; }
-.tbe .tbe-header img { object-fit:cover; border-radius:4px; }
+.tbe .tbe-sheet-body { display:grid; gap:1rem; padding:1rem; height:100%; overflow:auto; align-content:start; }
+.tbe .tbe-header { display:flex; align-items:center; gap:1rem; }
+.tbe .tbe-header img { object-fit:cover; border-radius:4px; flex:none; }
 .tbe label { display:grid; gap:.25rem; min-width:0; font-weight:600; }
-.tbe input, .tbe textarea { width:100%; min-width:0; font-weight:400; }
+.tbe input, .tbe textarea { box-sizing:border-box; width:100%; min-width:0; font-weight:400; }
 .tbe textarea { min-height:5rem; resize:vertical; }
 .tbe .tbe-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
-.tbe section { border-top:1px solid var(--color-border-light-primary); padding-top:.65rem; scroll-margin-top:.6rem; }
+.tbe section { border-top:1px solid var(--color-border-light-primary); padding-top:.65rem; }
 .tbe h2 { margin:.2rem 0 .6rem; font-size:1.25rem; }
 .tbe h3 { margin:.8rem 0 .4rem; font-size:1.05rem; }
-.tbe h3 button { float:right; font-size:.85rem; }
+.tbe h3:has(>button) { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.tbe h3 > button { flex:none; font-size:.85rem; }
 .tbe p { margin:.2rem 0 .5rem; opacity:.8; }
-.tbe .tbe-nav { display:flex; flex-wrap:wrap; gap:.75rem; position:sticky; top:0; z-index:1; padding:.45rem; background:var(--color-bg-primary, #242424); }
-.tbe .tbe-row { margin:.3rem 0; }
-.tbe .tbe-row > input { flex:1; }
-.tbe .tbe-row > input[type=number] { flex:0 0 4.5rem; }
-.tbe .tbe-row > button:last-child { flex:0 0 auto; }
-.tbe .tbe-check { display:flex; gap:.25rem; align-items:center; flex:none; white-space:nowrap; }
-.tbe .tbe-check input { width:auto; }
-.tbe .tbe-skill-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.25rem .8rem; }
-.tbe .tbe-skill { display:flex; align-items:center; gap:.35rem; min-width:0; }
-.tbe .tbe-skill > span { flex:1; }
-.tbe .tbe-skill > input[type=number] { width:3.8rem; }
-.tbe .tbe-custom { grid-column:1 / -1; }
-.tbe .tbe-custom > input:first-child { flex:1; }
-.tbe .tbe-custom > input:nth-child(2) { width:7rem; }
-.tbe .tbe-event { display:grid; gap:.35rem; }
-.tbe .tbe-item-link { text-align:left; flex:1; }
-.tbe .tbe-wound > input:nth-child(2) { flex:2; }
-@media(max-width:650px) { .tbe .tbe-grid, .tbe .tbe-skill-list { grid-template-columns:1fr; } }
-/* The navigation uses buttons so Foundry never interprets it as a world URL. */
-.tbe .tbe-nav { gap:.3rem; background:var(--color-bg-primary, #242424); }
+.tbe .tbe-nav { display:flex; flex-wrap:wrap; gap:.3rem; position:sticky; top:0; z-index:1; padding:.45rem; background:var(--color-bg-primary, #242424); }
 .tbe .tbe-nav button { flex:1; min-width:4.5rem; padding:.25rem .4rem; cursor:pointer; }
-.tbe h3:has(>button) { display:flex; justify-content:space-between; align-items:center; gap:.5rem; }
-.tbe h3 > button { float:none; flex:none; }
-.tbe .tbe-row { min-width:0; }
-.tbe .tbe-row > span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
-.tbe .tbe-skill { display:grid; grid-template-columns:minmax(6rem,1fr) 3.8rem 3.8rem 2.5rem; gap:.35rem; }
-.tbe .tbe-skill > input[type=number] { width:100%; }
-.tbe .tbe-skill-head { display:grid; grid-template-columns:minmax(6rem,1fr) 3.8rem 3.8rem 2.5rem; gap:.35rem; width:calc(50% - .4rem); font-size:.8rem; opacity:.8; font-weight:600; }
-.tbe .tbe-skill-head > span:not(:first-child) { text-align:center; }
-.tbe .tbe-custom { grid-template-columns:minmax(8rem,1fr) 7rem 3.8rem 3.8rem 2.5rem 2rem; }
-.tbe .tbe-custom > input:nth-child(2) { width:100%; }
-.tbe .tbe-custom-head { display:grid; grid-template-columns:minmax(8rem,1fr) 7rem 3.8rem 3.8rem 2.5rem 2rem; gap:.35rem; font-size:.8rem; opacity:.8; font-weight:600; }
+.tbe .tbe-check { display:flex; align-items:center; justify-content:center; gap:.25rem; font-weight:400; white-space:nowrap; }
+.tbe .tbe-check input { width:auto; }
+.tbe .tbe-event { display:grid; gap:.35rem; }
+.tbe .tbe-item-link { text-align:left; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
+/* Each heading and its rows use exactly the same named grid columns. */
+.tbe .tbe-list { overflow-x:auto; }
+.tbe .tbe-list-heading, .tbe .tbe-list-row { display:grid; grid-template-columns:var(--columns); align-items:center; gap:.5rem; min-width:var(--table-width,0); margin:.3rem 0; }
+.tbe .tbe-list-heading { font-size:.8rem; font-weight:600; opacity:.85; }
+.tbe .tbe-list-heading > span { min-width:0; }
+.tbe .tbe-list-heading > span:not(:first-child), .tbe .tbe-skill-head > span:not(:first-child) { text-align:center; }
+.tbe .tbe-list-row > input { width:100%; }
+.tbe .tbe-list-row > button { min-width:0; }
+.tbe .tbe-abilities, .tbe .tbe-traits { --columns:minmax(10rem,1fr) minmax(10rem,1fr) 4.5rem; }
+.tbe .tbe-custom-table { --columns:minmax(9rem,2fr) minmax(7rem,1fr) 4rem 4rem 3rem 2rem; --table-width:560px; }
+.tbe .tbe-wounds { --columns:minmax(7rem,1fr) minmax(10rem,2fr) 4rem 4rem 4rem 4.5rem 2rem; --table-width:700px; }
+.tbe .tbe-resources { --columns:minmax(10rem,1fr) 5.5rem 1rem 5.5rem 2rem; }
+.tbe .tbe-histories { --columns:minmax(7rem,1fr) minmax(7rem,1fr) minmax(7rem,1fr) minmax(10rem,1.5fr) 2rem; --table-width:650px; }
+.tbe .tbe-relationships { --columns:minmax(8rem,1fr) minmax(9rem,1fr) minmax(10rem,2fr) 2rem; }
+.tbe .tbe-goals { --columns:minmax(12rem,1fr) 5rem 2rem; }
+
+.tbe .tbe-skill-list { display:grid; grid-template-columns:minmax(0,1fr); gap:.25rem; }
+.tbe .tbe-skill, .tbe .tbe-skill-head { display:grid; grid-template-columns:minmax(8rem,1fr) 4.5rem 4.5rem 3.5rem; align-items:center; gap:.5rem; width:100%; }
+.tbe .tbe-skill-head { font-size:.8rem; font-weight:600; opacity:.85; margin:.3rem 0; }
+.tbe .tbe-skill > input { width:100%; }
+.tbe .tbe-skill-piety { grid-template-columns:minmax(8rem,1fr) 4.5rem 4.5rem 3.5rem; }
+.tbe .tbe-skill-strand { grid-template-columns:minmax(8rem,1fr) 4.5rem 4.5rem 3.5rem; }
+.tbe .tbe-skill-strand > label { grid-column:3; }
 .tbe .tbe-talent-head, .tbe .tbe-talent-row { display:grid; grid-template-columns:minmax(8rem,2fr) minmax(7rem,1fr) minmax(10rem,2fr) 2rem; align-items:center; gap:.5rem; margin:.25rem 0; }
-.tbe .tbe-talent-head { font-size:.8rem; font-weight:600; opacity:.8; }
+.tbe .tbe-talent-head { font-size:.8rem; font-weight:600; opacity:.85; }
 .tbe .tbe-talent-row > span { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 .tbe .tbe-talent-row > button { min-width:0; }
-.tbe .tbe-talent-row .tbe-item-link { text-align:left; padding:.3rem .5rem; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-@media(max-width:650px) { .tbe .tbe-skill-head { width:100%; } .tbe .tbe-talent-head, .tbe .tbe-talent-row { grid-template-columns:minmax(5rem,1fr) minmax(4rem,1fr) minmax(5rem,1fr) 2rem; } }
-.tbe .tbe-label-row { display:flex; gap:.5rem; padding:0 .2rem; margin:.3rem 0; font-size:.8rem; font-weight:600; opacity:.8; }
-.tbe .tbe-label-row > span { flex:1; min-width:0; }
-.tbe .tbe-label-row > span:nth-child(3), .tbe .tbe-label-row > span:nth-child(4) { flex:0 0 4.5rem; }
-.tbe .tbe-label-row > span:nth-child(n+5) { flex:0 0 4.2rem; }
+
+.tbe .tbe-weapon-scroll, .tbe .tbe-armor-table, .tbe .tbe-inventory-table { overflow-x:auto; max-width:100%; }
+.tbe .tbe-weapon-table { min-width:1080px; }
+.tbe .tbe-weapon-row { display:grid; grid-template-columns:minmax(120px,1.35fr) 3rem 3rem 3.5rem 3rem 3rem 3rem 3rem 3rem 3.5rem minmax(150px,2fr) 2rem; align-items:center; gap:.35rem; margin:.3rem 0; }
+.tbe .tbe-weapon-row > span { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.tbe .tbe-weapon-row > button { min-width:0; }
+.tbe .tbe-table-heading, .tbe .tbe-weapon-heading { font-size:.8rem; font-weight:600; opacity:.85; }
+.tbe .tbe-armor-row, .tbe .tbe-inventory-row { display:grid; align-items:center; gap:.5rem; margin:.3rem 0; }
+.tbe .tbe-armor-row { grid-template-columns:minmax(110px,1fr) minmax(110px,1fr) 4.5rem 4.5rem minmax(110px,1fr) 2rem; min-width:630px; }
+.tbe .tbe-inventory-row { grid-template-columns:minmax(140px,1fr) 4.5rem 4.5rem minmax(140px,1.4fr) 2rem; min-width:530px; }
+.tbe .tbe-armor-row > input, .tbe .tbe-inventory-row > input { width:100%; }
+.tbe .tbe-armor-row > button, .tbe .tbe-inventory-row > button { min-width:0; }
 .tbe.item-sheet .tbe-sheet-body { padding:1.2rem; gap:.9rem; }
-.tbe.item-sheet label { gap:.35rem; }
 .tbe.item-sheet textarea { min-height:6rem; }
+@media(max-width:650px) { .tbe .tbe-grid { grid-template-columns:1fr; } .tbe .tbe-talent-head, .tbe .tbe-talent-row { grid-template-columns:minmax(5rem,1fr) minmax(4rem,1fr) minmax(5rem,1fr) 2rem; } }

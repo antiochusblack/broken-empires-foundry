@@ -2,7 +2,7 @@ const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foun
 const string = () => new StringField({ required: true, blank: true, initial: "" });
 const number = (initial = 0) => new NumberField({ required: true, integer: true, initial });
 const entry = (fields) => new SchemaField(fields);
-const list = (fields) => new ArrayField(entry(fields), { initial: [] });
+const list = (fields, first = null) => new ArrayField(entry(fields), { initial: first ? [first] : [] });
 
 const SKILLS = {
   Combat: ["Dodge", "Melee: Light", "Melee: Medium", "Melee: Heavy", "Might", "Missile", "Thrown Weapons"],
@@ -26,21 +26,21 @@ class CharacterData extends foundry.abstract.TypeDataModel {
     return {
       description: string(), notes: string(), race: string(), sex: string(), size: string(), age: string(),
       culture: string(), career: string(), status: number(), silver: number(), xp: number(),
-      abilityScores: list({ name: string(), descriptor: string() }),
-      racialTraits: list({ name: string(), effect: string() }),
-      personalityTraits: list({ name: string(), description: string() }),
-      goals: list({ text: string(), shared: new BooleanField({ initial: false }) }),
+      abilityScores: list({ name: string(), descriptor: string() }, { name: "", descriptor: "" }),
+      racialTraits: list({ name: string(), effect: string() }, { name: "", effect: "" }),
+      personalityTraits: list({ name: string(), description: string() }, { name: "", description: "" }),
+      goals: list({ text: string(), shared: new BooleanField({ initial: false }) }, { text: "", shared: false }),
       events: new SchemaField(Object.fromEntries(["origin", "youth", "recent"].map(x => [x, entry({ name: string(), benefit: string(), story: string() })]))),
-      sharedHistories: list({ character: string(), event: string(), skill: string(), story: string() }),
-      relationships: list({ name: string(), type: string(), notes: string() }),
+      sharedHistories: list({ character: string(), event: string(), skill: string(), story: string() }, { character: "", event: "", skill: "", story: "" }),
+      relationships: list({ name: string(), type: string(), notes: string() }, { name: "", type: "", notes: "" }),
       resolve: entry({ value: number(10), max: number(10), fatigue: number(), permanentFatigue: number() }),
       attributes: entry({ initiative: number(10), initiativePenalty: number(), toughness: number(), deathThreshold: number(), lethalityLevel: number() }),
-      wounds: list({ location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }) }),
+      wounds: list({ location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }) }, { location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false }),
       skills: new SchemaField(skills),
-      customSkills: list({ name: string(), category: string(), value: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }),
-      resources: list({ name: string(), value: number(), max: number() }),
-      equipment: list({ name: string(), quantity: number(1), encumbrance: number(), notes: string() }),
-      armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }),
+      customSkills: list({ name: string(), category: string(), value: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }, { name: "", category: "Other", value: 0, expertise: 0, savvy: false }),
+      resources: list({ name: string(), value: number(), max: number() }, { name: "", value: 0, max: 0 }),
+      equipment: list({ name: string(), quantity: number(1), encumbrance: number(), notes: string() }, { name: "", quantity: 1, encumbrance: 0, notes: "" }),
+      armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }, { location: "", name: "", protection: 0, bulk: 0, notes: "" }),
       supply: entry({ gear: string(), ammo: string(), rations: string(), medical: string() }),
       encumbranceMax: number(), fraying: number(), trueName: string(), threads: string()
     };
@@ -51,7 +51,9 @@ class TalentData extends foundry.abstract.TypeDataModel {
 }
 class WeaponData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
-    return { attack: string(), parry: string(), reach: string(), damage: string(), clash: string(), counterstrike: string(), disruption: string(), threat: string(), encumbrance: number(), range: string(), notes: string() };
+    return { price: number(), reach: string(), damage: string(), chooseLocation: string(), circumventShield: string(), disarm: string(), trip: string(), encumbrance: number(), range: string(), notes: string(),
+      // Keep prototype values in existing worlds, even though they are not weapon statistics.
+      attack: string(), parry: string(), clash: string(), counterstrike: string(), disruption: string(), threat: string() };
   }
 }
 const HandlebarsSheet = foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2);
@@ -138,6 +140,17 @@ Hooks.once("init", () => {
 Hooks.once("ready", async () => {
   if (!game.user.isGM) return;
   for (const actor of game.actors.filter(a => a.type === "character")) {
+    if (!actor.getFlag("broken-empires-foundry", "startingItemsAdded")) {
+      const existing = actor.items.contents;
+      const additions = [];
+      if (!existing.some(i => i.type === "weapon" && i.name === "Fists/Kicks")) additions.push(STARTING_ITEMS[0]);
+      if (!existing.some(i => i.type === "weapon" && i.name === "New Weapon")) additions.push(STARTING_ITEMS[1]);
+      if (!existing.some(i => i.type === "talent" && i.name === "New Talent")) additions.push(STARTING_ITEMS[2]);
+      try {
+        if (additions.length) await actor.createEmbeddedDocuments("Item", additions);
+        await actor.setFlag("broken-empires-foundry", "startingItemsAdded", true);
+      } catch (error) { console.error(`TBE: failed to add starting items for ${actor.name}`, error); }
+    }
     const original = actor._source.system?.skills ?? {};
     if (original.melee === undefined && original.ranged === undefined && original.dodge === undefined) continue;
     const updates = { "system.skills.-=melee": null, "system.skills.-=ranged": null, "system.skills.-=dodge": null };
@@ -147,4 +160,19 @@ Hooks.once("ready", async () => {
     try { await actor.update(updates); }
     catch (error) { console.error(`TBE: failed to migrate skills for ${actor.name}`, error); }
   }
+});
+
+const STARTING_ITEMS = [
+  { name: "Fists/Kicks", type: "weapon", system: { price: 0, reach: "0", damage: "0 NL", chooseLocation: "1", circumventShield: "3", disarm: "2", trip: "4", encumbrance: 0, range: "-", notes: "Unarmed Might attacks; -20 vs armed foes" } },
+  { name: "New Weapon", type: "weapon" },
+  { name: "New Talent", type: "talent" }
+];
+
+// Only the client creating a new character adds these embedded Items.
+Hooks.on("createActor", async (actor, options, userId) => {
+  if (actor.type !== "character" || userId !== game.user.id) return;
+  try {
+    await actor.createEmbeddedDocuments("Item", STARTING_ITEMS);
+    await actor.setFlag("broken-empires-foundry", "startingItemsAdded", true);
+  } catch (error) { console.error(`TBE: failed to create starting items for ${actor.name}`, error); }
 });
