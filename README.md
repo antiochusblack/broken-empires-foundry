@@ -16,7 +16,7 @@ When the first GM opens a world, the system creates a separate **TBE Equipment**
 
 The character sheet has Held and Ready, At Hand, Worn, Inventory (Stored), and At Home / Elsewhere areas. Every area accepts a dropped Item and has **+ Item**, which makes a new owned Item directly in that area. The location selector moves owned Items between areas. The Worn area also shows armour missing a valid body location so it can be repaired or deleted. The protection slots show worn armour by body location; two pieces in one slot are flagged.
 
-Weapon ENC includes Held and Ready and At Hand weapons and shields. One weapon marked as free At Hand (such as the first dagger) uses no ENC there. Inventory ENC includes stored items, non-armour worn Items, carried armour (1 ENC per piece), ready or at-hand gear, and one point per 500 sp. Worn armour contributes Bulk to the displayed Initiative penalty (Bulk / 3, rounded up). Gear uses quantity × ENC per Item. **At Home / Elsewhere** contributes zero. The displayed total carried burden adds Weapon ENC, Inventory ENC and worn Bulk for reference; the separate limits still apply. The four standard Supply Dice use no Inventory ENC.
+Only At Hand weapons and shields count against the editable At Hand ENC limit (6 by default). Held and Ready has no ENC limit; its ENC is displayed separately for reference. One weapon marked as free At Hand (such as the first dagger) uses no ENC there. Inventory ENC includes stored items, non-armour worn Items, carried armour (1 ENC per piece), ready or at-hand gear, and one point per 500 sp. Worn armour contributes Bulk to the displayed Initiative penalty (Bulk / 3, rounded up). Gear uses quantity × ENC per Item. **At Home / Elsewhere** contributes zero. The displayed total carried burden adds Weapon ENC, Inventory ENC and worn Bulk for reference; the separate limits still apply. The four standard Supply Dice use no Inventory ENC.
 
 New characters start with Fists/Kicks and a blank Talent. Equipment areas start empty. Existing placeholder Items remain editable; you may remove any you no longer need. Filled armour and equipment rows from versions before 0.3.0 migrate once into owned Items, leaving their original rows in the actor data as a backup.
 
@@ -56,3 +56,13 @@ The Treasure Item Table rolls Type C (1d100) by default. Type A and B have dedic
 - Custom skills retain their category after saving. Use + Equipment location to create named areas, and Count ENC to include their contents in Inventory ENC. Removing a location moves its items to At Home / Elsewhere. Weapon ENC maximum is editable.
 - The Resolve track shows available, spent, temporary Fatigue and permanent Fatigue. Click an available box to spend Resolve, a spent box to recover one, or a temporary Fatigue box to clear it. + Fatigue adds one temporary Fatigue; permanent Fatigue remains editable only through its number field.
 - The TBE Playable Races compendium contains six Race Items. Drag one onto a character to fill Race and Race Traits. Manually entered traits are retained; dropping another Race replaces traits that were supplied by the previous Race Item.
+
+### Pierce Through (house rule)
+
+A thrown javelin or spear may use 4 SL to Pierce Through when shield AP stops or reduces the attack. Mark the owned Small, Medium or Large shield as pinned: its AP drops by 2, to a minimum of 0, until the lodged weapon is removed with a Minor Action. Additional pins do not stack; the earlier proposal makes a second pin cumbersome, adjudicated manually. Bucklers do not use this toggle.
+
+### 0.12.3 sheet changes
+
+Skill headings align with standard and custom rows. Each skill keeps its description tooltip and a compact breakdown control beside the name; Ability appears in the breakdown and its bonus is included in the Increases column. Custom skills use the same row layout, with description/category inside the breakdown and a compact delete button. Tooltips choose the side with space. Main sections can be collapsed, and navigation reopens them.
+
+The Resolve track distinguishes empty spent spaces from Fatigue even when current Resolve is zero. Removing Fatigue leaves a spent space and the full-track warning checks Fatigue marks, not remaining Resolve. Only At Hand weapons and shields count against the default 6 ENC limit; Held and Ready has no limit and is shown separately. Owned Small, Medium and Large shields have a Pierced Through checkbox that reduces displayed AP by 2 until cleared.

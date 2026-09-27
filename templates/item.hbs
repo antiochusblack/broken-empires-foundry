@@ -46,7 +46,7 @@
         <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Size <input name="system.size" value="{{system.size}}" placeholder="Buckler, Small, Medium, Large"></label>
         <label>Armour Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label><label>Shield Bash SL (ShB) <input name="system.shieldBash" value="{{system.shieldBash}}"></label>
         <label>Weapon ENC <input name="system.encumbrance" type="number" value="{{system.encumbrance}}"></label>
-        {{#if owned}}<label class="tbe-check">Split (broken) <input type="checkbox" name="system.split" {{#if system.split}}checked{{/if}}></label>{{/if}}
+        {{#if owned}}<label class="tbe-check">Split (broken) <input type="checkbox" name="system.split" {{#if system.split}}checked{{/if}}></label>{{#if pinnableShield}}<label class="tbe-check" title="Pierce Through: 4 SL with a thrown spear or javelin when shield AP stops or reduces the attack. −2 shield AP until removed with a Minor Action; does not stack.">Pierced Through <input type="checkbox" name="system.pinned" {{#if system.pinned}}checked{{/if}}></label>{{/if}}{{/if}}
       </div>
     {{/if}}
     {{#if (eq document.type "gear")}}

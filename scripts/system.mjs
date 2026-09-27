@@ -61,7 +61,7 @@ const BREAKDOWN_FIELDS = ["race", "culture", "lifeEvents", "career", "rounding",
 function skillTotals(actor, skillName, data) {
   const ability = abilityBonus(actor, skillName);
   const other = BREAKDOWN_FIELDS.reduce((sum, field) => sum + (Number(data?.[field]) || 0), 0);
-  return { ability, other, total: (Number(data?.value) || 0) + ability + other };
+  return { ability, other, increases: ability + other, total: (Number(data?.value) || 0) + ability + other };
 }
 const key = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/_$/, "");
 const skill = () => entry({ value: number(20), race: number(), culture: number(), lifeEvents: number(), career: number(), rounding: number(), xp: number(), other: number(), expertise: number(), savvy: new BooleanField({ initial: false }) });
@@ -115,12 +115,14 @@ class ArmorData extends foundry.abstract.TypeDataModel {
   static defineSchema() { return { price: number(), category: string(), protection: number(), bulk: decimal(), training: new BooleanField({ initial: false }), canSunder: new BooleanField({ initial: false }), sundered: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "inventory" }), location: string(), penalties: string(), notes: string() }; }
 }
 class ShieldData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { price: number(), size: string(), protection: number(), shieldBash: string(), encumbrance: number(), split: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }), notes: string() }; }
+  static defineSchema() { return { price: number(), size: string(), protection: number(), shieldBash: string(), encumbrance: number(), split: new BooleanField({ initial: false }), pinned: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }), notes: string() }; }
 }
 class GearData extends foundry.abstract.TypeDataModel {
   static defineSchema() { return { price: number(), category: string(), encumbrance: decimal(), quantity: number(1), placement: new StringField({ required: true, initial: "inventory" }), notes: string() }; }
 }
 const BODY_LOCATIONS = ["Head", "Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg"];
+const canPinShield = item => ["small", "medium", "large"].includes(String(item.system.size || "").trim().toLowerCase());
+const shieldAP = item => item.system.split ? 0 : Math.max(0, Number(item.system.protection || 0) - (canPinShield(item) && item.system.pinned ? 2 : 0));
 const LOCATION_OPTIONS = [
   { value: "ready", label: "Held and Ready" }, { value: "atHand", label: "At Hand" },
   { value: "worn", label: "Worn" }, { value: "inventory", label: "Inventory (Stored)" },
@@ -143,6 +145,7 @@ const COMBAT_MANEUVERS = [
   ["Drive Back", "3 rolled SLs; melee", "Move an Engaged foe and follow; at 4 SLs you can push without following."],
   ["Lock", "3 rolled SLs; melee", "Target cannot make a Fighting Withdrawal while you hold the engagement."],
   ["Pierce Armor", "4 rolled SLs; rigid armour", "Gain Piercing 3 against Reinforced Leather or better."],
+  ["Pierce Through", "4 rolled SLs; thrown spear or javelin only", "If shield AP stops or reduces the attack, the weapon lodges in a Small, Medium or Large shield. Shield AP −2 until removed with a Minor Action; the AP reduction does not stack."],
   ["Choose Location", "Weapon CL rolled SLs", "Choose another hit location."],
   ["Circumvent Shield", "Weapon CS rolled SLs", "Ignore shield AP for this hit."],
   ["Disarm", "Weapon DIS rolled SLs; Arm hit", "Knock away a held weapon; extra SLs affect distance, two-handed weapons and shields."],
@@ -257,6 +260,8 @@ class CharacterSheet extends HandlebarsSheet {
     context.talents = this.actor.items.filter(i => i.type === "talent");
     context.weapons = this.actor.items.filter(i => i.type === "weapon");
     context.shields = this.actor.items.filter(i => i.type === "shield");
+    context.pinnableShields = Object.fromEntries(context.shields.map(item => [item.id, canPinShield(item)]));
+    context.shieldAP = Object.fromEntries(context.shields.map(item => [item.id, shieldAP(item)]));
     context.armorItems = this.actor.items.filter(i => i.type === "armor");
     context.gearItems = this.actor.items.filter(i => i.type === "gear");
     const customLocations = this.actor.system.equipmentLocations ?? [];
@@ -283,10 +288,12 @@ class CharacterSheet extends HandlebarsSheet {
       return { location, items: pieces, conflict: pieces.length > 1, protection: pieces.length === 1 ? (pieces[0].system.sundered ? 0 : pieces[0].system.protection) : 0 };
     });
     context.unassignedArmor = worn.filter(i => !BODY_LOCATIONS.includes(i.system.location));
-    const carried = this.actor.items.filter(i => ["weapon", "shield"].includes(i.type) && ["ready", "atHand"].includes(itemPlacement(i)));
+    const atHand = this.actor.items.filter(i => ["weapon", "shield"].includes(i.type) && itemPlacement(i) === "atHand");
+    const heldReady = this.actor.items.filter(i => ["weapon", "shield"].includes(i.type) && itemPlacement(i) === "ready");
     const inventory = equipment.filter(i => itemPlacement(i) === "inventory" || (itemPlacement(i) === "worn" && i.type !== "armor") || (["ready", "atHand"].includes(itemPlacement(i)) && ["gear", "armor"].includes(i.type)) || customLocations.some(location => location.id === itemPlacement(i) && location.countsEncumbrance));
-    const freeAtHandWeapon = carried.find(i => i.type === "weapon" && i.system.freeAtHand && itemPlacement(i) === "atHand");
-    context.weaponENC = carried.reduce((sum, i) => sum + (i === freeAtHandWeapon ? 0 : itemENC(i)), 0);
+    const freeAtHandWeapon = atHand.find(i => i.type === "weapon" && i.system.freeAtHand);
+    context.weaponENC = atHand.reduce((sum, i) => sum + (i === freeAtHandWeapon ? 0 : itemENC(i)), 0);
+    context.heldReadyENC = heldReady.reduce((sum, i) => sum + itemENC(i), 0);
     context.inventoryENC = inventory.reduce((sum, i) => sum + (i.type === "armor" ? 1 : itemENC(i) * (i.type === "gear" ? Math.max(0, Number(i.system.quantity) || 0) : 1)), 0) + Math.max(0, Math.ceil((Number(this.actor.system.silver) || 0) / 500));
     context.wornBulk = worn.reduce((sum, i) => sum + (Number(i.system.bulk) || 0), 0);
     context.armorInitiativePenalty = Math.ceil(context.wornBulk / 3);
@@ -294,14 +301,14 @@ class CharacterSheet extends HandlebarsSheet {
     context.weaponMax = this.actor.system.weaponEncumbranceMax ?? 6;
     context.weaponOver = context.weaponENC > context.weaponMax;
     context.inventoryOver = context.inventoryENC > context.inventoryMax;
-    context.carriedBurden = context.weaponENC + context.inventoryENC + context.wornBulk;
+    context.carriedBurden = context.weaponENC + context.heldReadyENC + context.inventoryENC + context.wornBulk;
     const resolve = this.actor.system.resolve;
     const max = Math.max(0, Math.floor(Number(resolve.max) || 0));
     const permanent = Math.min(max, Math.max(0, Math.floor(Number(resolve.permanentFatigue) || 0)));
     const temporary = Math.min(max - permanent, Math.max(0, Math.floor(Number(resolve.fatigue) || 0)));
     const current = Math.max(0, Math.min(max - permanent - temporary, Math.floor(Number(resolve.value) || 0)));
     context.resolveTrack = Array.from({ length: max }, (_, index) => {
-      const state = index >= max - permanent ? "permanent" : index >= max - permanent - temporary ? "fatigue" : index < max - permanent - temporary - current ? "spent" : "available";
+      const state = index >= max - permanent ? "permanent" : index >= max - permanent - temporary ? "fatigue" : index < current ? "available" : "spent";
       return { index, state, permanent: state === "permanent", fatigue: state === "fatigue", available: state === "available" };
     });
     context.supplyDisplay = Object.fromEntries(["gear", "ammo", "rations", "medical"].map(type => [type, this.actor.system.supply[type] || "d12"]));
@@ -321,6 +328,22 @@ class CharacterSheet extends HandlebarsSheet {
   _onRender(context, options) {
     super._onRender(context, options);
     const scroller = this.element.querySelector(".tbe-sheet-body");
+    this._collapsedSections ??= new Set();
+    this.element.querySelectorAll("[data-collapse-section]").forEach(button => {
+      const section = button.closest("section");
+      const id = button.dataset.collapseSection;
+      const setCollapsed = collapsed => {
+        section.classList.toggle("tbe-section-collapsed", collapsed);
+        button.setAttribute("aria-expanded", String(!collapsed));
+      };
+      setCollapsed(this._collapsedSections.has(id));
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        if (this._collapsedSections.has(id)) this._collapsedSections.delete(id);
+        else this._collapsedSections.add(id);
+        setCollapsed(this._collapsedSections.has(id));
+      });
+    });
     this.element.querySelectorAll("[data-resolve-box]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
       if (!this.actor.isOwner) return;
@@ -334,10 +357,15 @@ class CharacterSheet extends HandlebarsSheet {
         await this.actor.update({ "system.resolve.value": Math.max(0, Math.min(maxAvailable, Number(resolve.value) + (state.contains("tbe-resolve-spent") ? 1 : -1))) });
       }
     }));
+    this.element.querySelectorAll("[data-pin-shield]").forEach(input => input.addEventListener("change", async () => {
+      const shield = this.actor.items.get(input.dataset.pinShield);
+      if (!this.actor.isOwner || shield?.type !== "shield" || !canPinShield(shield)) return;
+      await shield.update({ "system.pinned": input.checked });
+    }));
     this.element.querySelector("[data-add-fatigue]")?.addEventListener("click", async event => {
       event.preventDefault();
       const r = this.actor.system.resolve;
-      if (Number(r.value) <= 0 || Number(r.fatigue) + Number(r.permanentFatigue) >= Number(r.max)) { ui.notifications.warn("The Resolve track is full; further Fatigue may cause a Fatigue-based wound."); return; }
+      if (Number(r.fatigue) + Number(r.permanentFatigue) >= Number(r.max)) { ui.notifications.warn("Every space is marked as Fatigue or Permanent Fatigue; no more can be marked on this track."); return; }
       const fatigue = Number(r.fatigue) + 1;
       await this.actor.update({ "system.resolve.fatigue": fatigue, "system.resolve.value": Math.max(0, Number(r.value) - 1) });
     });
@@ -390,6 +418,18 @@ class CharacterSheet extends HandlebarsSheet {
     if (scroller) {
       scroller.scrollTop = this._savedScrollTop ?? 0;
       scroller.addEventListener("scroll", () => { this._savedScrollTop = scroller.scrollTop; }, { passive: true });
+      this.element.querySelectorAll("[data-tbe-tip]").forEach(tip => {
+        const positionTip = () => {
+          const bounds = scroller.getBoundingClientRect();
+          const anchor = tip.getBoundingClientRect();
+          const tipWidth = Math.min(384, bounds.width - 16);
+          const rightSpace = bounds.right - anchor.left;
+          const leftSpace = anchor.right - bounds.left;
+          tip.classList.toggle("tbe-tip-left", rightSpace < tipWidth && leftSpace > rightSpace);
+        };
+        tip.addEventListener("mouseenter", positionTip);
+        tip.addEventListener("focus", positionTip);
+      });
     }
     // Keep prose fields as short as their content, growing them as the user types.
     this.element.querySelectorAll("textarea.tbe-grow").forEach(field => {
@@ -400,6 +440,10 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       const target = this.element.querySelector(`#tbe-${button.dataset.section}`);
       if (!scroller || !target) return;
+      if (this._collapsedSections.delete(button.dataset.section)) {
+        target.classList.remove("tbe-section-collapsed");
+        target.querySelector("[data-collapse-section]")?.setAttribute("aria-expanded", "true");
+      }
       scroller.scrollTop += target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 44;
       this._savedScrollTop = scroller.scrollTop;
     }));
@@ -565,6 +609,7 @@ class TBEItemSheet extends ItemSheet {
     context.locations = BODY_LOCATIONS;
     context.attackSkills = ATTACK_SKILLS;
     context.owned = this.item.parent?.documentName === "Actor";
+    context.pinnableShield = this.item.type === "shield" && canPinShield(this.item);
     return context;
   }
   _onRender(context, options) {
