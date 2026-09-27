@@ -140,26 +140,41 @@ async function importRulebookJournals() {
           if (data.format !== "tbe-journals-v1" || typeof data.source !== "string" || !Array.isArray(data.chapters) || !data.chapters.length) throw new Error("This is not a TBE Journal import file.");
           if (data.chapters.some(ch => typeof ch.name !== "string" || !Array.isArray(ch.pages) || ch.pages.some(page => typeof page.name !== "string" || typeof page.html !== "string"))) throw new Error("The Journal file contains invalid chapters or pages.");
           const existing = game.journal.contents.filter(j => j.getFlag("broken-empires-foundry", "rulebookImport") === data.source);
-          const pending = data.chapters.filter(ch => !existing.some(j => j.getFlag("broken-empires-foundry", "chapterName") === ch.name));
-          if (!pending.length) { ui.notifications.info("These rulebook Journals have already been imported."); return; }
+          const revision = Number(data.revision) || 1;
+          const pending = data.chapters.map(chapter => ({
+            chapter, journal: existing.find(j => j.getFlag("broken-empires-foundry", "chapterName") === chapter.name)
+          })).filter(({ journal }) => !journal || Number(journal.getFlag("broken-empires-foundry", "rulebookRevision")) < revision);
+          if (!pending.length) { ui.notifications.info("These rulebook Journals are already up to date."); return; }
+          const updating = pending.filter(({ journal }) => journal).length;
+          const creating = pending.length - updating;
           const confirmed = await foundry.applications.api.DialogV2.confirm({
             window: { title: "Import private rulebook?" },
-            content: `Create ${pending.length} Journal entries from ${foundry.utils.escapeHTML(file.name)} in this world? This may take a minute.`,
-            yes: { label: "Import Journals" }, no: { label: "Cancel" }
+            content: `Update the imported text in ${updating} existing Journals and create ${creating} new Journals from ${foundry.utils.escapeHTML(file.name)}? Existing matching PDF pages will be replaced; other pages and Journal permissions will be kept.`,
+            yes: { label: "Import / Update" }, no: { label: "Cancel" }
           });
           if (!confirmed) return;
-          ui.notifications.info(`Importing ${pending.length} TBE rulebook chapters…`);
+          ui.notifications.info(`Updating ${pending.length} TBE rulebook chapters…`);
           let folder = game.folders.find(f => f.type === "JournalEntry" && f.name === "TBE Rulebook");
           if (!folder) folder = await Folder.create({ name: "TBE Rulebook", type: "JournalEntry" });
-          for (const chapter of pending) {
-            await JournalEntry.create({
-              name: chapter.name,
-              folder: folder.id,
-              flags: { "broken-empires-foundry": { rulebookImport: data.source, chapterName: chapter.name } },
-              pages: chapter.pages.map(page => ({ name: page.name, type: "text", text: { format: 1, content: page.html } }))
-            });
+          for (const { chapter, journal } of pending) {
+            if (journal) {
+              const oldPages = new Map(journal.pages.contents.map(page => [page.name, page]));
+              const updates = chapter.pages.filter(page => oldPages.has(page.name)).map(page => ({
+                _id: oldPages.get(page.name).id, "text.format": 1, "text.content": page.html
+              }));
+              const additions = chapter.pages.filter(page => !oldPages.has(page.name)).map(page => ({ name: page.name, type: "text", text: { format: 1, content: page.html } }));
+              if (updates.length) await journal.updateEmbeddedDocuments("JournalEntryPage", updates);
+              if (additions.length) await journal.createEmbeddedDocuments("JournalEntryPage", additions);
+              await journal.setFlag("broken-empires-foundry", "rulebookRevision", revision);
+            } else {
+              await JournalEntry.create({
+                name: chapter.name, folder: folder.id,
+                flags: { "broken-empires-foundry": { rulebookImport: data.source, chapterName: chapter.name, rulebookRevision: revision } },
+                pages: chapter.pages.map(page => ({ name: page.name, type: "text", text: { format: 1, content: page.html } }))
+              });
+            }
           }
-          ui.notifications.info(`Imported ${pending.length} TBE rulebook Journals. Set player permissions in the Journals sidebar.`);
+          ui.notifications.info(`Updated ${updating} and created ${creating} TBE rulebook Journals.`);
         } catch (error) {
           console.error("TBE: Journal import failed", error);
           ui.notifications.error(`Journal import failed: ${error.message}`);

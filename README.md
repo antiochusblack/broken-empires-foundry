@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.9.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.10.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.9.0` and attach `broken-empires-foundry-v0.9.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.10.0` and attach `broken-empires-foundry-v0.10.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
@@ -36,4 +36,4 @@ The GM's first world startup after updating creates a separate **TBE Talents** w
 
 ## Private rulebook Journals
 
-The rulebook text is **not** bundled in this public system or its ZIP. The GM can download the separate `TBE_Rulebook_Journals_Private.json`, open the **Journals sidebar**, click **Import TBE rulebook Journals** at the top, and select that JSON file. This creates chapter Journals with searchable text pages in the world's **TBE Rulebook** folder. Repeat imports skip chapters already created; an interrupted import can be resumed with the same file. Only a GM sees the import button. Set Journal player visibility in the Journals sidebar as desired. Keep the JSON private; it contains the text of the book. Consult the original PDF for artwork, diagrams and complex tables because text extraction cannot preserve their layout.
+The full rulebook text is **not** bundled in this public system or its ZIP. The GM can download the separate `TBE_Rulebook_Journals_Private.json`, open the **Journals sidebar**, click **Import TBE rulebook Journals** at the top, and select that JSON file. This creates chapter Journals with searchable text pages in the world's **TBE Rulebook** folder. Revision 2 presents paragraphs in column order. Importing the revised file into a world with earlier imported Journals updates their matching PDF pages in place, preserving Journal identity, permissions and unrelated pages. The confirmation explains that it will replace existing imported page text; an interrupted import can be resumed with the same file. Only a GM sees the import button. Keep the JSON private; it contains the full book text. Consult the original PDF for artwork, diagrams and complex tables because text extraction cannot preserve their layout.
