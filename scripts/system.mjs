@@ -139,6 +139,7 @@ class CharacterSheet extends HandlebarsSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     context.system = this.actor.system;
+    context.isGM = game.user.isGM;
     context.maneuvers = COMBAT_MANEUVERS;
     context.combatModifiers = COMBAT_MODIFIERS;
     context.skillGroups = Object.entries(SKILLS).map(([category, names]) => ({
@@ -209,6 +210,46 @@ class CharacterSheet extends HandlebarsSheet {
       scroller.scrollTop += target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 44;
       this._savedScrollTop = scroller.scrollTop;
     }));
+    this.element.querySelector("[data-import-journals]")?.addEventListener("click", async event => {
+      event.preventDefault();
+      if (!game.user.isGM) return;
+      const picker = document.createElement("input");
+      picker.type = "file"; picker.accept = ".json,application/json";
+      picker.addEventListener("change", async () => {
+        const file = picker.files?.[0];
+        if (!file) return;
+        try {
+          const data = JSON.parse(await file.text());
+          if (data.format !== "tbe-journals-v1" || typeof data.source !== "string" || !Array.isArray(data.chapters) || !data.chapters.length) throw new Error("This is not a TBE Journal import file.");
+          if (data.chapters.some(ch => typeof ch.name !== "string" || !Array.isArray(ch.pages) || ch.pages.some(page => typeof page.name !== "string" || typeof page.html !== "string"))) throw new Error("The Journal file contains invalid chapters or pages.");
+          const existing = game.journal.contents.filter(j => j.getFlag("broken-empires-foundry", "rulebookImport") === data.source);
+          const pending = data.chapters.filter(ch => !existing.some(j => j.getFlag("broken-empires-foundry", "chapterName") === ch.name));
+          if (!pending.length) { ui.notifications.info("These rulebook Journals have already been imported."); return; }
+          const confirmed = await foundry.applications.api.DialogV2.confirm({
+            window: { title: "Import private rulebook?" },
+            content: `Create ${pending.length} Journal entries from ${foundry.utils.escapeHTML(file.name)} in this world? This may take a minute.`,
+            yes: { label: "Import Journals" }, no: { label: "Cancel" }
+          });
+          if (!confirmed) return;
+          ui.notifications.info(`Importing ${pending.length} TBE rulebook chapters…`);
+          let folder = game.folders.find(f => f.type === "JournalEntry" && f.name === "TBE Rulebook");
+          if (!folder) folder = await Folder.create({ name: "TBE Rulebook", type: "JournalEntry" });
+          for (const chapter of pending) {
+            await JournalEntry.create({
+              name: chapter.name,
+              folder: folder.id,
+              flags: { "broken-empires-foundry": { rulebookImport: data.source, chapterName: chapter.name } },
+              pages: chapter.pages.map(page => ({ name: page.name, type: "text", text: { format: 1, content: page.html } }))
+            });
+          }
+          ui.notifications.info(`Imported ${pending.length} TBE rulebook Journals. Set player permissions in the Journals sidebar.`);
+        } catch (error) {
+          console.error("TBE: Journal import failed", error);
+          ui.notifications.error(`Journal import failed: ${error.message}`);
+        }
+      }, { once: true });
+      picker.click();
+    });
     this.element.querySelectorAll("[data-attack-item]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
       const weapon = this.actor.items.get(button.dataset.attackItem);
@@ -288,10 +329,20 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       this._savedScrollTop = scroller?.scrollTop ?? 0;
       const [collection, index] = button.dataset.remove.split(":");
-      if (collection === "wounds") {
-        const confirmed = await foundry.applications.api.DialogV2.confirm({ window: { title: "Delete wound?" }, content: "Are you sure you want to delete this wound?", yes: { label: "Delete wound" }, no: { label: "Cancel" } });
-        if (!confirmed) return;
-      }
+      const entries = this.actor.system[collection];
+      const entry = entries?.[Number(index)];
+      if (!entry) return;
+      const descriptions = { abilityScores: "ability score", racialTraits: "race trait", customSkills: "custom skill", resources: "resource", wounds: "wound", sharedHistories: "shared history", relationships: "NPC relationship", personalityTraits: "personality trait", goals: "goal" };
+      const kind = descriptions[collection] ?? "entry";
+      const label = entry.name || entry.character || entry.detail || entry.text || entry.location || kind;
+      const confirmed = await foundry.applications.api.DialogV2.confirm({
+        window: { title: `Delete ${kind}?` },
+        content: `Are you sure you want to delete ${foundry.utils.escapeHTML(String(label))}?`,
+        yes: { label: "Delete" }, no: { label: "Cancel" }
+      });
+      if (!confirmed) return;
+      // A second click or another user may have changed this list while the dialogue was open.
+      if (JSON.stringify(this.actor.system[collection]?.[Number(index)]) !== JSON.stringify(entry)) return;
       await this.actor.update({ [`system.${collection}`]: this.actor.system[collection].filter((_, i) => i !== Number(index)) });
     }));
     this.element.querySelectorAll("[data-item-placement]").forEach(select => select.addEventListener("change", async event => {
