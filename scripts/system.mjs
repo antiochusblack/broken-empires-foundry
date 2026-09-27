@@ -14,6 +14,23 @@ const SKILLS = {
   Magic: ["Piety"],
   Strands: ["Air", "Beasts", "Body", "Earth", "Fire", "Plants", "Spheres", "Spirit", "Thought", "Water"]
 };
+const SKILL_DESCRIPTIONS = {
+  Dodge: "Avoid incoming damage and oppose certain magical effects; requires room to move.",
+  "Melee: Light": "Fight with light, fast, one-handed weapons.", "Melee: Medium": "Fight with standard swords, maces and axes.", "Melee: Heavy": "Fight with two-handed weapons, often with Reach.",
+  Might: "Unarmed fighting, grappling and feats of strength; −20 against armed foes.", Missile: "Use bows, crossbows and slings.", "Thrown Weapons": "Throw spears, knives and improvised objects.",
+  Athletics: "Climb, swim, jump and rise from Prone.", Endurance: "Withstand suffering; affects wound recovery and physical stamina.", "Locks & Traps": "Pick locks and build or disarm traps; use Perception to spot traps.",
+  Perception: "Notice changes, hidden creatures and ambushes; used when scouting journeys.", Ride: "Ride mounts, avoid falls, and defend against ranged attacks while mounted.", "Sail/Boat": "Navigate waterways and captain vessels.",
+  "Sleight of Hand": "Pick pockets, palm small objects and cheat at games.", Stealth: "Move quietly and unseen; requires concealment and limits movement to one zone per round.",
+  Survival: "Find food, water and shelter; avoid wilderness hazards.", Track: "Follow trails and navigate by landmarks or stars.", Willpower: "Mental and spiritual fortitude; oppose certain magical effects.",
+  Deceive: "Lie, disguise yourself and use guile.", Insight: "Sense intentions and see through Deceive.", Inspire: "Rouse and motivate others with emotion or speeches.",
+  Intimidate: "Threaten, shame or pressure others.", Perform: "Sing, dance, act, tell stories or play an instrument.", Persuade: "Use reason, bargaining and a friendly approach.",
+  Protocol: "Know etiquette, rank, status and diplomacy.", Seduce: "Use flirtation and understand romantic cues.", Wit: "Use charm, humour, flattery and quick observation.",
+  "Ancient Lore": "Recall history, old legends and forgotten myths.", Arcana: "Know the Weave, esoteric theory and summoning circles.", Commerce: "Trade, haggle, gamble and manage wealth.",
+  "Common Lore": "Know the geography, customs, plants, animals and people of a region.", "Craft: Practical": "Build or repair mundane objects, often as an extended roll.",
+  "Craft: Artistic": "Make art, poetry, sculpture or disguises, often as an extended roll.", Divinity: "Know gods, religions and doctrine; oppose divine miracles.",
+  Heal: "Treat wounds, poison and infection; roll Medical Supply after each attempt.", Naturewise: "Know nature, animals, weather and natural healing ingredients.",
+  Streetwise: "Know local underworld contacts and urban suppliers; can support Social rolls."
+};
 const key = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/_$/, "");
 const skill = () => entry({ value: number(20), expertise: number(), savvy: new BooleanField({ initial: false }) });
 const strand = () => entry({ level: number(), thin: new BooleanField({ initial: false }) });
@@ -39,12 +56,12 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       sepsisDeadline: string(),
       wounds: list({ generalLocation: string(), location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }), septic: new BooleanField({ initial: false }) }, { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }),
       skills: new SchemaField(skills),
-      customSkills: list({ name: string(), category: string(), value: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }, { name: "", category: "Other", value: 0, expertise: 0, savvy: false }),
+      customSkills: list({ name: string(), category: string(), description: string(), value: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }, { name: "", category: "Other", description: "", value: 0, expertise: 0, savvy: false }),
       resources: list({ name: string(), value: number(), max: number() }, { name: "", value: 0, max: 0 }),
       equipment: list({ name: string(), quantity: number(1), encumbrance: number(), notes: string() }),
       armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }),
       supply: entry({ gear: new StringField({ initial: "d12" }), ammo: new StringField({ initial: "d12" }), rations: new StringField({ initial: "d12" }), medical: new StringField({ initial: "d12" }) }),
-      encumbranceMax: number(6), fraying: number(), trueName: string(), threads: string()
+      encumbranceMax: number(6), droppedZone: string(), fraying: number(), trueName: string(), threads: string()
     };
   }
 }
@@ -72,7 +89,7 @@ const BODY_LOCATIONS = ["Head", "Body", "Right Arm", "Left Arm", "Right Leg", "L
 const LOCATION_OPTIONS = [
   { value: "ready", label: "Held and Ready" }, { value: "atHand", label: "At Hand" },
   { value: "worn", label: "Worn" }, { value: "inventory", label: "Inventory (Stored)" },
-  { value: "away", label: "At Home / Elsewhere" }
+  { value: "dropped", label: "Dropped in Zone" }, { value: "away", label: "At Home / Elsewhere" }
 ];
 const PLACEMENTS = Object.fromEntries(["weapon", "shield", "armor", "gear"].map(type => [type, LOCATION_OPTIONS]));
 const inferWoundLocation = wound => {
@@ -197,8 +214,11 @@ class CharacterSheet extends HandlebarsSheet {
     context.maneuvers = COMBAT_MANEUVERS;
     context.combatModifiers = COMBAT_MODIFIERS;
     context.skillGroups = Object.entries(SKILLS).map(([category, names]) => ({
-      category, rows: names.map(name => ({ name, path: `system.skills.${key(category)}.${key(name)}`, strand: category === "Strands", data: this.actor.system.skills[key(category)][key(name)] }))
+      category, rows: names.map(name => ({ name, description: SKILL_DESCRIPTIONS[name] || "", path: `system.skills.${key(category)}.${key(name)}`, strand: category === "Strands", data: this.actor.system.skills[key(category)][key(name)] }))
     }));
+    const customSkills = this.actor.system.customSkills.map((row, index) => ({ index, name: row.name, category: row.category, description: row.description, value: row.value, expertise: row.expertise, savvy: row.savvy }));
+    context.customSkillGroups = Object.fromEntries(Object.keys(SKILLS).map(category => [category, customSkills.filter(row => row.category === category)]));
+    context.otherCustomSkills = customSkills.filter(row => !Object.keys(SKILLS).includes(row.category));
     context.talents = this.actor.items.filter(i => i.type === "talent");
     context.weapons = this.actor.items.filter(i => i.type === "weapon");
     context.shields = this.actor.items.filter(i => i.type === "shield");
@@ -212,6 +232,7 @@ class CharacterSheet extends HandlebarsSheet {
       { key: "atHand", title: "At Hand", items: equipment.filter(i => itemPlacement(i) === "atHand") },
       { key: "worn", title: "Worn", items: equipment.filter(i => itemPlacement(i) === "worn") },
       { key: "inventory", title: "Inventory (Stored)", items: equipment.filter(i => itemPlacement(i) === "inventory") },
+      { key: "dropped", title: "Dropped in Zone", items: equipment.filter(i => itemPlacement(i) === "dropped") },
       { key: "away", title: "At Home / Elsewhere", items: equipment.filter(i => itemPlacement(i) === "away") }
     ];
     const worn = context.armorItems.filter(i => itemPlacement(i) === "worn");
@@ -248,6 +269,27 @@ class CharacterSheet extends HandlebarsSheet {
   _onRender(context, options) {
     super._onRender(context, options);
     const scroller = this.element.querySelector(".tbe-sheet-body");
+    this.element.querySelector("[data-portrait]")?.addEventListener("click", event => {
+      event.preventDefault();
+      if (!this.actor.isOwner) return;
+      new foundry.applications.apps.FilePicker({ type: "image", current: this.actor.img, callback: path => this.actor.update({ img: path }) }).browse();
+    });
+    this.element.querySelectorAll("[data-roll-supply]").forEach(button => button.addEventListener("click", async event => {
+      event.preventDefault();
+      if (!this.actor.isOwner) return;
+      const category = button.dataset.rollSupply;
+      if (!["gear", "ammo", "rations", "medical"].includes(category)) return;
+      const die = this.actor.system.supply[category];
+      if (!["d12", "d10", "d8", "d6"].includes(die)) { ui.notifications.warn(`${category} supply has run out.`); return; }
+      const roll = await new Roll(`1${die}`).evaluate();
+      const depleted = roll.total <= 2;
+      const steps = ["d12", "d10", "d8", "d6", "depleted"];
+      const next = depleted ? steps[steps.indexOf(die) + 1] : die;
+      if (depleted) await this.actor.update({ [`system.supply.${category}`]: next });
+      const name = category[0].toUpperCase() + category.slice(1);
+      const flavor = depleted ? `Oh shit, ${name} decreased! ${die} → ${next}.` : `${name} Supply holds at ${die}.`;
+      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor });
+    }));
     if (scroller) {
       scroller.scrollTop = this._savedScrollTop ?? 0;
       scroller.addEventListener("scroll", () => { this._savedScrollTop = scroller.scrollTop; }, { passive: true });
@@ -310,8 +352,13 @@ class CharacterSheet extends HandlebarsSheet {
         ' = <strong>' + target + '</strong></p><p>Roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
         '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p>' +
         (outcome.success ? '<p>General hit location from attacker’s ones die: <strong>' + generalHitLocation(value) + '</strong>.</p>' : '') +
-        '<p>Weapon base damage: ' + escape(String(weapon.system.damage || '0')) +
-        '. Resolve defence, manoeuvre, DoS and detailed hit location at the table.</p></div>';
+        '<div class="tbe-attack-stats">' + [
+          ["RCH", weapon.system.reach], ["DMG", weapon.system.damage], ["CL", weapon.system.chooseLocation],
+          ["CS", weapon.system.circumventShield], ["DIS", weapon.system.disarm], ["T", weapon.system.trip],
+          ["ENC", weapon.system.encumbrance], ["RNG", weapon.system.range]
+        ].map(([label, stat]) => `<span><b>${label}</b> ${escape(String(stat ?? ""))}</span>`).join("") + '</div>' +
+        (weapon.system.notes ? '<p><b>Notes:</b> ' + escape(weapon.system.notes) + '</p>' : '') + '</div>';
+      if (draw) await weapon.update({ "system.placement": "ready" });
       await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
     }));
     this.element.querySelectorAll("[data-add]").forEach(button => button.addEventListener("click", async event => {
@@ -335,7 +382,7 @@ class CharacterSheet extends HandlebarsSheet {
         const created = await this.actor.createEmbeddedDocuments("Item", [{ name, type, ...(area ? { system: { placement: area } } : {}) }]);
         created[0]?.sheet.render(true);
       } else {
-        const defaults = { customSkills: { name: "", category: "Other", value: 0, expertise: 0, savvy: false }, resources: { name: "", value: 0, max: 0 }, abilityScores: { name: "", descriptor: "" }, racialTraits: { name: "", effect: "" }, personalityTraits: { name: "", description: "" }, goals: { text: "", shared: false }, sharedHistories: { character: "", event: "", skill: "", story: "" }, relationships: { name: "", type: "", notes: "" }, wounds: { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }, equipment: { name: "", quantity: 1, encumbrance: 0, notes: "" }, armor: { location: "", name: "", protection: 0, bulk: 0, notes: "" } };
+        const defaults = { customSkills: { name: "", category: button.dataset.category || "Other", description: "", value: 0, expertise: 0, savvy: false }, resources: { name: "", value: 0, max: 0 }, abilityScores: { name: "", descriptor: "" }, racialTraits: { name: "", effect: "" }, personalityTraits: { name: "", description: "" }, goals: { text: "", shared: false }, sharedHistories: { character: "", event: "", skill: "", story: "" }, relationships: { name: "", type: "", notes: "" }, wounds: { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }, equipment: { name: "", quantity: 1, encumbrance: 0, notes: "" }, armor: { location: "", name: "", protection: 0, bulk: 0, notes: "" } };
         await this.actor.update({ [`system.${collection}`]: [...this.actor.system[collection], defaults[collection]] });
       }
     }));
@@ -432,8 +479,57 @@ function addRulebookImportButton(application, element) {
   header.append(button);
 }
 Hooks.on("renderJournalDirectory", addRulebookImportButton);
+function addTableImportButton(application, element) {
+  if (!game.user.isGM) return;
+  const root = element instanceof HTMLElement ? element : element?.[0] ?? application.element;
+  if (!root || root.querySelector("[data-tbe-import-tables]")) return;
+  const header = root.querySelector(".directory-header") || root.querySelector(".directory-list")?.parentElement;
+  if (!header) return;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.dataset.tbeImportTables = "";
+  button.className = "tbe-journal-import-button";
+  button.textContent = "Import TBE RollTables";
+  button.addEventListener("click", event => {
+    event.preventDefault();
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json,application/json";
+    input.addEventListener("change", async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const data = JSON.parse(await file.text());
+        if (data.format !== "tbe-rolltables-v1" || !Array.isArray(data.tables)) throw new Error("Choose the TBE RollTables import file.");
+        const folders = new Map();
+        for (const name of [...new Set(data.tables.map(t => t.folder).filter(Boolean))]) {
+          let folder = game.folders.find(f => f.type === "RollTable" && f.name === name && !f.folder);
+          if (!folder) folder = await Folder.create({ name, type: "RollTable" });
+          folders.set(name, folder.id);
+        }
+        let created = 0, updated = 0;
+        for (const table of data.tables) {
+          if (!table.name || !/^\d+d\d+(?:[+-]\d+)?$/.test(table.formula) || !Array.isArray(table.results) || !table.results.length) throw new Error(`Invalid table: ${table.name || "unnamed"}`);
+          const results = table.results.map(result => ({ type: CONST.TABLE_RESULT_TYPES.TEXT, text: result.text, range: result.range, weight: result.range[1] - result.range[0] + 1, drawn: false }));
+          const fields = { name: table.name, formula: table.formula, results, folder: folders.get(table.folder) || null, replacement: true,
+            flags: { "broken-empires-foundry": { rulebookTable: true, tableKey: table.key } } };
+          const existing = game.tables.find(t => t.getFlag("broken-empires-foundry", "tableKey") === table.key);
+          if (existing) { await existing.update({ name: fields.name, formula: fields.formula, folder: fields.folder });
+            await existing.deleteEmbeddedDocuments("TableResult", existing.results.map(r => r.id));
+            await existing.createEmbeddedDocuments("TableResult", results); updated++; }
+          else { await RollTable.create(fields); created++; }
+        }
+        ui.notifications.info(`TBE RollTables: ${created} created, ${updated} updated.`);
+      } catch (error) { console.error("TBE: table import failed", error); ui.notifications.error(`TBE RollTables import failed: ${error.message}`); }
+    }, { once: true });
+    input.click();
+  });
+  header.append(button);
+}
+Hooks.on("renderRollTableDirectory", addTableImportButton);
 Hooks.on("renderApplicationV2", (application, element) => {
   if (application instanceof foundry.applications.sidebar.tabs.JournalDirectory) addRulebookImportButton(application, element);
+  if (application instanceof foundry.applications.sidebar.tabs.RollTableDirectory) addTableImportButton(application, element);
 });
 Hooks.once("init", () => {
   CONFIG.Actor.dataModels.character = CharacterData;

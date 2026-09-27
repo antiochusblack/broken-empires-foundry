@@ -139,3 +139,17 @@
 .tbe .tbe-equipment-card [data-attack-item] { margin:0 0 .4rem; }
 .tbe-attack-dialog { display:grid; gap:.65rem; }
 .tbe-attack-card p { margin:.3rem 0; }
+
+.tbe .tbe-portrait { padding:0; border:0; background:none; flex:none; cursor:pointer; }
+.tbe .tbe-portrait:hover { outline:2px solid var(--color-border-highlight,#d9a04b); }
+.tbe .tbe-skill-list { gap:0; }
+.tbe .tbe-skill { padding:.16rem .3rem; border-bottom:1px solid var(--color-border-light-primary,#7775); }
+.tbe .tbe-skill:nth-child(even) { background:var(--color-bg-primary,#7772); }
+.tbe .tbe-skill > span[title] { cursor:help; }
+.tbe .tbe-custom-skill { grid-template-columns:minmax(8rem,1fr) 4.5rem 4.5rem 3.5rem 8rem 2rem; }
+.tbe .tbe-custom-table { --columns:minmax(9rem,2fr) minmax(7rem,1fr) 4rem 4rem 3rem minmax(9rem,2fr) 2rem; --table-width:680px; }
+.tbe .tbe-supply-grid label { grid-template-columns:1fr auto; align-items:end; }
+.tbe .tbe-supply-grid label select { grid-column:1; }
+.tbe .tbe-supply-grid label button { grid-column:2; grid-row:2; }
+.tbe-attack-stats { display:flex; flex-wrap:wrap; gap:.3rem .7rem; margin:.5rem 0; }
+.tbe-attack-stats span { padding:.15rem .3rem; border:1px solid currentColor; border-radius:3px; }
