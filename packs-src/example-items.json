@@ -3,6 +3,8 @@
     "name": "Dagger",
     "type": "weapon",
     "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
       "price": 20,
       "reach": "0",
       "damage": "1",
@@ -12,14 +14,34 @@
       "trip": "6",
       "encumbrance": 1,
       "range": "0",
-      "notes": "Thrown. ENC is 0 for one dagger At Hand; otherwise 1. Piercing 5 against a prone or grappled foe.",
+      "notes": "Thrown; one dagger At Hand is free of ENC. Piercing 5 against Prone/Grappled foe.",
       "freeAtHand": true
     }
   },
   {
-    "name": "Cutlass",
+    "name": "Parrying Dagger",
     "type": "weapon",
     "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 25,
+      "reach": "0",
+      "damage": "1",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "-",
+      "notes": "Defensive; +2 AP in secondary hand with Two Weapon Fighter; no off-hand penalty."
+    }
+  },
+  {
+    "name": "Shortsword",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
       "price": 60,
       "reach": "0",
       "damage": "2",
@@ -33,9 +55,191 @@
     }
   },
   {
+    "name": "Cutlass",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 60,
+      "reach": "0",
+      "damage": "2",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Hand Axe",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 30,
+      "reach": "0",
+      "damage": "2",
+      "chooseLocation": "3",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "0",
+      "notes": "Thrown."
+    }
+  },
+  {
+    "name": "Cudgel",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 10,
+      "reach": "0",
+      "damage": "2 NL",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Rapier",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 100,
+      "reach": "0",
+      "damage": "2",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "4",
+      "trip": "7",
+      "encumbrance": 1,
+      "range": "-",
+      "notes": "Defensive; not secondary-hand compatible with Two Weapon Fighter."
+    }
+  },
+  {
+    "name": "Javelin",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 70,
+      "reach": "0",
+      "damage": "2",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 2,
+      "range": "2",
+      "notes": "Piercing 1; Thrown."
+    }
+  },
+  {
+    "name": "Blackjack",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 15,
+      "reach": "0",
+      "damage": "1 NL",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "-",
+      "notes": "Surprise Head hit: humanoid Wound Die at −3."
+    }
+  },
+  {
+    "name": "Whip",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 25,
+      "reach": "1",
+      "damage": "1",
+      "chooseLocation": "2",
+      "circumventShield": "5",
+      "disarm": "2",
+      "trip": "3",
+      "encumbrance": 1,
+      "range": "-",
+      "notes": "Cannot parry or Set for Charge."
+    }
+  },
+  {
+    "name": "Torch",
+    "type": "weapon",
+    "system": {
+      "category": "Light Weapons",
+      "attackSkill": "Melee: Light",
+      "price": 0,
+      "reach": "0",
+      "damage": "1",
+      "chooseLocation": "2",
+      "circumventShield": "2",
+      "disarm": "5",
+      "trip": "7",
+      "encumbrance": 0,
+      "range": "-",
+      "notes": "Fire/Burn wound. After attack roll d6; on 1–2 torch goes out."
+    }
+  },
+  {
+    "name": "Fists/Kicks",
+    "type": "weapon",
+    "system": {
+      "category": "Might Weapons",
+      "attackSkill": "Might",
+      "price": 0,
+      "reach": "0",
+      "damage": "0 NL",
+      "chooseLocation": "1",
+      "circumventShield": "3",
+      "disarm": "2",
+      "trip": "4",
+      "encumbrance": 0,
+      "range": "-",
+      "notes": "Unarmed; −20 versus armed."
+    }
+  },
+  {
+    "name": "Brass Knuckles",
+    "type": "weapon",
+    "system": {
+      "category": "Might Weapons",
+      "attackSkill": "Might",
+      "price": 20,
+      "reach": "0",
+      "damage": "0",
+      "chooseLocation": "1",
+      "circumventShield": "3",
+      "disarm": "3",
+      "trip": "4",
+      "encumbrance": 0,
+      "range": "-",
+      "notes": "Unarmed Might becomes lethal; −20 versus armed."
+    }
+  },
+  {
     "name": "Broadsword",
     "type": "weapon",
     "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
       "price": 100,
       "reach": "0",
       "damage": "4",
@@ -49,9 +253,137 @@
     }
   },
   {
+    "name": "Mace",
+    "type": "weapon",
+    "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
+      "price": 100,
+      "reach": "0",
+      "damage": "4",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Scimitar",
+    "type": "weapon",
+    "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
+      "price": 100,
+      "reach": "0",
+      "damage": "4",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Flail",
+    "type": "weapon",
+    "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
+      "price": 100,
+      "reach": "0",
+      "damage": "4",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Bearded Axe",
+    "type": "weapon",
+    "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
+      "price": 120,
+      "reach": "0",
+      "damage": "4",
+      "chooseLocation": "3",
+      "circumventShield": "2",
+      "disarm": "3",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": "Unwieldy."
+    }
+  },
+  {
+    "name": "Warhammer",
+    "type": "weapon",
+    "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
+      "price": 110,
+      "reach": "0",
+      "damage": "4",
+      "chooseLocation": "4",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": "Piercing 1."
+    }
+  },
+  {
+    "name": "Club",
+    "type": "weapon",
+    "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
+      "price": 30,
+      "reach": "0",
+      "damage": "4 NL",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Staff",
+    "type": "weapon",
+    "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
+      "price": 50,
+      "reach": "1",
+      "damage": "4 NL",
+      "chooseLocation": "3",
+      "circumventShield": "3",
+      "disarm": "4",
+      "trip": "4",
+      "encumbrance": 2,
+      "range": "-",
+      "notes": "2H; Defensive."
+    }
+  },
+  {
     "name": "Spear",
     "type": "weapon",
     "system": {
+      "category": "Medium Weapons",
+      "attackSkill": "Melee: Medium",
       "price": 60,
       "reach": "1",
       "damage": "3",
@@ -65,19 +397,399 @@
     }
   },
   {
-    "name": "Staff",
+    "name": "Battle-Axe",
     "type": "weapon",
     "system": {
-      "price": 50,
-      "reach": "1",
-      "damage": "4 NL",
-      "chooseLocation": "3",
-      "circumventShield": "3",
-      "disarm": "4",
-      "trip": "4",
-      "encumbrance": 2,
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 150,
+      "reach": "0",
+      "damage": "6",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 3,
       "range": "-",
-      "notes": "Two-handed; Defensive."
+      "notes": "2H; ClSh; Unwieldy; Overbearing."
+    }
+  },
+  {
+    "name": "Longsword (one hand)",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 200,
+      "reach": "0",
+      "damage": "4",
+      "chooseLocation": "4",
+      "circumventShield": "4",
+      "disarm": "3",
+      "trip": "3",
+      "encumbrance": 3,
+      "range": "-",
+      "notes": "1H stance; same sword as two-hand profile."
+    }
+  },
+  {
+    "name": "Longsword (two hands)",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 200,
+      "reach": "0",
+      "damage": "5",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 3,
+      "range": "-",
+      "notes": "2H stance; same sword as one-hand profile."
+    }
+  },
+  {
+    "name": "Two-Handed Sword",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 180,
+      "reach": "1",
+      "damage": "6",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 4,
+      "range": "-",
+      "notes": "2H; ClSh; Unwieldy; Overbearing."
+    }
+  },
+  {
+    "name": "Longspear",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 100,
+      "reach": "2",
+      "damage": "5",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 4,
+      "range": "-",
+      "notes": "2H; Piercing 1; Unwieldy; DMG 10 versus Lance Charge."
+    }
+  },
+  {
+    "name": "Pike",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 100,
+      "reach": "2",
+      "damage": "5",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 4,
+      "range": "-",
+      "notes": "2H; Piercing 1; Unwieldy; DMG 10 versus Lance Charge."
+    }
+  },
+  {
+    "name": "Halberd",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 200,
+      "reach": "1",
+      "damage": "6",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 4,
+      "range": "-",
+      "notes": "2H; +10 versus Mounted; Unwieldy; Overbearing."
+    }
+  },
+  {
+    "name": "Bill Hook",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 200,
+      "reach": "1",
+      "damage": "6",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 4,
+      "range": "-",
+      "notes": "2H; +10 versus Mounted; Unwieldy; Overbearing."
+    }
+  },
+  {
+    "name": "Heavy Flail",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 150,
+      "reach": "0",
+      "damage": "6",
+      "chooseLocation": "5",
+      "circumventShield": "4",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 3,
+      "range": "-",
+      "notes": "2H; Unwieldy; Overbearing."
+    }
+  },
+  {
+    "name": "War Staff",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 80,
+      "reach": "1",
+      "damage": "5 NL",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 3,
+      "range": "-",
+      "notes": "2H; Defensive."
+    }
+  },
+  {
+    "name": "Maul",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 175,
+      "reach": "0",
+      "damage": "6",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 4,
+      "range": "-",
+      "notes": "2H; Piercing 1; ClSh; Unwieldy; Overbearing."
+    }
+  },
+  {
+    "name": "Lance",
+    "type": "weapon",
+    "system": {
+      "category": "Heavy Weapons",
+      "attackSkill": "Melee: Heavy",
+      "price": 160,
+      "reach": "2",
+      "damage": "10",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "3",
+      "trip": "2",
+      "encumbrance": 4,
+      "range": "-",
+      "notes": "Mounted Charge only; ENC 2 while mounted; Unwieldy; Overbearing; may break on hit."
+    }
+  },
+  {
+    "name": "Sling",
+    "type": "weapon",
+    "system": {
+      "category": "Missile Weapons",
+      "attackSkill": "Missile",
+      "price": 10,
+      "reach": "-",
+      "damage": "1",
+      "chooseLocation": "6",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 1,
+      "range": "2",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Light Crossbow",
+    "type": "weapon",
+    "system": {
+      "category": "Missile Weapons",
+      "attackSkill": "Missile",
+      "price": 100,
+      "reach": "-",
+      "damage": "3",
+      "chooseLocation": "6",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 3,
+      "range": "2",
+      "notes": "2H; Piercing 1; Reload 1."
+    }
+  },
+  {
+    "name": "Shortbow",
+    "type": "weapon",
+    "system": {
+      "category": "Missile Weapons",
+      "attackSkill": "Missile",
+      "price": 50,
+      "reach": "-",
+      "damage": "2",
+      "chooseLocation": "6",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "3",
+      "notes": "2H."
+    }
+  },
+  {
+    "name": "Longbow",
+    "type": "weapon",
+    "system": {
+      "category": "Missile Weapons",
+      "attackSkill": "Missile",
+      "price": 120,
+      "reach": "-",
+      "damage": "3",
+      "chooseLocation": "6",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 3,
+      "range": "4",
+      "notes": "2H."
+    }
+  },
+  {
+    "name": "Heavy Crossbow",
+    "type": "weapon",
+    "system": {
+      "category": "Missile Weapons",
+      "attackSkill": "Missile",
+      "price": 200,
+      "reach": "-",
+      "damage": "3",
+      "chooseLocation": "6",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 4,
+      "range": "3",
+      "notes": "2H; Piercing 3; Reload 1."
+    }
+  },
+  {
+    "name": "Throwing Knives",
+    "type": "weapon",
+    "system": {
+      "category": "Thrown Weapons",
+      "attackSkill": "Thrown Weapons",
+      "price": 30,
+      "reach": "-",
+      "damage": "1",
+      "chooseLocation": "3",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 0,
+      "range": "0",
+      "notes": "Ammo Die; draw and throw without penalty."
+    }
+  },
+  {
+    "name": "Dagger (thrown)",
+    "type": "weapon",
+    "system": {
+      "category": "Thrown Weapons",
+      "attackSkill": "Thrown Weapons",
+      "price": 20,
+      "reach": "-",
+      "damage": "1",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "6",
+      "encumbrance": 1,
+      "range": "0",
+      "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled."
+    }
+  },
+  {
+    "name": "Hand Axe (thrown)",
+    "type": "weapon",
+    "system": {
+      "category": "Thrown Weapons",
+      "attackSkill": "Thrown Weapons",
+      "price": 30,
+      "reach": "-",
+      "damage": "2",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 1,
+      "range": "0",
+      "notes": ""
+    }
+  },
+  {
+    "name": "Spear (thrown)",
+    "type": "weapon",
+    "system": {
+      "category": "Thrown Weapons",
+      "attackSkill": "Thrown Weapons",
+      "price": 60,
+      "reach": "-",
+      "damage": "3",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "1",
+      "notes": "Piercing 1."
+    }
+  },
+  {
+    "name": "Javelin (thrown)",
+    "type": "weapon",
+    "system": {
+      "category": "Thrown Weapons",
+      "attackSkill": "Thrown Weapons",
+      "price": 70,
+      "reach": "-",
+      "damage": "2",
+      "chooseLocation": "5",
+      "circumventShield": "5",
+      "disarm": "5",
+      "trip": "5",
+      "encumbrance": 2,
+      "range": "2",
+      "notes": "Piercing 1."
     }
   },
   {
@@ -89,7 +801,7 @@
       "protection": 1,
       "shieldBash": "-",
       "encumbrance": 1,
-      "notes": "Can be used while wielding a bow; cannot be split."
+      "notes": "May be used with a bow; cannot be split."
     }
   },
   {
@@ -117,9 +829,190 @@
     }
   },
   {
+    "name": "Large Shield",
+    "type": "shield",
+    "system": {
+      "price": 100,
+      "size": "Large",
+      "protection": 5,
+      "shieldBash": "5",
+      "encumbrance": 3,
+      "notes": "Requires Large Shield Training."
+    }
+  },
+  {
+    "name": "Padding Cap",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 20,
+      "protection": 1,
+      "bulk": 0.5,
+      "training": false,
+      "canSunder": false,
+      "location": "Head",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Padding Cuirass",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 20,
+      "protection": 1,
+      "bulk": 0.5,
+      "training": false,
+      "canSunder": false,
+      "location": "Body",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Padding Sleeve (Right Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 20,
+      "protection": 1,
+      "bulk": 0.5,
+      "training": false,
+      "canSunder": false,
+      "location": "Right Arm",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Padding Sleeve (Left Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 20,
+      "protection": 1,
+      "bulk": 0.5,
+      "training": false,
+      "canSunder": false,
+      "location": "Left Arm",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Padding Leggings (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 20,
+      "protection": 1,
+      "bulk": 0.5,
+      "training": false,
+      "canSunder": false,
+      "location": "Right Leg",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Padding Leggings (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 20,
+      "protection": 1,
+      "bulk": 0.5,
+      "training": false,
+      "canSunder": false,
+      "location": "Left Leg",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Quilt Cap",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 40,
+      "protection": 2,
+      "bulk": 1,
+      "training": false,
+      "canSunder": false,
+      "location": "Head",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Quilt Cuirass",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 40,
+      "protection": 2,
+      "bulk": 1,
+      "training": false,
+      "canSunder": false,
+      "location": "Body",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Quilt Sleeve (Right Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 40,
+      "protection": 2,
+      "bulk": 1,
+      "training": false,
+      "canSunder": false,
+      "location": "Right Arm",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Quilt Sleeve (Left Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 40,
+      "protection": 2,
+      "bulk": 1,
+      "training": false,
+      "canSunder": false,
+      "location": "Left Arm",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Quilt Leggings (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 40,
+      "protection": 2,
+      "bulk": 1,
+      "training": false,
+      "canSunder": false,
+      "location": "Right Leg",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Quilt Leggings (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 40,
+      "protection": 2,
+      "bulk": 1,
+      "training": false,
+      "canSunder": false,
+      "location": "Left Leg",
+      "penalties": ""
+    }
+  },
+  {
     "name": "Leather Cap",
     "type": "armor",
     "system": {
+      "category": "Armour",
       "price": 60,
       "protection": 3,
       "bulk": 2,
@@ -133,6 +1026,7 @@
     "name": "Leather Jerkin",
     "type": "armor",
     "system": {
+      "category": "Armour",
       "price": 60,
       "protection": 3,
       "bulk": 2,
@@ -143,55 +1037,754 @@
     }
   },
   {
-    "name": "Mail Hauberk",
+    "name": "Leather Sleeve (Right Arm)",
     "type": "armor",
     "system": {
-      "price": 200,
-      "protection": 5,
-      "bulk": 4,
-      "training": true,
-      "canSunder": true,
-      "location": "Body",
-      "penalties": "Stealth, Dodge, Rise from Prone -10."
-    }
-  },
-  {
-    "name": "Mail Sleeve (Right)",
-    "type": "armor",
-    "system": {
-      "price": 200,
-      "protection": 5,
-      "bulk": 4,
-      "training": true,
+      "category": "Armour",
+      "price": 60,
+      "protection": 3,
+      "bulk": 2,
+      "training": false,
       "canSunder": true,
       "location": "Right Arm",
       "penalties": ""
     }
   },
   {
-    "name": "Padding (Left Leg)",
+    "name": "Leather Sleeve (Left Arm)",
     "type": "armor",
     "system": {
-      "price": 20,
-      "protection": 1,
-      "bulk": 0.5,
+      "category": "Armour",
+      "price": 60,
+      "protection": 3,
+      "bulk": 2,
       "training": false,
-      "canSunder": false,
+      "canSunder": true,
+      "location": "Left Arm",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Leather Greave (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 60,
+      "protection": 3,
+      "bulk": 2,
+      "training": false,
+      "canSunder": true,
+      "location": "Right Leg",
+      "penalties": ""
+    }
+  },
+  {
+    "name": "Leather Greave (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 60,
+      "protection": 3,
+      "bulk": 2,
+      "training": false,
+      "canSunder": true,
       "location": "Left Leg",
       "penalties": ""
     }
   },
   {
-    "name": "Reinforced Leather (Right Leg)",
+    "name": "Reinforced Leather Helm",
     "type": "armor",
     "system": {
+      "category": "Armour",
+      "price": 100,
+      "protection": 4,
+      "bulk": 3,
+      "training": true,
+      "canSunder": true,
+      "location": "Head",
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+    }
+  },
+  {
+    "name": "Reinforced Leather Cuirass",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 100,
+      "protection": 4,
+      "bulk": 3,
+      "training": true,
+      "canSunder": true,
+      "location": "Body",
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+    }
+  },
+  {
+    "name": "Reinforced Leather Sleeve (Right Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 100,
+      "protection": 4,
+      "bulk": 3,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Arm",
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+    }
+  },
+  {
+    "name": "Reinforced Leather Sleeve (Left Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 100,
+      "protection": 4,
+      "bulk": 3,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Arm",
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+    }
+  },
+  {
+    "name": "Reinforced Leather Greave (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
       "price": 100,
       "protection": 4,
       "bulk": 3,
       "training": true,
       "canSunder": true,
       "location": "Right Leg",
-      "penalties": "Athletics -5 if worn on either leg."
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+    }
+  },
+  {
+    "name": "Reinforced Leather Greave (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 100,
+      "protection": 4,
+      "bulk": 3,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Leg",
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+    }
+  },
+  {
+    "name": "Mail Helm",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Head",
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+    }
+  },
+  {
+    "name": "Mail Hauberk",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Body",
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+    }
+  },
+  {
+    "name": "Mail Sleeve (Right Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Arm",
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+    }
+  },
+  {
+    "name": "Mail Sleeve (Left Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Arm",
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+    }
+  },
+  {
+    "name": "Mail Leggings (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Leg",
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+    }
+  },
+  {
+    "name": "Mail Leggings (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 200,
+      "protection": 5,
+      "bulk": 4,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Leg",
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+    }
+  },
+  {
+    "name": "Bone Helm",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 125,
+      "protection": 5,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Head",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Bone Cuirass",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 125,
+      "protection": 5,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Body",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Bone Sleeve (Right Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 125,
+      "protection": 5,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Arm",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Bone Sleeve (Left Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 125,
+      "protection": 5,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Arm",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Bone Greave (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 125,
+      "protection": 5,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Leg",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Bone Greave (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 125,
+      "protection": 5,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Leg",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Scale Helm",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 250,
+      "protection": 6,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Head",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Scale Hauberk",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 250,
+      "protection": 6,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Body",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Scale Sleeve (Right Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 250,
+      "protection": 6,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Arm",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Scale Sleeve (Left Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 250,
+      "protection": 6,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Arm",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Scale Greave (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 250,
+      "protection": 6,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Leg",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Scale Greave (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 250,
+      "protection": 6,
+      "bulk": 5,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Leg",
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+    }
+  },
+  {
+    "name": "Plate Helm",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 500,
+      "protection": 7,
+      "bulk": 6,
+      "training": true,
+      "canSunder": true,
+      "location": "Head",
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+    }
+  },
+  {
+    "name": "Plate Cuirass",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 500,
+      "protection": 7,
+      "bulk": 6,
+      "training": true,
+      "canSunder": true,
+      "location": "Body",
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+    }
+  },
+  {
+    "name": "Plate Vambrace (Right Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 500,
+      "protection": 7,
+      "bulk": 6,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Arm",
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+    }
+  },
+  {
+    "name": "Plate Vambrace (Left Arm)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 500,
+      "protection": 7,
+      "bulk": 6,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Arm",
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+    }
+  },
+  {
+    "name": "Plate Greave (Right Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 500,
+      "protection": 7,
+      "bulk": 6,
+      "training": true,
+      "canSunder": true,
+      "location": "Right Leg",
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+    }
+  },
+  {
+    "name": "Plate Greave (Left Leg)",
+    "type": "armor",
+    "system": {
+      "category": "Armour",
+      "price": 500,
+      "protection": 7,
+      "bulk": 6,
+      "training": true,
+      "canSunder": true,
+      "location": "Left Leg",
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+    }
+  },
+  {
+    "name": "Medical Supply Die, per step",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 3,
+      "encumbrance": 2,
+      "notes": "Extra Supply type takes 2 Inventory ENC regardless of step.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Rations Supply Die, per step",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 5,
+      "encumbrance": 2,
+      "notes": "Extra Supply type takes 2 Inventory ENC regardless of step.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Ammo Supply Die, per step",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 5,
+      "encumbrance": 2,
+      "notes": "Extra Supply type takes 2 Inventory ENC regardless of step.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Gear Supply Die, per step",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 10,
+      "encumbrance": 2,
+      "notes": "Extra Supply type takes 2 Inventory ENC regardless of step.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Superior Rations upgrade",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 20,
+      "encumbrance": 0,
+      "notes": "One Rations Die reroll per session.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Mug of ale",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 1,
+      "encumbrance": 0,
+      "notes": "",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Simple meal",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 3,
+      "encumbrance": 0,
+      "notes": "Covers daily Rations Die roll.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Fancy meal",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 5,
+      "encumbrance": 0,
+      "notes": "Covers daily Rations Die roll.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Night in common room",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 2,
+      "encumbrance": 0,
+      "notes": "−10 Recovery Bonus.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Private room",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 10,
+      "encumbrance": 0,
+      "notes": "+0 Recovery Bonus.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Excellent private room",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 20,
+      "encumbrance": 0,
+      "notes": "+10 Recovery Bonus.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Finest medical care, one night",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 50,
+      "encumbrance": 0,
+      "notes": "+20 Recovery Bonus.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Coach transport, one day",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 5,
+      "encumbrance": 0,
+      "notes": "Rations and accommodation extra.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Armour repair kit",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 20,
+      "encumbrance": 1,
+      "notes": "Five Craft: Practical repair attempts.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Forge or workshop, one day",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 5,
+      "encumbrance": 0,
+      "notes": "Craft facilities.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Ritual Grimoire, d12",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 500,
+      "encumbrance": 0,
+      "notes": "For one Bind and one Strand.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Cabin",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 800,
+      "encumbrance": 0,
+      "notes": "",
+      "placement": "away"
+    }
+  },
+  {
+    "name": "Farm, one acre",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 1500,
+      "encumbrance": 0,
+      "notes": "",
+      "placement": "away"
+    }
+  },
+  {
+    "name": "Inn and stables",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 2000,
+      "encumbrance": 0,
+      "notes": "Book cost 2,000–5,000 sp depending on quality.",
+      "placement": "away"
+    }
+  },
+  {
+    "name": "Riding horse",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 300,
+      "encumbrance": 0,
+      "notes": "Carries 12 Inventory ENC; Ride roll to enter melee.",
+      "placement": "away"
+    }
+  },
+  {
+    "name": "Warhorse",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 1200,
+      "encumbrance": 0,
+      "notes": "Carries 12 Inventory ENC.",
+      "placement": "away"
+    }
+  },
+  {
+    "name": "Wagon",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 100,
+      "encumbrance": 0,
+      "notes": "Carries 20 Inventory ENC; mule drawn.",
+      "placement": "away"
+    }
+  },
+  {
+    "name": "Mule",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 150,
+      "encumbrance": 0,
+      "notes": "Carries 15 Inventory ENC.",
+      "placement": "away"
+    }
+  },
+  {
+    "name": "Animal Rations Supply Die, per step",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 10,
+      "encumbrance": 2,
+      "notes": "Takes 2 Inventory ENC regardless of step.",
+      "placement": "inventory"
+    }
+  },
+  {
+    "name": "Horse barding",
+    "type": "gear",
+    "system": {
+      "category": "Miscellaneous Items",
+      "price": 0,
+      "encumbrance": 0,
+      "notes": "Head and Body only; price as armour; twice the Bulk. Choose armour type when acquired.",
+      "placement": "inventory"
     }
   }
 ]

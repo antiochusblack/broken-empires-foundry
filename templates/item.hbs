@@ -13,7 +13,8 @@
     {{#if (eq document.type "weapon")}}
       <p>Attack and Parry use the character’s skills. Manoeuvre values are required Success Levels.</p>
       <div class="tbe-grid">
-        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Reach (RCH) <input name="system.reach" value="{{system.reach}}"></label>
+        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Book category <input name="system.category" value="{{system.category}}"></label>
+        <label>Attack skill <select name="system.attackSkill"><option value="">Choose when attacking</option>{{#each attackSkills as |name|}}<option value="{{name}}" {{#if (eq name ../system.attackSkill)}}selected{{/if}}>{{name}}</option>{{/each}}</select></label><label>Reach (RCH) <input name="system.reach" value="{{system.reach}}"></label>
         <label>Base damage (DMG) <input name="system.damage" value="{{system.damage}}"></label><label>Choose Location (CL) <input name="system.chooseLocation" value="{{system.chooseLocation}}"></label>
         <label>Circumvent Shield (CS) <input name="system.circumventShield" value="{{system.circumventShield}}"></label><label>Disarm (DIS) <input name="system.disarm" value="{{system.disarm}}"></label>
         <label>Trip (T) <input name="system.trip" value="{{system.trip}}"></label><label>Weapon ENC <input name="system.encumbrance" type="number" value="{{system.encumbrance}}"></label>
@@ -23,7 +24,7 @@
     {{/if}}
     {{#if (eq document.type "armor")}}
       <div class="tbe-grid">
-        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Armour Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label>
+        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Book category <input name="system.category" value="{{system.category}}"></label><label>Armour Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label>
         <label>Bulk per piece <input name="system.bulk" type="number" step="0.5" min="0" value="{{system.bulk}}"></label>
         <label>Body location for this armour piece <select name="system.location"><option value="">Choose location</option>{{#each locations as |location|}}<option value="{{location}}" {{#if (eq location ../system.location)}}selected{{/if}}>{{location}}</option>{{/each}}</select></label>
         <label class="tbe-check">Requires armour training <input type="checkbox" name="system.training" {{#if system.training}}checked{{/if}}></label>
@@ -43,7 +44,7 @@
     {{/if}}
     {{#if (eq document.type "gear")}}
       <div class="tbe-grid">
-        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>ENC each <input name="system.encumbrance" type="number" step="0.5" min="0" value="{{system.encumbrance}}"></label>
+        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Book category <input name="system.category" value="{{system.category}}"></label><label>ENC each <input name="system.encumbrance" type="number" step="0.5" min="0" value="{{system.encumbrance}}"></label>
         {{#if owned}}<label>Quantity <input name="system.quantity" type="number" min="0" value="{{system.quantity}}"></label>{{/if}}
       </div>
     {{/if}}

@@ -53,20 +53,20 @@ class TalentData extends foundry.abstract.TypeDataModel {
 }
 class WeaponData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
-    return { price: number(), reach: string(), damage: string(), chooseLocation: string(), circumventShield: string(), disarm: string(), trip: string(), encumbrance: number(), range: string(), notes: string(),
+    return { price: number(), category: string(), attackSkill: string(), reach: string(), damage: string(), chooseLocation: string(), circumventShield: string(), disarm: string(), trip: string(), encumbrance: number(), range: string(), notes: string(),
       // Keep prototype values in existing worlds, even though they are not weapon statistics.
       attack: string(), parry: string(), clash: string(), counterstrike: string(), disruption: string(), threat: string(),
       freeAtHand: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }) };
   }
 }
 class ArmorData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { price: number(), protection: number(), bulk: decimal(), training: new BooleanField({ initial: false }), canSunder: new BooleanField({ initial: false }), sundered: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "inventory" }), location: string(), penalties: string(), notes: string() }; }
+  static defineSchema() { return { price: number(), category: string(), protection: number(), bulk: decimal(), training: new BooleanField({ initial: false }), canSunder: new BooleanField({ initial: false }), sundered: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "inventory" }), location: string(), penalties: string(), notes: string() }; }
 }
 class ShieldData extends foundry.abstract.TypeDataModel {
   static defineSchema() { return { price: number(), size: string(), protection: number(), shieldBash: string(), encumbrance: number(), split: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }), notes: string() }; }
 }
 class GearData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { price: number(), encumbrance: decimal(), quantity: number(1), placement: new StringField({ required: true, initial: "inventory" }), notes: string() }; }
+  static defineSchema() { return { price: number(), category: string(), encumbrance: decimal(), quantity: number(1), placement: new StringField({ required: true, initial: "inventory" }), notes: string() }; }
 }
 const BODY_LOCATIONS = ["Head", "Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg"];
 const LOCATION_OPTIONS = [
@@ -86,6 +86,48 @@ const inferWoundLocation = wound => {
 };
 const itemENC = item => Math.max(0, Number(item.system.encumbrance) || 0);
 const itemPlacement = item => item.system.placement || (item.type === "armor" || item.type === "gear" ? "inventory" : "atHand");
+const COMBAT_MANEUVERS = [
+  ["Unbalance", "1 rolled SL", "Target takes −20 on its next skill roll; repeated uses do not stack."],
+  ["Drive Back", "3 rolled SLs; melee", "Move an Engaged foe and follow; at 4 SLs you can push without following."],
+  ["Lock", "3 rolled SLs; melee", "Target cannot make a Fighting Withdrawal while you hold the engagement."],
+  ["Pierce Armor", "4 rolled SLs; rigid armour", "Gain Piercing 3 against Reinforced Leather or better."],
+  ["Choose Location", "Weapon CL rolled SLs", "Choose another hit location."],
+  ["Circumvent Shield", "Weapon CS rolled SLs", "Ignore shield AP for this hit."],
+  ["Disarm", "Weapon DIS rolled SLs; Arm hit", "Knock away a held weapon; extra SLs affect distance, two-handed weapons and shields."],
+  ["Trip", "Weapon T rolled SLs; Leg hit", "Knock the foe Prone; four or more legs cost 3 extra SLs."],
+  ["Shield Bash", "Shield ShB rolled SLs", "A Small or larger shield knocks a same-size or smaller foe Prone."],
+  ["Cleave Shield", "DoS; melee, 2H, ClSh", "Forgo damage; roll d20 + DoS against the shield-size threshold."],
+  ["Compel Surrender", "3 rolled SLs; disadvantaged foe", "Forgo damage; the foe rolls Willpower, penalised according to the attack DoS."],
+  ["Grapple", "3 rolled SLs; Might; hands free", "Restrain a foe and deal unarmed nonlethal damage; size alters the cost."]
+].map(([name, cost, effect]) => ({ name, cost, effect }));
+const COMBAT_MODIFIERS = [
+  ["Charge", "+20", "Melee attack, with movement restrictions"],
+  ["Draw and attack", "−20", "At Hand weapon; sheathed throwing knives exempt"],
+  ["Aim", "+20", "Ranged shot after aiming the prior turn"],
+  ["Ranged into melee", "−20", "Shot into an ongoing melee"],
+  ["Cover", "−20", "Ranged; stacks with obscurement"],
+  ["Beyond range", "−20", "One zone beyond the weapon range"],
+  ["Prone target", "+20 melee / −20 ranged", "Melee attacks and defences against a Prone foe"],
+  ["Higher elevation", "+10", "Melee against a lower foe"],
+  ["Unarmed against armed", "−20", "Might attacks, defence and Grapple"],
+  ["Off hand", "−20", "Parrying Dagger exempt"],
+  ["Nonlethal with lethal weapon", "−10", "Declare before attacking"],
+  ["Environment", "−10 to −30", "GM adjudicates"]
+].map(([name, value, note]) => ({ name, value, note }));
+const ATTACK_SKILLS = SKILLS.Combat.filter(name => name !== "Dodge");
+function attackOutcome(value, target, expertise) {
+  const success = (value <= target || value <= 5) && value < 99;
+  const doubles = value === 100 || Math.floor(value / 10) === value % 10;
+  const critical = success && (value === target || doubles || (target <= 0 && value === 5));
+  const criticalFailure = !success && doubles && value > target;
+  const bonus = target > 100 ? Math.max(1, Math.floor((target - 100) / 10)) : 0;
+  return { success, critical, criticalFailure,
+    sl: success ? Math.max(1, Math.floor(value / 10), expertise) + bonus + (critical ? 3 : 0) : 0 };
+}
+function generalHitLocation(value) {
+  const digit = value % 10;
+  return digit === 0 ? "Head" : digit <= 5 ? "Body" : digit <= 7 ? (digit === 6 ? "Right Arm" : "Left Arm") : (digit === 8 ? "Right Leg" : "Left Leg");
+}
 const HandlebarsSheet = foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2);
 class CharacterSheet extends HandlebarsSheet {
   static DEFAULT_OPTIONS = {
@@ -97,6 +139,8 @@ class CharacterSheet extends HandlebarsSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     context.system = this.actor.system;
+    context.maneuvers = COMBAT_MANEUVERS;
+    context.combatModifiers = COMBAT_MODIFIERS;
     context.skillGroups = Object.entries(SKILLS).map(([category, names]) => ({
       category, rows: names.map(name => ({ name, path: `system.skills.${key(category)}.${key(name)}`, strand: category === "Strands", data: this.actor.system.skills[key(category)][key(name)] }))
     }));
@@ -164,6 +208,56 @@ class CharacterSheet extends HandlebarsSheet {
       if (!scroller || !target) return;
       scroller.scrollTop += target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 44;
       this._savedScrollTop = scroller.scrollTop;
+    }));
+    this.element.querySelectorAll("[data-attack-item]").forEach(button => button.addEventListener("click", async event => {
+      event.preventDefault();
+      const weapon = this.actor.items.get(button.dataset.attackItem);
+      if (!weapon || weapon.type !== "weapon" || !this.actor.isOwner) return;
+      const placement = itemPlacement(weapon);
+      if (!["ready", "atHand"].includes(placement)) return;
+      const legacySkills = { Dagger: "Melee: Light", Cutlass: "Melee: Light", Broadsword: "Melee: Medium", Spear: "Melee: Medium", Staff: "Melee: Medium", "Fists/Kicks": "Might" };
+      const preferred = weapon.system.attackSkill || legacySkills[weapon.name] || "Melee: Medium";
+      const options = ATTACK_SKILLS.map(name => '<option value="' + name + '"' + (name === preferred ? ' selected' : '') + '>' + name + '</option>').join("");
+      const presets = [
+        ["charge", 20, "Charge +20"], ["aim", 20, "Aim +20"],
+        ["cover", -20, "Target in cover −20"], ["intoMelee", -20, "Ranged into melee −20"],
+        ["beyondRange", -20, "One zone beyond range −20"],
+        ["highGround", 10, "Higher elevation +10"], ["proneMelee", 20, "Melee vs Prone +20"],
+        ["proneRanged", -20, "Ranged vs Prone −20"], ["offHand", -20, "Off hand −20"],
+        ["nonlethal", -10, "Lethal weapon for nonlethal injury −10"]
+      ];
+      const presetFields = presets.map(([key, , label]) => '<label><input type="checkbox" name="mod_' + key + '"> ' + label + '</label>').join("");
+      const details = await foundry.applications.api.DialogV2.input({
+        window: { title: "Attack with " + weapon.name },
+        content: '<div class="tbe-attack-dialog"><label>Skill <select name="skill">' + options +
+          '</select></label><label>Other modifier <input type="number" name="modifier" value="0" step="1"></label>' +
+          '<label><input type="checkbox" name="draw"' + (placement === "atHand" && weapon.name !== "Fists/Kicks" ? ' checked' : '') +
+          '> Draw and attack (−20; uncheck if already drawn)</label><details><summary>Common modifiers</summary>' +
+          presetFields + '</details><p>Use Other modifier for reach, talents and situational rulings. No token is required.</p></div>',
+        ok: { label: "Roll attack" }
+      });
+      if (!details || !ATTACK_SKILLS.includes(details.skill)) return;
+      const skillData = this.actor.system.skills.combat[key(details.skill)];
+      const base = Number(skillData?.value) || 0;
+      const other = Number(details.modifier);
+      if (!Number.isFinite(other)) return;
+      const draw = Boolean(details.draw) && placement === "atHand" && weapon.name !== "Fists/Kicks" && !/throwing knives/i.test(weapon.name);
+      const presetTotal = presets.reduce((sum, [name, amount]) => sum + (details["mod_" + name] ? amount : 0), 0);
+      const modifier = other + presetTotal - (draw ? 20 : 0);
+      const target = base + modifier;
+      const roll = await new Roll("1d100").evaluate();
+      const value = roll.total;
+      const outcome = attackOutcome(value, target, Number(skillData?.expertise) || 0);
+      const result = outcome.critical ? "Critical success" : outcome.criticalFailure ? "Critical failure" : outcome.success ? "Success" : "Failure";
+      const escape = foundry.utils.escapeHTML;
+      const content = '<div class="tbe-attack-card"><h3>' + escape(this.actor.name) + ' — ' + escape(weapon.name) +
+        '</h3><p>' + escape(details.skill) + ' ' + base + ' ' + (modifier < 0 ? '−' : '+') + ' ' + Math.abs(modifier) +
+        ' = <strong>' + target + '</strong></p><p>Roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
+        '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p>' +
+        (outcome.success ? '<p>General hit location from attacker’s ones die: <strong>' + generalHitLocation(value) + '</strong>.</p>' : '') +
+        '<p>Weapon base damage: ' + escape(String(weapon.system.damage || '0')) +
+        '. Resolve defence, manoeuvre, DoS and detailed hit location at the table.</p></div>';
+      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
     }));
     this.element.querySelectorAll("[data-add]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
@@ -246,6 +340,7 @@ class TBEItemSheet extends ItemSheet {
     context.system = this.item.system;
     context.placements = PLACEMENTS[this.item.type] ?? [];
     context.locations = BODY_LOCATIONS;
+    context.attackSkills = ATTACK_SKILLS;
     context.owned = this.item.parent?.documentName === "Actor";
     return context;
   }
@@ -274,15 +369,24 @@ Hooks.once("ready", async () => {
   // Populate a world compendium once so Forge installs do not need a bundled LevelDB database.
   if (!game.users.activeGM || game.users.activeGM.id === game.user.id) {
     try {
-      let pack = game.packs.get("world.tbe-starter-equipment");
-      if (!pack) pack = await foundry.documents.collections.CompendiumCollection.createCompendium({ name: "tbe-starter-equipment", label: "TBE Starter Equipment", type: "Item" });
+      let pack = game.packs.get("world.tbe-equipment");
+      if (!pack) pack = await foundry.documents.collections.CompendiumCollection.createCompendium({ name: "tbe-equipment", label: "TBE Equipment", type: "Item" });
       const index = await pack.getIndex();
-      if (index.size === 0) {
-        const response = await fetch("systems/broken-empires-foundry/packs-src/example-items.json");
-        if (!response.ok) throw new Error(`Starter equipment HTTP ${response.status}`);
-        await Item.implementation.createDocuments(await response.json(), { pack: pack.collection });
+      const response = await fetch("systems/broken-empires-foundry/packs-src/example-items.json");
+      if (!response.ok) throw new Error(`Equipment HTTP ${response.status}`);
+      const items = await response.json();
+      const missing = items.filter(item => !index.some(entry => entry.name === item.name && entry.type === item.type));
+      if (missing.length) {
+        const categories = [...new Set(missing.map(i => i.system.category || (i.type === "shield" ? "Shields" : "Miscellaneous Items")))];
+        const existingFolders = pack.folders?.contents ?? [];
+        const absent = categories.filter(name => !existingFolders.some(folder => folder.name === name));
+        const created = absent.length ? await foundry.documents.Folder.createDocuments(absent.map(name => ({ name, type: "Item" })), { pack: pack.collection }) : [];
+        const byName = new Map([...existingFolders, ...created].map(folder => [folder.name, folder.id]));
+        await Item.implementation.createDocuments(missing.map(item => ({
+          ...item, folder: byName.get(item.system.category || (item.type === "shield" ? "Shields" : "Miscellaneous Items")) ?? null
+        })), { pack: pack.collection });
       }
-    } catch (error) { console.error("TBE: failed to initialise the starter equipment compendium", error); }
+    } catch (error) { console.error("TBE: failed to initialise the equipment compendium", error); }
   }
   for (const actor of game.actors.filter(a => a.type === "character")) {
     if (!actor.getFlag("broken-empires-foundry", "startingItemsAdded")) {
@@ -323,7 +427,7 @@ Hooks.once("ready", async () => {
 });
 
 const STARTING_ITEMS = [
-  { name: "Fists/Kicks", type: "weapon", system: { price: 0, reach: "0", damage: "0 NL", chooseLocation: "1", circumventShield: "3", disarm: "2", trip: "4", encumbrance: 0, range: "-", notes: "Unarmed Might attacks; -20 vs armed foes" } },
+  { name: "Fists/Kicks", type: "weapon", system: { price: 0, category: "Might Weapons", attackSkill: "Might", placement: "ready", reach: "0", damage: "0 NL", chooseLocation: "1", circumventShield: "3", disarm: "2", trip: "4", encumbrance: 0, range: "-", notes: "Unarmed Might attacks; -20 vs armed foes" } },
   { name: "New Talent", type: "talent" }
 ];
 

@@ -130,3 +130,11 @@
   .tbe .tbe-equipment-title, .tbe .tbe-slot-item { flex-wrap:wrap; }
   .tbe .tbe-equipment-title > select, .tbe .tbe-slot-item > select { flex:1 1 10rem; max-width:none; }
 }
+.tbe .tbe-reference-grid { display:grid; gap:.35rem; }
+.tbe .tbe-reference-grid details { border:1px solid var(--color-border-light-primary); border-radius:4px; padding:.4rem .55rem; }
+.tbe .tbe-reference-grid summary { cursor:pointer; display:flex; flex-wrap:wrap; justify-content:space-between; gap:.5rem; }
+.tbe .tbe-reference-grid summary span { opacity:.8; }
+.tbe .tbe-reference-grid p { margin:.4rem 0 0; }
+.tbe .tbe-equipment-card [data-attack-item] { margin:0 0 .4rem; }
+.tbe-attack-dialog { display:grid; gap:.65rem; }
+.tbe-attack-card p { margin:.3rem 0; }
