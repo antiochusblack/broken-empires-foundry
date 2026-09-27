@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.11.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.13.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.11.0` and attach `broken-empires-foundry-v0.11.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.13.0` and attach `broken-empires-foundry-v0.13.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
@@ -66,3 +66,10 @@ A thrown javelin or spear may use 4 SL to Pierce Through when shield AP stops or
 Skill headings align with standard and custom rows. Each skill keeps its description tooltip and a compact breakdown control beside the name; Ability appears in the breakdown and its bonus is included in the Increases column. Custom skills use the same row layout, with description/category inside the breakdown and a compact delete button. Tooltips choose the side with space. Main sections can be collapsed, and navigation reopens them.
 
 The Resolve track distinguishes empty spent spaces from Fatigue even when current Resolve is zero. Removing Fatigue leaves a spent space and the full-track warning checks Fatigue marks, not remaining Resolve. Only At Hand weapons and shields count against the default 6 ENC limit; Held and Ready has no limit and is shown separately. Owned Small, Medium and Large shields have a Pierced Through checkbox that reduces displayed AP by 2 until cleared.
+
+### 0.13.0 sheet changes
+
+- Skill breakdown fields now open beneath the skill and stay open while values are edited. Removing Thin or Savvy asks for confirmation. Gear comes between Combat and Story, and main sections have alternating subtle shades.
+- Skill and attack rolls show playful fumble and critical messages. The Heavy Crossbow reload note now says two actions. A shield's reduced AP says “Pierced Through.”
+- Dagger, Hand Axe, Spear and Javelin can switch between melee and thrown profiles on the character sheet. Existing owned copies of those four weapons also support the switch. Thrown attacks do not automatically move an Item into Dropped in Zone.
+- Recognised weapon and armour note terms have tooltips. Pierce Through 4 SL (thrown only) appears in the spear and javelin notes. Each Item in Dropped in Zone has its own Zone field; existing dropped Items inherit the former shared Zone on first update.

@@ -28,6 +28,17 @@
         <label>Range (RNG) <input name="system.range" value="{{system.range}}"></label>
         <label class="tbe-check">One copy At Hand has no ENC <input type="checkbox" name="system.freeAtHand" {{#if system.freeAtHand}}checked{{/if}}></label>
       </div>
+      <details><summary>Thrown use (optional)</summary><p>Fill in a thrown attack skill to enable a Melee / Thrown switch on the character sheet. Blank thrown fields keep the melee value.</p><div class="tbe-grid">
+        <label>Thrown attack skill <select name="system.thrown.attackSkill"><option value="">No thrown use</option>{{#each attackSkills as |name|}}<option value="{{name}}" {{#if (eq name ../system.thrown.attackSkill)}}selected{{/if}}>{{name}}</option>{{/each}}</select></label>
+        <label>Thrown reach <input name="system.thrown.reach" value="{{system.thrown.reach}}"></label>
+        <label>Thrown damage <input name="system.thrown.damage" value="{{system.thrown.damage}}"></label>
+        <label>Thrown CL <input name="system.thrown.chooseLocation" value="{{system.thrown.chooseLocation}}"></label>
+        <label>Thrown CS <input name="system.thrown.circumventShield" value="{{system.thrown.circumventShield}}"></label>
+        <label>Thrown DIS <input name="system.thrown.disarm" value="{{system.thrown.disarm}}"></label>
+        <label>Thrown trip <input name="system.thrown.trip" value="{{system.thrown.trip}}"></label>
+        <label>Thrown range <input name="system.thrown.range" value="{{system.thrown.range}}"></label>
+        <label>Thrown notes <input name="system.thrown.notes" value="{{system.thrown.notes}}"></label>
+      </div></details>
     {{/if}}
     {{#if (eq document.type "armor")}}
       <div class="tbe-grid">
@@ -56,6 +67,8 @@
       </div>
     {{/if}}
     <label>Notes <textarea class="tbe-grow" rows="2" name="system.notes">{{system.notes}}</textarea></label>
+    {{#if (eq document.type "weapon")}}<div class="tbe-note-preview" aria-label="Weapon notes with rule explanations">{{#each noteSegments as |part|}}{{#if part.tooltip}}<span class="tbe-note-term" tabindex="0" data-tbe-tip="{{part.tooltip}}">{{part.text}}</span>{{else}}{{part.text}}{{/if}}{{/each}}</div>{{/if}}
+    {{#if (eq document.type "armor")}}<div class="tbe-note-preview" aria-label="Armour notes with rule explanations">{{#each noteSegments as |part|}}{{#if part.tooltip}}<span class="tbe-note-term" tabindex="0" data-tbe-tip="{{part.tooltip}}">{{part.text}}</span>{{else}}{{part.text}}{{/if}}{{/each}}</div>{{/if}}
     {{/if}}
   {{/if}}
 </div>

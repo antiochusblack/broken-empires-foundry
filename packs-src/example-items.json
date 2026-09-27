@@ -15,7 +15,18 @@
       "encumbrance": 1,
       "range": "0",
       "notes": "Thrown; one dagger At Hand is free of ENC. Piercing 5 against Prone/Grappled foe.",
-      "freeAtHand": true
+      "freeAtHand": true,
+      "thrown": {
+        "attackSkill": "Thrown Weapons",
+        "reach": "-",
+        "damage": "1",
+        "chooseLocation": "5",
+        "circumventShield": "5",
+        "disarm": "5",
+        "trip": "6",
+        "range": "0",
+        "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled."
+      }
     }
   },
   {
@@ -87,7 +98,18 @@
       "trip": "6",
       "encumbrance": 1,
       "range": "0",
-      "notes": "Thrown."
+      "notes": "Thrown.",
+      "thrown": {
+        "attackSkill": "Thrown Weapons",
+        "reach": "-",
+        "damage": "2",
+        "chooseLocation": "5",
+        "circumventShield": "5",
+        "disarm": "5",
+        "trip": "5",
+        "range": "0",
+        "notes": ""
+      }
     }
   },
   {
@@ -141,7 +163,18 @@
       "trip": "6",
       "encumbrance": 2,
       "range": "2",
-      "notes": "Piercing 1; Thrown."
+      "notes": "Piercing 1; Thrown; Pierce Through 4 SL (thrown only).",
+      "thrown": {
+        "attackSkill": "Thrown Weapons",
+        "reach": "-",
+        "damage": "2",
+        "chooseLocation": "5",
+        "circumventShield": "5",
+        "disarm": "5",
+        "trip": "5",
+        "range": "2",
+        "notes": "Piercing 1; Pierce Through 4 SL (thrown only)."
+      }
     }
   },
   {
@@ -393,7 +426,18 @@
       "trip": "5",
       "encumbrance": 2,
       "range": "1",
-      "notes": "Piercing 1; Unwieldy; Thrown."
+      "notes": "Piercing 1; Unwieldy; Thrown; Pierce Through 4 SL (thrown only).",
+      "thrown": {
+        "attackSkill": "Thrown Weapons",
+        "reach": "-",
+        "damage": "3",
+        "chooseLocation": "5",
+        "circumventShield": "5",
+        "disarm": "5",
+        "trip": "5",
+        "range": "1",
+        "notes": "Piercing 1; Pierce Through 4 SL (thrown only)."
+      }
     }
   },
   {
@@ -699,7 +743,7 @@
       "trip": "5",
       "encumbrance": 4,
       "range": "3",
-      "notes": "2H; Piercing 3; Reload 1."
+      "notes": "2H; Piercing 3; Reload 2 (two actions, normally two rounds)."
     }
   },
   {
@@ -735,7 +779,7 @@
       "trip": "6",
       "encumbrance": 1,
       "range": "0",
-      "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled."
+      "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled. Legacy separate entry; the standard dagger now switches between melee and thrown use."
     }
   },
   {
@@ -753,7 +797,7 @@
       "trip": "5",
       "encumbrance": 1,
       "range": "0",
-      "notes": ""
+      "notes": "Legacy separate entry; the standard weapon now switches between melee and thrown use."
     }
   },
   {
@@ -771,7 +815,7 @@
       "trip": "5",
       "encumbrance": 2,
       "range": "1",
-      "notes": "Piercing 1."
+      "notes": "Piercing 1. Legacy separate entry; the standard weapon now switches between melee and thrown use; Pierce Through 4 SL (thrown only)."
     }
   },
   {
@@ -789,7 +833,7 @@
       "trip": "5",
       "encumbrance": 2,
       "range": "2",
-      "notes": "Piercing 1."
+      "notes": "Piercing 1. Legacy separate entry; the standard weapon now switches between melee and thrown use; Pierce Through 4 SL (thrown only)."
     }
   },
   {
