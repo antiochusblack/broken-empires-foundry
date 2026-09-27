@@ -153,3 +153,29 @@
 .tbe .tbe-supply-grid label button { grid-column:2; grid-row:2; }
 .tbe-attack-stats { display:flex; flex-wrap:wrap; gap:.3rem .7rem; margin:.5rem 0; }
 .tbe-attack-stats span { padding:.15rem .3rem; border:1px solid currentColor; border-radius:3px; }
+
+/* Character creation breakdown and reliably visible explanations. */
+.tbe .tbe-skill, .tbe .tbe-skill-head { grid-template-columns:minmax(8rem,1fr) repeat(4,minmax(3.2rem,3.8rem)) 3.4rem 2.8rem; }
+.tbe .tbe-custom-skill { grid-template-columns:minmax(8rem,1fr) repeat(4,minmax(3.2rem,3.8rem)) 3.4rem 2.8rem minmax(6rem,.7fr) 2rem; }
+.tbe .tbe-custom-skill > input[type=hidden] { display:none; }
+.tbe .tbe-skill-number { text-align:center; font-variant-numeric:tabular-nums; }
+.tbe .tbe-skill-breakdown { grid-column:1/-1; min-width:0; }
+.tbe .tbe-skill-breakdown summary { cursor:pointer; width:max-content; font-size:.78rem; opacity:.85; }
+.tbe .tbe-breakdown-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(5.8rem,1fr)); gap:.35rem; padding:.3rem 0 .55rem; }
+.tbe .tbe-breakdown-grid label { font-size:.78rem; }
+.tbe [data-tbe-tip] { position:relative; cursor:help; }
+.tbe [data-tbe-tip]:hover::after, .tbe [data-tbe-tip]:focus-visible::after { content:attr(data-tbe-tip); display:block; position:absolute; left:0; bottom:calc(100% + 6px); z-index:50; width:max-content; max-width:min(24rem,75vw); white-space:normal; padding:.55rem .7rem; border:1px solid #c99b54; border-radius:5px; background:#242027; color:#f7eee0; box-shadow:0 4px 16px #000b; font-weight:400; line-height:1.4; pointer-events:none; }
+.tbe .tbe-enc-inputs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.6rem; }
+.tbe .tbe-location-count { display:flex; align-items:center; flex:none; gap:.3rem; font-size:.8rem; text-transform:none; }
+.tbe .tbe-location-count input { width:auto; }
+.tbe .tbe-resolve-track { display:flex; flex-wrap:wrap; gap:.22rem; padding:.55rem; border:1px solid var(--color-border-light-primary); border-radius:5px; }
+.tbe .tbe-resolve-box { flex:0 0 1.65rem; width:1.65rem; height:1.65rem; padding:0; border:1px solid #bd9d73; border-radius:2px; font-size:1.3rem; line-height:1; cursor:pointer; }
+.tbe .tbe-resolve-available { background:#589f83; }
+.tbe .tbe-resolve-spent { background:transparent; }
+.tbe .tbe-resolve-fatigue { background:#e1b565; color:#241a17; }
+.tbe .tbe-resolve-permanent { background:#9b6068; color:white; cursor:default; }
+.tbe .tbe-race-trait { border:1px solid var(--color-border-light-primary); border-radius:4px; padding:.45rem; }
+@container (max-width:730px) {
+  .tbe .tbe-skill, .tbe .tbe-custom-skill { overflow-x:auto; min-width:680px; }
+  .tbe .tbe-enc-inputs { grid-template-columns:1fr; }
+}

@@ -7,6 +7,11 @@
     <label>Effect <textarea class="tbe-grow" rows="2" name="system.effect">{{system.effect}}</textarea></label>
     <label>Requirements <textarea class="tbe-grow" rows="2" name="system.requirements">{{system.requirements}}</textarea></label>
   {{else}}
+    {{#if (eq document.type "race")}}
+      <p>Drag this Race item onto a character to fill their Race Traits.</p>
+      {{#each system.traits as |trait|}}<div class="tbe-race-trait"><strong>{{trait.name}}</strong><p>{{trait.effect}}</p></div>{{/each}}
+      <label>Notes <textarea class="tbe-grow" name="system.notes">{{system.notes}}</textarea></label>
+    {{else}}
     {{#if owned}}
       <label>Where is it?
         <select name="system.placement">{{#each placements as |choice|}}<option value="{{choice.value}}" {{#if (eq choice.value ../system.placement)}}selected{{/if}}>{{choice.label}}</option>{{/each}}</select>
@@ -51,5 +56,6 @@
       </div>
     {{/if}}
     <label>Notes <textarea class="tbe-grow" rows="2" name="system.notes">{{system.notes}}</textarea></label>
+    {{/if}}
   {{/if}}
 </div>

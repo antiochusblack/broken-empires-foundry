@@ -49,3 +49,10 @@ The Treasure Item Table rolls Type C (1d100) by default. Type A and B have dedic
 - Click the portrait to choose the actor picture; add custom skills in Combat, Adventuring, Social, and Lore directly below their category headings; hover skills and key mechanical fields for explanations.
 - Skill rows have dividers; Supply Dice have roll buttons that reduce the die on 1–2 and report reductions in chat.
 - Attack chat shows weapon statistics other than cost. Draw & Attack moves a drawn weapon to Held and Ready. Dropped in Zone sits above At Home / Elsewhere and includes a zone name.
+
+### 0.12.0 sheet changes
+
+- New characters have two ability score slots. Enter a full ability name or its three-letter abbreviation to apply its +5 to the listed skills. Skill rows show Starting, Ability, Other, Total, Expertise and Savvy; open Breakdown to record Race, Culture, Life Events, Career, Rounding Out, XP and other contributions. Existing recorded totals are preserved on the GM's first launch of 0.12.0 when an ability was already selected; check a migrated character's breakdown before reallocating older manually entered bonuses.
+- Custom skills retain their category after saving. Use + Equipment location to create named areas, and Count ENC to include their contents in Inventory ENC. Removing a location moves its items to At Home / Elsewhere. Weapon ENC maximum is editable.
+- The Resolve track shows available, spent, temporary Fatigue and permanent Fatigue. Click an available box to spend Resolve, a spent box to recover one, or a temporary Fatigue box to clear it. + Fatigue adds one temporary Fatigue; permanent Fatigue remains editable only through its number field.
+- The TBE Playable Races compendium contains six Race Items. Drag one onto a character to fill Race and Race Traits. Manually entered traits are retained; dropping another Race replaces traits that were supplied by the previous Race Item.
