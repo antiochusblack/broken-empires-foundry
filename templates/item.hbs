@@ -1,6 +1,8 @@
 <div class="tbe-sheet-body">
   <label>Name <input name="name" type="text" value="{{document.name}}"></label>
   {{#if (eq document.type "talent")}}
+    <label>Book category <input name="system.category" type="text" value="{{system.category}}"></label>
+    <label>Rules reference <input name="system.reference" type="text" value="{{system.reference}}"></label>
     <label>Source (how gained) <input name="system.source" type="text" value="{{system.source}}"></label>
     <label>Effect <textarea class="tbe-grow" rows="2" name="system.effect">{{system.effect}}</textarea></label>
     <label>Requirements <textarea class="tbe-grow" rows="2" name="system.requirements">{{system.requirements}}</textarea></label>

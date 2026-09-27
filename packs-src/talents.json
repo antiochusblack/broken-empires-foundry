@@ -1,0 +1,1532 @@
+[
+  {
+    "name": "ARMOR PIERCER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 40",
+      "effect": "Pick one specific weapon type (shortsword, mace, 2H sword, etc.). Gain +1 Piercing when attacking with a weapon of this type. Can be purchased once per weapon type.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FIND THE GAP",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 40",
+      "effect": "You have a knack for finding the weak point in an opponent’s armor. Successful attacks with your Armor Piercer weapon always cause a minimum of a 1-pt wound, regardless of the target’s armor or shield. Requires Armor Piercer and a corresponding weapon skill of 80.",
+      "requirements": "Requires Armor Piercer and a corresponding weapon skill of 80."
+    }
+  },
+  {
+    "name": "ARMOR TRAINING (I-IV)",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 40",
+      "effect": "Wearing heavier armor (Reinforced Leather, Mail, Scale, and Plate) on the Body or Arms prevents an untrained combatant from being able to use any Combat Maneuvers in a combat round. Armor Training allows regular use of Combat Maneuvers, but each new level must be acquired in order from lightest armor to heaviest:\narmor training i allows Combat Maneuvers while wearing Body or Arm armor as heavy as Reinforced Leather.\narmor training ii allows Combat Maneuvers while wearing Body or Arm armor as heavy as Mail.\narmor training iii allows Combat Maneuvers while wearing Body or Arm armor as heavy as Scale.\narmor training iv allows Combat Maneuvers while wearing Body or Arm armor as heavy as Plate.\nAn Ogre can take this Talent only once, gaining training in Bone armor only.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ASSASSIN",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Gain +1 SL when attacking with surprise. Can be purchased up to three times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "CATCH AND RELEASE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "If attacked with a thrown weapon and not surprised, you can attempt to catch it and immediately hurl it back at the attacker. You must have one free hand, or you may freely drop a held item (including a shield) to free one. As a defense, make an opposed Thrown roll against the attack. If you win, your DoS counts as a successful attack against the original attacker, using your roll to determine hit location. They may defend as normal. You may use this Talent only once per round.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "CLOAK AND BLADE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Tical Dondallan duelists often use a cloak and blade in combat. When fighting with either a Light or Medium weapon while using a cloak instead of a shield, and wearing only Padding, Quilted, or Leather armor pieces, gain the following: +20 to parries, -1 SL to Disarm. Additionally, once per combat, at any point during your turn, you may Taunt Foe as a free action, using Perform instead of Intimidate or Wit.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "DANCE OF BLADES",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Once per combat, as an action, make a Perform roll to make a disorienting, dancing blur of cloak movements. Any SLs generated can be used as Favor for the duration of this combat. Requires Cloak and Blade.",
+      "requirements": "Requires Cloak and Blade."
+    }
+  },
+  {
+    "name": "CLOSE THE DISTANCE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Any bonus from Reach weapons used against you is reduced by 10. They may still choose to use the Set for Charge action against you.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "COMBAT AWARENESS",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Add +1 to your Initiative modifier. Can be purchased up to five times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "DEFENDER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Pick one specific melee weapon type (shortsword, mace, 2H sword, fists, etc.). Gain +10 when parrying with that weapon.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "IMPROVED DEFENDER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "As above, but gain +20 instead. Requires and replaces Defender.",
+      "requirements": "Requires and replaces Defender."
+    }
+  },
+  {
+    "name": "DROP ATTACK",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Once a round in melee combat, if you kill, knock Prone, or send your opponent into Shock, you may immediately make one free attack at -20 on an adjacent foe currently Engaged with you. The free attack cannot use any “as your action” type of Talent.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "CLEAVE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "As above, but without the -20 penalty. Requires Drop Attack.",
+      "requirements": "Requires Drop Attack."
+    }
+  },
+  {
+    "name": "EAGLE EYE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "Add one zone when determining effective range when using one specific ranged weapon type (longbow, sling, etc.).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ENHANCED DEFENSE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "When defending with a specific Combat skill while outnumbered in melee, your opponents only get a +10 Outnumbering bonus. This Talent can be purchased once for each Combat skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "GREAT DEFENSE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "As above, but one primary opponent (you choose each round) gets no outnumbering bonus; the rest get +10. Requires Enhanced Defense.",
+      "requirements": "Requires Enhanced Defense."
+    }
+  },
+  {
+    "name": "FAST RUNNER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "As your action, you may Run 2 zones instead of 1.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FAST SKIRMISHER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 41",
+      "effect": "If you get 20 or more on your Initiative result, you get two turns in the round: one on your Initiative result, and the next at your Initiative result -20 (for example, rolling “21” allows you to act on “21” and again on “1”). You may act and move (if possible) on each turn within the round. Only one of your turns can be used for casting a spell or asking for a miracle. Cannot be used while mounted.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FEINT",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "As part of your melee attack action, you may make a Hard (-20) Deceive roll. If you succeed, you mislead your opponent, and he defends at -10. If you fail, your opponent sees your ruse and defends with +10 instead. Either way, he’ll see it coming next time: Feint can never be used twice in a row on the same opponent.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "IMPROVED FEINT",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "As above, but with your successful Deceive, your opponent defends at -20. Requires and replaces Feint.",
+      "requirements": "Requires and replaces Feint."
+    }
+  },
+  {
+    "name": "FORCEFUL SHOT",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "For 4 SLs, you may use the Drive Back Maneuver with a Missile weapon. This can knock a combatant out of an Engaged melee and into a neighboring zone.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FULL QUIVER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "Once per combat, you may re-roll an Ammo Supply Die.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "HARD-HEADED",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "You do not become stunned from Head Impairment.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "HOLD THE LINE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "When you take the Stand Your Ground action, add +1 to your Toughness.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "HORSE ARCHER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "Your ranged attacks on horseback are not capped by your Ride skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "IMPAIRED FIGHTER, ARM",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "If your Arm is rendered useless from impairment, and you are not in Shock, you can still use that arm to make Combat rolls at a -20 penalty.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "IMPAIRED FIGHTER, LEG",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "If a Leg is impaired, and you are not in Shock, you may still take the Run action (but not the Charge action).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "INTIMIDATING CHARGE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "A successful Charge attack frightens your foe. If the target fails a Willpower or Might roll (defender’s choice) opposed to your original attack roll, they must choose the Flee action on their next turn. Creatures larger than you get +20 per size category. You may only attempt this once per opponent per combat, and it must be declared before the Charge. Will not affect Mindless or Undead creatures, or any creature with Ferocity 5+.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "KNOCK-OUT STRIKE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "When damaging a target’s Head from behind and with surprise, they are rendered Unconscious and in Shock on any failed Wound Die result.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "LARGE SHIELD TRAINING",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "Allows you to equip a Large shield (using 3 Weapon ENC).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "MOUNTED CHARGE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "When charging on horseback (or other applicable beast), gain +1 SL to any successful Charge attack.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "OVERRUN",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "If your Mounted Charge attack is successful, you have access to the Overrun special Combat Maneuver. Requires Mounted Charge.\nOverrun - 3 SLs. After a mounted charge, leave the Engagement and move back out to Close range, on the opposite side of the zone from where you came. You do not provoke any free attacks by doing so. You may not become Engaged with any new foes while moving.",
+      "requirements": "Requires Mounted Charge."
+    }
+  },
+  {
+    "name": "ON YOUR FEET",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "Reduce any Rise from Prone penalties from Body armor by 10.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "JUMP UP",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "Reduce any Rise from Prone penalties from Body armor by 20. Requires and replaces On Your Feet.",
+      "requirements": "Requires and replaces On Your Feet."
+    }
+  },
+  {
+    "name": "POWERFUL BLOW",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "Pick one specific weapon type (shortsword, mace, 2H sword, longbow, fists, etc.). Do +1 base damage when using a weapon of this type. Can be purchased once per weapon type.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "PUGILIST",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "When making a Might attack or defense roll versus an armed opponent, the penalty is reduced to -10.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ADVANCED PUGILIST",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 42",
+      "effect": "When making a Might attack or defense roll versus an armed opponent, there is no penalty. Requires and replaces Pugilist.",
+      "requirements": "Requires and replaces Pugilist."
+    }
+  },
+  {
+    "name": "QUICKDRAW",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "Choose one Combat skill. Drawing an “at hand” weapon (i.e., a weapon using up Weapon ENC) that uses this skill does not require an action. You may draw and attack without penalty. Can be purchased once per Combat skill.",
+      "requirements": "require an action."
+    }
+  },
+  {
+    "name": "RAPID FIRE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "You can make a Ranged attack with a longbow, short bow, or throwing knives at two separate targets with the same ranged attack roll, made at -20. They must be within the same zone as one another, and they each defend separately against your roll. The general locations hit are the same on both targets by default. Any resulting Combat Maneuvers can be applied to one target only. Two Ammo Supply Die rolls must be made.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "RIPOSTE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "If you parry a successful melee attack and win the opposed roll with 3+ DoS, your melee attack against that opponent on your next turn, made with the weapon you parried with, is at +20.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "RISE A FIGHTER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "You can Rise from Prone by rolling Endurance, Might, or Willpower (choose one when purchasing this Talent) instead of Athletics.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "RUN FOR YOUR LIFE!",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "When fleeing melee, gain +20 to your Athletics roll.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SHIELD WALL",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "When two or more possessors of this Talent remain shoulder-to-shoulder with Medium or Large shields in the same zone, it costs +2 SL to use Circumvent Shield, Drive Back, or Trip Combat Maneuvers against them. If moving, they must move together on the same Initiative (likely using the Delay action) to maintain the wall. The wall also counts as cover to allies directly behind it.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SPEED-LOADER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "You may reload your crossbow as part of your action, provided you don’t move on your turn.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SWEEPING ATTACK",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "As your action this round, make a single melee attack with a Heavy weapon at -20 against two or more Engaged melee opponents. Roll once and apply to all foes, who may defend as normal. The locations hit are the same on all targets by default. Any resulting Combat Maneuvers are applied to one target only.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "TACTICAL ADVANCE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "When advancing on someone who has made a Fighting Withdrawal, gain +20 on your defense against their attack.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "TACTICAL RETREAT",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "When making a Fighting Withdrawal, you may make a single attack on one additional opponent who engages you. Can be purchased up to three times (to a maximum of four attacks on four different opponents).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "TACTICIAN",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "When Preparing the Battlefield, gain +2 SL to a successful roll.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "MASTER TACTICIAN",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "When Preparing the Battlefield, gain +20 on your skill roll. Requires Tactician.",
+      "requirements": "Requires Tactician."
+    }
+  },
+  {
+    "name": "TWO-WEAPON FIGHTER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "If you are armed with a Light or Medium weapon in the primary hand, and a Light weapon in the secondary hand, you have access to a special Combat Maneuver when you attack with the weapon in your primary hand:\nSecondary Attack - 3 SLs. Make an immediate -20 unopposed attack with your secondary weapon against any Engaged opponent.\nThe secondary weapon adds +1 AP to all locations (and can be bypassed with Circumvent Shield), but does not count as a shield against ranged attacks. You do not suffer an additional -20 penalty for fighting with the off-hand.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "TWO-WEAPON MASTER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 43",
+      "effect": "Reduce the Secondary Attack modifier to -10. Requires Two-Weapon Fighter.",
+      "requirements": "Requires Two-Weapon Fighter."
+    }
+  },
+  {
+    "name": "BULLRUSH",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Drive Back costs 1 less SL to perform when attacking with one chosen melee Combat skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "DISARMING HIT",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Disarm costs 1 less SL to perform when attacking with one chosen Combat skill. Can be purchased once per Combat skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "DROP. YOUR. SWORD.",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Compel Surrender costs 1 less SL to perform when attacking with one chosen Combat skill. Can be purchased once per Combat skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "LEG SWEEPER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Trip costs 1 less SL to perform when attacking with one chosen Combat skill. Can be purchased once per Combat skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "PRECISE STRIKE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Choose Location costs one less SL when attacking with one chosen Combat skill. Can be purchased once per Combat skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SHIELD BEAT",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Shield Bash costs 1 less SL to perform when attacking with one chosen size of shield (Small, Medium, or Large). Can be purchased once per shield size.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SHIELD BREAKER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "When using the Cleave Shield Maneuver of a 2H weapon, add +2 to the d20 roll. Can be purchased up to three times per 2H weapon.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SHIELD MANEUVER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Circumvent Shield costs 1 less SL to perform when attacking with one chosen Combat skill. Can be purchased once per Combat skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SUBJUGATING WORDS",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Use Intimidate as a Combat skill to force your enemy to give up. As your action, roll Intimidate vs your foe’s Combat skill. If you win with 3+ SL, you can Compel Surrender, subject to all the normal rules regarding Compel Surrender (target must be disadvantaged, etc). If you win with only 1 or 2 SLs, you Unbalance your foe with your intimidating approach.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WRESTLER",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Grapple costs 1 less SL to perform when attacking with Might. Can be purchased once.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SHIELD ARM",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Any Circumvent Shield attempts made against you cost +1 SL.",
+      "requirements": "Can be purchased up to three times."
+    }
+  },
+  {
+    "name": "ANTI-VENOM BLOOD",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Gain +20 on Endurance rolls against poison.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "“…BUT IT IS NOT THIS DAY!”",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Once per session, you can make an Inspire roll to recover spent Resolve equal to 1+ (1 per 2 SLs). This Resolve may be split among the party, including yourself. This does not remove Fatigue. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "CAREFUL RATIONING",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Once per session, if you’re the Quartermaster, you can ignore up to 3 points of penalties from any source when rolling on the Fatigue table. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "EASE OF PASSAGE",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Once per session, this character can allow each PC in the party to suffer one less Fatigue at the end of a Journey’s leg, after the Fatigue roll is made (or after a day’s travel on a HexMarch). A party cannot benefit from more than one character with this Talent. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ENDURING WATCH",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "If you kept watch during a rest, recover Fatigue as if you had not kept watch.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FEARLESS",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Gain +20 on Willpower rolls against fear.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "METTLE",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Gain +20 on Endurance rolls to resist Body Impairment from the Wound Die.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ON THROUGH THE NIGHT",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Once per session, if you’re the Guide, you can do a forced march and not suffer the -5 to the next Fatigue roll. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "QUICK AND QUIET",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "You can use the Run action even while using Stealth.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "RIDE LIKE THE WIND",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "While mounted, make a Ride roll at -20 as part of your movement to move one extra zone in a round (3 zones instead of 2).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SHIP’S GUNNER",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "In Naval Combat, you can support your ship’s Weapon skill with your Sail/ Boat skill (add double your Sail/Boat Score). If you are also the ship’s captain, you cannot use this Talent in the same round as using your Sail/Boat skill to support the ship’s Maneuvering skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SPYGLASS",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "Once per session, if you’re the Scout, you may try to avoid the Event even if your Perception roll failed. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "USEFUL GEAR",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "When taking Fatigue on a Journey, you may take 1 less by rolling the Gear Supply Die. This is in addition to any Fatigue reduced from use of the Rations Die.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WATCHMASTER",
+    "type": "talent",
+    "system": {
+      "category": "Adventuring Talents",
+      "reference": "Core Rulebook, p. 45",
+      "effect": "If you are the only one keeping watch while in camp, your Perception penalty is -10 instead of -30.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ALLOW ME TO INTRODUCE…",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "Adds +1 to Tolerance for all Social Encounters, so long as you are the primary voice for the group. You must be the first to speak and introduce the rest of your party in whichever manner you think best. The roll does count against Tolerance, but also contributes to the total SLs for the Social Encounter. In a Competitive Social Encounter, your first Social skill roll instead gets a +20 bonus.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "BARBED TONGUE",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "This Talent is similar to the Taunt combat action, but is used in a Competitive Social Encounter. You land a verbal jab to demoralize an opponent within earshot. Pick one target on the opposing side. As your action this round, make an opposed Intimidate or Wit roll against the target’s Willpower. If you win (and if they can understand you), they or their side suffers -20 to their next Social roll. For every 3 DoS, increase the penalty by an additional -10. Each subsequent use of Barbed Tongue against the same target in the same encounter suffers a cumulative -20 to your Intimidate or Wit roll.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "BLATHER",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "Spew a string of gobbledegook to confuse one target, in combat or otherwise. The target must be able to hear and understand you. As an action, make a Wit roll opposed to the target’s Insight. If you win, they suffer a -20 to their next roll. If you win by 5+ DoS, the target is flabbergasted by your blather, loses their next action, and may only defend. Each subsequent use of Blather against the same target in the same encounter suffers a cumulative -20 to your Wit roll.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ENTERTAINING",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "Your first use of Perform or Wit in a Static Social Encounter does not count against Tolerance. In a Competitive Social Encounter, the first use instead gives a +20 skill bonus.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "EXPRESSIVE",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "Your Social skills are not capped by the language you are speaking.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FIERY WORDS",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "Your first use of Inspire or Intimidate in a Static Social Encounter does not count against Tolerance. In a Competitive Social Encounter, the first use instead gives a +20 skill bonus.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "HONEYED WORDS",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "Your first use of Persuade or Seduce in a Static Social Encounter does not count against Tolerance. In a Competitive Social Encounter, the first use instead gives a +20 skill bonus.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "INSPIRATIONAL",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "When using the Inspire Ally action in combat, a success grants either one ally +20 to their next roll (instead of +10), or two allies +10 each. For every 3 SLs, you gain another +10 that may be given to any eligible ally.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "I SEE YOUR MIND",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 46",
+      "effect": "If someone in your party gains leverage through an Insight roll during a Social Encounter, you may immediately spend 1 leverage to learn one of the NPC’s Special Reactions (GM’s choice). You can learn only one Special Reaction this way per encounter. You may also spend 3 leverage to reveal the NPC’s Tolerance.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "NATURAL POLITICIAN",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "Your first use of Deceive or Protocol in a Static Social Encounter does not count against Tolerance. In a Competitive Social Encounter, the first use instead gives a +20 skill bonus.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "PRESS THE POINT",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "Once per Social Encounter, you can use a skill for a third time in a row, or you can use a Social skill with an NPC even if that same skill just failed.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "RALLY THE TROOPS",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "When in Mass Combat, make any Rally actions with a +20 bonus. When not in Mass Combat, if forces under your control and within the sound of your voice fail a morale or fear (Willpower) roll for any reason, as an action, make an Intimidate or Inspire roll. For every 2 SLs, one friendly unit recovers from their failed morale and rejoins the battle.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ALCHEMIST",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "When successfully creating alchemical potions, make 1d4 doses + 1 dose per 2 SLs (instead of 1d3 + 1 per 3 SLs).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "BARTERER",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "Use Commerce to make one attempt to adjust the value of a bought or sold item by +10% per DoS (instead of per 2 DoS) up to a maximum of 50% (see Chapter 9 - Equipment: Coins & Haggling).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "BATTLEFIELD TACTICS",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "Once per battle (see Appendix A: Mass Combat), a Commander can roll Battle-wise to increase the Initiative values of friendly units. Each SL can increase one unit’s Initiative value by 1. This effect lasts throughout the battle. Requires Battle-wise Lore skill.",
+      "requirements": "Requires Battle-wise Lore skill."
+    }
+  },
+  {
+    "name": "STORM THE DECKS",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "When leading a crew in a Naval Combat boarding action, you can support their Crew value with double your Inspire Score each round of hand-to-hand combat. You must participate in the boarding action and get into combat yourself to use this Talent.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "UNIVERSAL TAUNT",
+    "type": "talent",
+    "system": {
+      "category": "Social Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "When Taunting a Foe in combat, roll any appropriate Social skill (not limited to Intimidate and Wit).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "BEAST TAMER",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 47",
+      "effect": "Use Naturewise to tame a mundane wild animal as an extended roll, with each roll taking one day. Most normal animals require 6 SLs to tame; more aggressive animals require 9 to 15 SLs, and will attack on any critically failed extended roll. Offers of food may provide a bonus to one or more of the rolls (GM discretion). A tamed animal is considered friendly towards the Beast Tamer and anyone he designates as friends. The tamed animal will follow the Beast Tamer’s simple commands on a successful Naturewise roll. It is not a pet, however, and will still behave according to its nature where appropriate. It can be commanded to fight, but it will not generally fight to the death.\nAt any one time, a Beast Tamer can have tamed a maximum number of animals based on their Size and on the Beast Tamer’s Naturewise Score:\nA Naturewise Score is 1–4: up to 3 Small animals\nA Naturewise Score is 5–7: as above, plus up to 2 Medium animals\nA Naturewise Score is 8+: as above, plus up to 1 Large animal\nTaming an additional animal of a particular size category requires first releasing one of the currently tamed animals.",
+      "requirements": "require 6 SLs to tame; more aggressive animals require 9 to 15 SLs, and will attack on any critically failed extended roll."
+    }
+  },
+  {
+    "name": "BEAST SPEAKER",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Choose up to three of your tamed animals. Through body language, vocalizations, or other nonverbal cues, the tamed animals can communicate simple ideas to you, but nothing more complicated than what would be expressed in short, simple sentences. Requires Beast Tamer.",
+      "requirements": "Requires Beast Tamer."
+    }
+  },
+  {
+    "name": "BEDSIDE MANNER",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Add 3× your Heal Score when tending to a character’s Recovery rolls.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "EXTRA BANDAGES",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Once per game session, you may re-roll a failed Medical Supply roll. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "IT’S ALL IN THE MOLD",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Gain +20 on Heal rolls to purge infected wounds.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "KINGSFOIL",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Once per game session, at any point while on a Journey, you may attempt to purge an infection without having to change to Daily Time. Requires a Medical Supply roll. Can be purchased up to 3 times, each giving an additional attempt per session.",
+      "requirements": "Requires a Medical Supply roll."
+    }
+  },
+  {
+    "name": "LECTURER",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Pick one of your custom -wise skills. You may use this skill in a Social Encounter.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "LITERATE",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "You can read and write any language you can speak.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "MASTER CRAFTSMAN",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "When crafting a new item with Craft: Practical/Artistic, for every 3 SLs you earn over the required SLs, you may improve it in one of the ways below to make it a masterwork item. Each option may be selected only once, and each selection increases the crafting cost by an amount in sp equal to the item’s listed price:\nA +5% to a skill applicable to the item’s use\nA +1 damage to a weapon\nA -1 to the cost of one weapon Combat Maneuver (Choose Location, Disarm, etc.), to a minimum Maneuver cost of 1\nA +1 AP to a piece of armor\nA -1 to the ENC or Bulk, to a minimum ENC or Bulk of 1\nA critical failure while trying to gain extra SLs over the required SLs ruins the item, and the material costs from trying to improve the item (as described above) are wasted.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "LEGENDARY CRAFTSMAN",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "As above, but each improvement can be chosen twice (for example, the skill bonus could be +10%, or armor Bulk could be reduced by 2, to a minimum of 1 Bulk). Requires Master Craftsman.",
+      "requirements": "Requires Master Craftsman."
+    }
+  },
+  {
+    "name": "NATURAL REMEDIES",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Gain +10 on any Naturewise or Survival attempts to find ingredients for a natural healing potion, and +10 on Craft: Practical attempts to brew it.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SURGEON",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "Gain +20 on Heal rolls to perform an amputation.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "TRAVEL PLANNER",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 48",
+      "effect": "If you participate in the Travel Lore roll and gain any number of SLs, the party earns 2 additional points of Favor.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WEAPON OF FAITH",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 49",
+      "effect": "Once per combat, as an action, pray to your god, spend 1 Resolve, and make a Divinity roll. Any SLs generated can be used as Favor to your actions for the duration of this combat. Requires a Divinity skill of 70 and to be a faithful adherent of a god (you do not require the Godbound Talent).",
+      "requirements": "Requires a Divinity skill of 70 and to be a faithful adherent of a god (you do not require the Godbound Talent)."
+    }
+  },
+  {
+    "name": "ARMORED CASTER",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 49",
+      "effect": "You are trained to weave magic through the hindrance of armor. Reduce the Total Cost increase from your armor’s Initiative penalty by 3. Can be purchased up to three times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "DIVINE CONDUIT",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 49",
+      "effect": "You can try to channel your god’s wisdom by allowing the deity to speak through you at (in)opportune times. There is a chance that what is spoken is helpful. Spend 1 Resolve and roll Piety; every 3 SLs generated produces one useful piece of information. The information should be presented in some combination of metaphor, symbolism, and poetry (the gods rarely give a straight answer). Failing the roll, or using this Talent twice in the same day, causes the deity to provide unhelpful or obstructive information. Using this Talent doesn’t cost any Piety, only the 1 Resolve.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ENCHANTER",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 49",
+      "effect": "When making Enchanted items, roll Arcana. Reduce the accrued Fraying points by 1 per 3 SLs (to a minimum of 1 Fraying point).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "ARMOR OF FAITH",
+    "type": "talent",
+    "system": {
+      "category": "Lore Talents",
+      "reference": "Core Rulebook, p. 49",
+      "effect": "Your faith protects you from harm. Once per combat, as an action, pray to your god, spend 3 Resolve, and make a Divinity roll. Add 1 (+ 1 per 3 SLs) of AP to all locations for the duration of the combat. Requires Weapon of Faith.",
+      "requirements": "Requires Weapon of Faith."
+    }
+  },
+  {
+    "name": "ENDURING CASTER (BIND)",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 49",
+      "effect": "Spend 1 less Resolve when choosing to Mitigate after the casting roll with a specific Bind skill. Can be purchased up to three times in total (not per Bind).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FADED PATTERN",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 49",
+      "effect": "Allows a non-Spellweaver to cast magic within certain limitations; these folk are known as Fades. A Fade wasn’t born to the power, and they will never be as accomplished as a true Spellweaver; their magical presence imprints a more unstable outline on the Pattern of the Weave. The following rules apply to a Fade:\nA You may spend XP (or “rounding out” skill points in character creation) on Bind and Strand skills.\nA You may never have a value of more than 70 in any Bind skill.\nA Start with a total of 5 levels among any Strands of your choice. A Fade may never have more than 7 in any Strand. Fades are not limited by Thin Strands.\nA You may not choose Bind skills as Savvy skills.\nA As a Fade, you are even more susceptible to the Weave’s lashings: any casting roll that critically fails immediately accumulates 1 Fraying point, in addition to any other critical failure effects.\nA Upon becoming a Fade, the Weave imprints you with a True Name, as a Spellweaver.\nSpecial Restriction: Unlike other Talents, Faded Pattern requires 2 Talent selections if chosen during character creation. These must come from your starting allotment of Talents, including those granted by Previous Careers. If purchased later in play, this Talent costs 10 XP instead of 5.",
+      "requirements": "requires 2 Talent selections if chosen during character creation."
+    }
+  },
+  {
+    "name": "FAST SUMMONER",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Drawing your summoning circle only takes 15 minutes.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FORCEFUL STRAND (STRAND)",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Pick one Strand. For any spell you cast using this Strand, the target resists at -10. Can be purchased up to three times per Strand.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "GODBOUND",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "This Talent allows the character to select a chosen patron deity and acquire the Piety skill at a starting value of 30 (or to add 30 during character creation). The Piety value can never be more than 90 (although it can be temporarily raised through modifiers). At character creation, only Previous Career: Godbound may select this Talent. Purchasing this Talent after character creation costs 10 XP.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "PATTERNED IN THE WEAVE",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "This Talent can only be chosen if your Previous Career is Spellweaver. True Spellweavers are born to the Pattern. One must possess this Talent to be a fully-fledged Spellweaver. Choose a True Name imprinted upon you by the Weave: this name must be in the language of your people, and can be used to magically target you using the Arcane Tether Range (see Chapter 14 - Weave Magic). Gain +5 to Max Resolve.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "RITUAL CASTER",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "All your ritual spell rolls gain a +10 bonus. Can be purchased up to three times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "STRAND SECRET (STRAND)",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Gain a new Strand of your choice at a value of 1 (a Thin Strand costs 10 XP).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "TRUE FAITH",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Once per session, increase the quality of a granted divine miracle by one step (Lesser to Middle or Middle to Greater). Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "UNERRING BOLT (STRAND)",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Pick one Strand. Your attack spells with that Strand do +1 damage. Can be purchased up to three times per Strand.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WEAVE RESISTANT (CHOOSE)",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Pick one skill. Gain +20 when using that skill to oppose magic. Can be purchased once per skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WEAVE SHADOW",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Make all rolls on the Weave Reaction Table at -1. Can be purchased up to five times, for up to -5 on the table.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WORDS ALONE",
+    "type": "talent",
+    "system": {
+      "category": "Magic Talents",
+      "reference": "Core Rulebook, p. 50",
+      "effect": "Casting a spell normally requires at least one free hand. With this Talent, the caster can still attempt the spell if both hands are occupied (such as wielding a weapon and shield) or otherwise prevented from making gestures (such as having both arms Impaired), but at -20 to the Bind roll.",
+      "requirements": "requires at least one free hand."
+    }
+  },
+  {
+    "name": "CAT’S FALL",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "When falling, roll Athletics. Reduce falling damage by the SLs. If it reduces the damage to zero, you do not go Prone.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "FAST HEALER",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Remove 1 extra Wound Point on a successful Recovery roll. This Talent can only be purchased once.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "GRIT (LOCATION)",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "In the specified hit location(s), you do not automatically drop in Shock until you suffer a third Impairment there. Each time this Talent is taken, choose one from: the Body, the Head, both Arms, or both Legs.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "I HAVE JUST THE THING",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Once per game session, you may re-roll a failed Gear Supply Die. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "INNER STRENGTH",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Increase your Max Resolve by 1. Can be purchased multiple times to a maximum Resolve of 30.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "NOT TODAY, DEATH",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Increase your Death Threshold by 2; recalculate Lethality Level. Can be purchased up to five times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SAVVY",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Pick one skill and mark an “S” next to it. When improving this skill with XP, increase the result by +1 (see Chapter 8 - Experience & Advancement).You may not buy Savvy twice for the same skill.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "STEELY THEWS",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Once per game session, you may re-roll the Wound Die, keeping the more favorable result. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "STRONG BACK",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Increase your number of Inventory slots by 2. Can be purchased up to three times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "STRONG IMMUNE SYSTEM",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Once per game session, you may re-roll the Infection Die, keeping the more favorable result. Can be purchased up to three times, each giving an additional use per session.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SWIFT RIDER",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "While traveling alone on horseback during a Journey, you suffer only a -2 Fatigue penalty for a Forced March instead of -5.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SWIFT COMPANY",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "The benefit extends to your whole party. Requires Swift Rider and Ride 80+.",
+      "requirements": "Requires Swift Rider and Ride 80+."
+    }
+  },
+  {
+    "name": "TOUGH",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Increase your Toughness by 1. Can be purchased up to three times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "UNKILLABLE",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Increase your Lethality Level by 1. You may improve your Lethality Level this way a maximum of three times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WEAPON BELT",
+    "type": "talent",
+    "system": {
+      "category": "Miscellaneous Talents",
+      "reference": "Core Rulebook, p. 51",
+      "effect": "Increase your Max Weapon ENC by 1. Can be purchased up to three times.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "BLOOD-FURY",
+    "type": "talent",
+    "system": {
+      "category": "Non-Human Talents",
+      "reference": "Core Rulebook, p. 52",
+      "effect": "Half-Orc only. Any time your total Wound points exceed half your Death Threshold, you may choose to spend 3 Resolve to enter a Blood-fury state. For a number of rounds equal to half your Endurance Score (round up), gain +20 to any melee attack roll and +1 damage on successful attacks. However, you suffer -20 to all other skills during this time—including all defense rolls—and cannot retreat or disengage unless you succeed on a Willpower roll.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "DWARVEN SWORDSINGER",
+    "type": "talent",
+    "system": {
+      "category": "Non-Human Talents",
+      "reference": "Core Rulebook, p. 52",
+      "effect": "Dwarf only. You are a Dwarven smith whose song can enchant a weapon that you forge (Master Craftsman improvements may be added during forging if desired). Once per turn of the moon (one month), you can make a Perform roll, taking 1 hour. You may instead Perform the song in 1 round, but at a -20 penalty. For every Perform SL, the weapon counts as magical for 1 day (as per the 1 SL Enhance Weapon Effect; see Chapter 14 - Weave Magic).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "DEVOURING MAW",
+    "type": "talent",
+    "system": {
+      "category": "Non-Human Talents",
+      "reference": "Core Rulebook, p. 52",
+      "effect": "Ogre only. Your bite may be used as a Natural Weapon attack (2 dmg, Piercing 1). Once per scene, if you deal at least 1 Wound with this attack, you may consume the flesh to regain 1d3 Resolve (if the target is living) or 1 Resolve (if recently dead).",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "WHISPERED INHERITANCE",
+    "type": "talent",
+    "system": {
+      "category": "Non-Human Talents",
+      "reference": "Core Rulebook, p. 52",
+      "effect": "Bolg Fiir only. Once per session, you may roll Willpower to attune yourself to the buried resonance of your people’s lost magic. If successful, you receive a fleeting insight or impression relevant to your current situation. The quality of the outcome is based on your SL. Choose one of these effects:\nA 1+ SLs: You receive a useful emotional imprint (for example, “This place was a battleground,” or “Someone is lying to you.”)\nA 4+ SLs: A forgotten word, rune, or phrase surfaces in your mind. It grants +30 to your next Ancient Lore, Arcana, or Insight roll.\nA 6+ SLs: A half-memory of a Seethie magical technique flickers through you, granting a one-time +3 SL bonus to the outcome of the next successful Bind roll you make.\nA 8+ SLs: The Seethie thought coalesces briefly into lucidity. You may ask the GM a single specific question related to your current environment or decision and receive a symbolic but useful answer.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "HUNTED BY THE QUEEN",
+    "type": "talent",
+    "system": {
+      "category": "Non-Human Talents",
+      "reference": "Core Rulebook, p. 53",
+      "effect": "Replaced only, mandatory at character creation. You were abducted and enslaved by the minions of the Dark Fae lords. You spent countless years trapped in their dreamy nightmare realm, a mortal plaything of strange elder beings. Finally, you found a way to escape through the Thorns, the supernatural boundary between worlds. Though free, you now carry a fragment of the Glamour: a lingering sliver of the power they used on you. But the Fae Queen never gives up her toys. The Queen’s Hunt is always on your trail, appearing in many forms, at the worst possible times.\nA Glamour - By spending 3 Resolve and making a successful Willpower roll, you can make yourself look like anyone a single target would consider friendly or desirable. This lasts for a few hours, or until you do something they would consider suspicious, at which point they get an Insight roll to see through the effect. Further suspicious actions grant a cumulative +20 to the Insight roll. Most individuals are not pleased once they realize they’ve been deceived by the Glamour.\nA Seduction of the Fae: Resolve spent on Perform (only with song or instrument), Seduce or Wit rolls against a single target adds +20 per Resolve instead of +10. Failing such a Fae-enhanced roll immediately ends a Social Encounter, or otherwise ends badly, as the NPC sees through the Glamour. This may have violent consequences.\nA Cast Out of the Weave: A Replaced may never learn Weave magic, and suffers a -10 on any opposed roll made against it.\nA Legacy of Servitude: A Replaced suffers a 1-pt Wound from any simple contact with cold iron. Such weapons also do +1 damage against them.\nA Hunted: You were one of the Fae Queen’s playthings, and she wants her slaves back. The Queen’s Hunt is ever at your heels. If you stay in one place for more than a few days, the GM rolls a d20 Timer Die: if the roll is equal to or less than the number of days you have remained in one place, the Hunt has found you. They come in many forms, but their goal is always the same: to drag you back through the Thorns into the “loving” arms of your Fae master.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "THORNMARK",
+    "type": "talent",
+    "system": {
+      "category": "Non-Human Talents",
+      "reference": "Core Rulebook, p. 53",
+      "effect": "Replaced only. Once per scene, you may roll Insight to sense whether a Fae creature or agent of the Queen’s Hunt is within 300 feet. On a success with 1–4 SLs, you detect a direction and distance—but not identity. This may give you a chance to flee, prepare an ambush, or otherwise act before they arrive. With 5+ SLs, you also recover a blurred memory of your captivity, which grants +10 to any skill roll made in defiance of the Hunt for the first three rounds of the encounter.",
+      "requirements": ""
+    }
+  },
+  {
+    "name": "SLIPPERY",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Any Grapple attempts made against you cost +1 SL.",
+      "requirements": "Can be purchased up to three times."
+    }
+  },
+  {
+    "name": "STABLE STANCE",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Any Trip or Shield Bash attempts made against you cost +1 SL.",
+      "requirements": "Can be purchased up to three times."
+    }
+  },
+  {
+    "name": "STAY PUT",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Any Drive Back attempts made against you cost +1 SL.",
+      "requirements": "Can be purchased up to three times."
+    }
+  },
+  {
+    "name": "STAY UP",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Any Unbalance attempts made against you cost +1 SL.",
+      "requirements": "Can be purchased up to three times."
+    }
+  },
+  {
+    "name": "STRONG GRIP",
+    "type": "talent",
+    "system": {
+      "category": "Combat Maneuver Talents",
+      "reference": "Core Rulebook, p. 44",
+      "effect": "Any Disarm attempts made against you cost +1 SL.",
+      "requirements": "Can be purchased up to three times."
+    }
+  },
+  {
+    "name": "Expertise (Choose Skill)",
+    "type": "talent",
+    "system": {
+      "category": "Expertise",
+      "reference": "Core Rulebook, p. 54",
+      "effect": "Choose one skill and mark its Expertise in that skill’s Ex field on the character sheet. A successful roll generates at least Ex2, then Ex3 and Ex4 for subsequent purchases in the same skill. A failure gains no benefit. Strands and Piety cannot have Expertise. In opposed rolls, the opponent’s SLs can reduce the Expertise SLs as usual. The Ex field on the sheet is the operative value; this Item is a reference and purchase record.",
+      "requirements": "Skill 40–59: up to Ex2; 60–79: up to Ex3; 80+: up to Ex4. Expertise cannot exceed half the skill’s tens digit, rounded down."
+    }
+  },
+  {
+    "name": "Runesmith (House Rule — Draft)",
+    "type": "talent",
+    "system": {
+      "category": "House Rules",
+      "reference": "TBE_Rune_Magic_Rules_Draft.txt, §1–10",
+      "effect": "Gain Rune Magic 30. Prepare odd-length rune scripts up to the tens digit of unmodified Rune Magic (3/5/7/9 runes); activate them by singing a galdur and rolling Rune Magic. Preparing a script in downtime needs no Craft roll; hurried inscription needs an appropriate Craft roll. Scripts cost 6/10/14/18 locked Resolve or ritual Wound Points and grant 1/2/3/4 effect slots. Blood avoids the −20 activation penalty that applies to ochre-only scripts. Ritual wounds are lethal, non-infectious and cannot heal while committed. A recipient can benefit from only one active rune script or bind-rune. Rune Magic 70 permits crafting bind-runes by committing permanent Fatigue; another bearer spends 3 Resolve to activate a bind-rune. See the rune magic draft for the full duration, effect and creation rules; some effect conversions are still undecided.",
+      "requirements": "House rule; Rune Magic and an appropriate Craft skill. Bind-runes require Rune Magic 70. Draft pending final effect conversions."
+    }
+  },
+  {
+    "name": "Shield Wall (House Rule Variant)",
+    "type": "talent",
+    "system": {
+      "category": "House Rules",
+      "reference": "TBE_Pikes_and_Shield_Walls_House_Rules.pdf, §1",
+      "effect": "At least two characters with this Talent, Medium or Large shields, and shoulder-to-shoulder position in the same zone form a shield wall. Each member must remain adjacent to another qualifying member. Circumvent Shield, Drive Back and Trip against a member each require 2 additional raw SL. Allies immediately behind the wall count as in Cover. Members may move together at the same Initiative (using Delay as needed). A separated member loses the benefit, while any connected group of at least two retains it. Magic that moves combatants can break the wall.",
+      "requirements": "House rule variant of the core Shield Wall Talent; Medium or Large shield and one adjacent qualifying member."
+    }
+  }
+]

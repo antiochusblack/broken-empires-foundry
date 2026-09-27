@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.7.0 has an editable character sheet, owned Item sheets, an equipment compendium and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.9.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.7.0` and attach `broken-empires-foundry-v0.7.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.9.0` and attach `broken-empires-foundry-v0.9.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
@@ -30,6 +30,10 @@ Weapons in Held and Ready or At Hand have an Attack button. Select a Combat skil
 
 The equipment pack includes all standard tabulated weapon profiles, four shields, six body-location pieces for each of the eight armour types, and the miscellaneous table. The two longsword stances and thrown profiles are separate reference Items; add the profile needed for play instead of treating them as separate purchases. Book services and property are represented as Gear Items for browsing. Some specialised entries, such as horse barding, need their details selected when acquired.
 
+## Talent compendium
+
+The GM's first world startup after updating creates a separate **TBE Talents** world compendium with 150 named book Talents, an Expertise reference Item and two house-rule Items. Folders follow the eight talent categories from the book, plus Expertise and House Rules. Existing Talent Items are never overwritten. Drag a Talent onto a character or copy it from the pack into the Items directory. The sheet keeps the book category and page reference separate from the character-specific Source field. The Runesmith Item is marked **Draft** because some effect conversions in the rune magic draft remain undecided. The Shield Wall house-rule variant is separate from the standard book Talent.
+
 ## Private rulebook Journals
 
-The rulebook text is **not** bundled in this public system or its ZIP. The GM can download the separate `TBE_Rulebook_Journals_Private.json`, open any character sheet, go to **Reference**, click **Import rulebook Journals**, and select that JSON file. This creates chapter Journals with searchable text pages in the world's **TBE Rulebook** folder. Repeat imports skip chapters already created; an interrupted import can be resumed with the same file. Only a GM sees the import button. Set Journal player visibility in the Journals sidebar as desired. Keep the JSON private; it contains the text of the book. Consult the original PDF for artwork, diagrams and complex tables because text extraction cannot preserve their layout.
+The rulebook text is **not** bundled in this public system or its ZIP. The GM can download the separate `TBE_Rulebook_Journals_Private.json`, open the **Journals sidebar**, click **Import TBE rulebook Journals** at the top, and select that JSON file. This creates chapter Journals with searchable text pages in the world's **TBE Rulebook** folder. Repeat imports skip chapters already created; an interrupted import can be resumed with the same file. Only a GM sees the import button. Set Journal player visibility in the Journals sidebar as desired. Keep the JSON private; it contains the text of the book. Consult the original PDF for artwork, diagrams and complex tables because text extraction cannot preserve their layout.

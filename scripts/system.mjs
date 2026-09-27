@@ -49,7 +49,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
   }
 }
 class TalentData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { source: string(), effect: string(), requirements: string() }; }
+  static defineSchema() { return { source: string(), effect: string(), requirements: string(), category: string(), reference: string() }; }
 }
 class WeaponData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
@@ -128,6 +128,46 @@ function generalHitLocation(value) {
   const digit = value % 10;
   return digit === 0 ? "Head" : digit <= 5 ? "Body" : digit <= 7 ? (digit === 6 ? "Right Arm" : "Left Arm") : (digit === 8 ? "Right Leg" : "Left Leg");
 }
+async function importRulebookJournals() {
+      if (!game.user.isGM) return;
+      const picker = document.createElement("input");
+      picker.type = "file"; picker.accept = ".json,application/json";
+      picker.addEventListener("change", async () => {
+        const file = picker.files?.[0];
+        if (!file) return;
+        try {
+          const data = JSON.parse(await file.text());
+          if (data.format !== "tbe-journals-v1" || typeof data.source !== "string" || !Array.isArray(data.chapters) || !data.chapters.length) throw new Error("This is not a TBE Journal import file.");
+          if (data.chapters.some(ch => typeof ch.name !== "string" || !Array.isArray(ch.pages) || ch.pages.some(page => typeof page.name !== "string" || typeof page.html !== "string"))) throw new Error("The Journal file contains invalid chapters or pages.");
+          const existing = game.journal.contents.filter(j => j.getFlag("broken-empires-foundry", "rulebookImport") === data.source);
+          const pending = data.chapters.filter(ch => !existing.some(j => j.getFlag("broken-empires-foundry", "chapterName") === ch.name));
+          if (!pending.length) { ui.notifications.info("These rulebook Journals have already been imported."); return; }
+          const confirmed = await foundry.applications.api.DialogV2.confirm({
+            window: { title: "Import private rulebook?" },
+            content: `Create ${pending.length} Journal entries from ${foundry.utils.escapeHTML(file.name)} in this world? This may take a minute.`,
+            yes: { label: "Import Journals" }, no: { label: "Cancel" }
+          });
+          if (!confirmed) return;
+          ui.notifications.info(`Importing ${pending.length} TBE rulebook chapters…`);
+          let folder = game.folders.find(f => f.type === "JournalEntry" && f.name === "TBE Rulebook");
+          if (!folder) folder = await Folder.create({ name: "TBE Rulebook", type: "JournalEntry" });
+          for (const chapter of pending) {
+            await JournalEntry.create({
+              name: chapter.name,
+              folder: folder.id,
+              flags: { "broken-empires-foundry": { rulebookImport: data.source, chapterName: chapter.name } },
+              pages: chapter.pages.map(page => ({ name: page.name, type: "text", text: { format: 1, content: page.html } }))
+            });
+          }
+          ui.notifications.info(`Imported ${pending.length} TBE rulebook Journals. Set player permissions in the Journals sidebar.`);
+        } catch (error) {
+          console.error("TBE: Journal import failed", error);
+          ui.notifications.error(`Journal import failed: ${error.message}`);
+        }
+      }, { once: true });
+      picker.click();
+ }
+
 const HandlebarsSheet = foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2);
 class CharacterSheet extends HandlebarsSheet {
   static DEFAULT_OPTIONS = {
@@ -139,7 +179,6 @@ class CharacterSheet extends HandlebarsSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     context.system = this.actor.system;
-    context.isGM = game.user.isGM;
     context.maneuvers = COMBAT_MANEUVERS;
     context.combatModifiers = COMBAT_MODIFIERS;
     context.skillGroups = Object.entries(SKILLS).map(([category, names]) => ({
@@ -210,46 +249,6 @@ class CharacterSheet extends HandlebarsSheet {
       scroller.scrollTop += target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 44;
       this._savedScrollTop = scroller.scrollTop;
     }));
-    this.element.querySelector("[data-import-journals]")?.addEventListener("click", async event => {
-      event.preventDefault();
-      if (!game.user.isGM) return;
-      const picker = document.createElement("input");
-      picker.type = "file"; picker.accept = ".json,application/json";
-      picker.addEventListener("change", async () => {
-        const file = picker.files?.[0];
-        if (!file) return;
-        try {
-          const data = JSON.parse(await file.text());
-          if (data.format !== "tbe-journals-v1" || typeof data.source !== "string" || !Array.isArray(data.chapters) || !data.chapters.length) throw new Error("This is not a TBE Journal import file.");
-          if (data.chapters.some(ch => typeof ch.name !== "string" || !Array.isArray(ch.pages) || ch.pages.some(page => typeof page.name !== "string" || typeof page.html !== "string"))) throw new Error("The Journal file contains invalid chapters or pages.");
-          const existing = game.journal.contents.filter(j => j.getFlag("broken-empires-foundry", "rulebookImport") === data.source);
-          const pending = data.chapters.filter(ch => !existing.some(j => j.getFlag("broken-empires-foundry", "chapterName") === ch.name));
-          if (!pending.length) { ui.notifications.info("These rulebook Journals have already been imported."); return; }
-          const confirmed = await foundry.applications.api.DialogV2.confirm({
-            window: { title: "Import private rulebook?" },
-            content: `Create ${pending.length} Journal entries from ${foundry.utils.escapeHTML(file.name)} in this world? This may take a minute.`,
-            yes: { label: "Import Journals" }, no: { label: "Cancel" }
-          });
-          if (!confirmed) return;
-          ui.notifications.info(`Importing ${pending.length} TBE rulebook chapters…`);
-          let folder = game.folders.find(f => f.type === "JournalEntry" && f.name === "TBE Rulebook");
-          if (!folder) folder = await Folder.create({ name: "TBE Rulebook", type: "JournalEntry" });
-          for (const chapter of pending) {
-            await JournalEntry.create({
-              name: chapter.name,
-              folder: folder.id,
-              flags: { "broken-empires-foundry": { rulebookImport: data.source, chapterName: chapter.name } },
-              pages: chapter.pages.map(page => ({ name: page.name, type: "text", text: { format: 1, content: page.html } }))
-            });
-          }
-          ui.notifications.info(`Imported ${pending.length} TBE rulebook Journals. Set player permissions in the Journals sidebar.`);
-        } catch (error) {
-          console.error("TBE: Journal import failed", error);
-          ui.notifications.error(`Journal import failed: ${error.message}`);
-        }
-      }, { once: true });
-      picker.click();
-    });
     this.element.querySelectorAll("[data-attack-item]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
       const weapon = this.actor.items.get(button.dataset.attackItem);
@@ -403,6 +402,24 @@ class TBEItemSheet extends ItemSheet {
     });
   }
 }
+function addRulebookImportButton(application, element) {
+  if (!game.user.isGM) return;
+  const root = element instanceof HTMLElement ? element : element?.[0] ?? application.element;
+  if (!root || root.querySelector("[data-tbe-import-journals]")) return;
+  const header = root.querySelector(".directory-header") || root.querySelector(".directory-list")?.parentElement;
+  if (!header) return;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.dataset.tbeImportJournals = "";
+  button.className = "tbe-journal-import-button";
+  button.textContent = "Import TBE rulebook Journals";
+  button.addEventListener("click", event => { event.preventDefault(); void importRulebookJournals(); });
+  header.append(button);
+}
+Hooks.on("renderJournalDirectory", addRulebookImportButton);
+Hooks.on("renderApplicationV2", (application, element) => {
+  if (application instanceof foundry.applications.sidebar.tabs.JournalDirectory) addRulebookImportButton(application, element);
+});
 Hooks.once("init", () => {
   CONFIG.Actor.dataModels.character = CharacterData;
   CONFIG.Item.dataModels.talent = TalentData;
@@ -438,6 +455,23 @@ Hooks.once("ready", async () => {
         })), { pack: pack.collection });
       }
     } catch (error) { console.error("TBE: failed to initialise the equipment compendium", error); }
+    try {
+      let pack = game.packs.get("world.tbe-talents");
+      if (!pack) pack = await foundry.documents.collections.CompendiumCollection.createCompendium({ name: "tbe-talents", label: "TBE Talents", type: "Item" });
+      const response = await fetch("systems/broken-empires-foundry/packs-src/talents.json");
+      if (!response.ok) throw new Error(`Talents HTTP ${response.status}`);
+      const talents = await response.json();
+      const index = await pack.getIndex({ fields: ["type"] });
+      const missing = talents.filter(talent => !index.some(entry => entry.name === talent.name && entry.type === "talent"));
+      if (missing.length) {
+        const categories = [...new Set(missing.map(item => item.system.category))];
+        const existingFolders = pack.folders?.contents ?? [];
+        const absent = categories.filter(name => !existingFolders.some(folder => folder.name === name));
+        const created = absent.length ? await foundry.documents.Folder.createDocuments(absent.map(name => ({ name, type: "Item" })), { pack: pack.collection }) : [];
+        const byName = new Map([...existingFolders, ...created].map(folder => [folder.name, folder.id]));
+        await Item.implementation.createDocuments(missing.map(item => ({ ...item, folder: byName.get(item.system.category) ?? null })), { pack: pack.collection });
+      }
+    } catch (error) { console.error("TBE: failed to initialise the talents compendium", error); }
   }
   for (const actor of game.actors.filter(a => a.type === "character")) {
     if (!actor.getFlag("broken-empires-foundry", "startingItemsAdded")) {
