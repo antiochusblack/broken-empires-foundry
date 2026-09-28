@@ -613,17 +613,22 @@ class CharacterSheet extends HandlebarsSheet {
       Leg: "First impairment: odd Wound Die = fall Prone; even = cannot Run or Charge until impairment is removed. Second impairment = Shock for die-face minutes."
     };
     const conditionHelp = [
-      ["shock", "Shock", "Prone and unable to act meaningfully; 3 Resolve can avoid dropping into Shock. Remove impairment and Shock through treatment."],
       ["unconscious", "Unconscious", "Unaware and unable to act. Even Head impairment causes unconsciousness and Shock."],
-      ["stunned", "Stunned", "Odd first Head impairment: lose the next action; you can still defend and move if possible."],
-      ["prone", "Prone", "Lying on the ground; use Rise from Prone to stand under the appropriate circumstances."],
+      ["shock", "Shock", "Prone and unable to act meaningfully; 3 Resolve can avoid dropping into Shock. Remove impairment and Shock through treatment."],
       ["dying", "Dying", "In Shock with lethal WP over Lethality Level. Make a Dying Wound Die check at the end of each round."],
       ["dead", "Dead", "Lethal WP over Death Threshold kills immediately under the standard rule; optional critical injury rules may change this."],
-      ["rightArmUseless", "Right Arm unusable", "Even first Right Arm impairment: that arm cannot hold weapons or shields or perform skills requiring it until impairment is removed."],
+      ["impairedHead", "Head impaired", impairmentHelp.Head],
+      ["impairedBody", "Body impaired", impairmentHelp.Body],
+      ["stunned", "Stunned", "Odd first Head impairment: lose the next action; you can still defend and move if possible."],
+      ["prone", "Prone", "Lying on the ground; use Rise from Prone to stand under the appropriate circumstances."],
       ["leftArmUseless", "Left Arm unusable", "Even first Left Arm impairment: that arm cannot hold weapons or shields or perform skills requiring it until impairment is removed."],
-      ["rightLegNoRunCharge", "Right Leg: no Run/Charge", "Even first Right Leg impairment: you cannot Run or Charge until this impairment is removed."],
+      ["rightArmUseless", "Right Arm unusable", "Even first Right Arm impairment: that arm cannot hold weapons or shields or perform skills requiring it until impairment is removed."],
       ["leftLegNoRunCharge", "Left Leg: no Run/Charge", "Even first Left Leg impairment: you cannot Run or Charge until this impairment is removed."],
-      ...BODY_LOCATIONS.map(location => [`impaired${location.replace(/\s/g, "")}`, `${location} impaired`, impairmentHelp[location.endsWith("Arm") ? "Arm" : location.endsWith("Leg") ? "Leg" : location]])
+      ["rightLegNoRunCharge", "Right Leg: no Run/Charge", "Even first Right Leg impairment: you cannot Run or Charge until this impairment is removed."],
+      ["impairedLeftLeg", "Left Leg impaired", impairmentHelp.Leg],
+      ["impairedRightLeg", "Right Leg impaired", impairmentHelp.Leg],
+      ["impairedLeftArm", "Left Arm impaired", impairmentHelp.Arm],
+      ["impairedRightArm", "Right Arm impaired", impairmentHelp.Arm]
     ];
     if (this.actor.system.conditions?.armUseless) conditionHelp.push(["armUseless", "Arm unusable (old marker)", "Existing marker from the previous version: tick the affected Right or Left Arm above, then untick this old marker."]);
     if (this.actor.system.conditions?.noRunCharge) conditionHelp.push(["noRunCharge", "No Run/Charge (old marker)", "Existing marker from the previous version: tick the affected Right or Left Leg above, then untick this old marker."]);
@@ -818,13 +823,15 @@ class CharacterSheet extends HandlebarsSheet {
       printWindow.document.open();
       printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title} — character sheet</title><style>
         @font-face{font-family:TBE-Cinzel;src:url(/systems/broken-empires-foundry/styles/fonts/cinzel-semibold.ttf)}@font-face{font-family:TBE-Alegreya;src:url(/systems/broken-empires-foundry/styles/fonts/alegreya-regular.ttf)}
-        @page{size:A4;margin:13mm}body{font:12px/1.35 TBE-Alegreya,Georgia,serif;color:#26352c;margin:0}h2{font:600 17px TBE-Cinzel,Georgia,serif;color:#55352d;border-bottom:2px solid #ad8248;margin:1.2em 0 .5em}h3{font:600 13px TBE-Cinzel,Georgia,serif;color:#55352d;border-bottom:1px solid #ad8248;margin:.8em 0 .4em}section{break-inside:auto;margin-bottom:1em}.tbe-header{display:flex;gap:1em;align-items:center}.tbe-header img{width:72px;height:72px;object-fit:cover}label{display:inline-flex;gap:.3em;align-items:baseline;margin:.2em .8em .2em 0}.print-value{font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}textarea,.tbe-list-row,.tbe-skill,.tbe-equipment-card,.tbe-wound-card{break-inside:avoid}.tbe-list-row,.tbe-skill,.tbe-equipment-card{border-bottom:1px solid #ddd;padding:.3em 0}.tbe-skill{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}.tbe-skill>:first-child{grid-column:span 1}.tbe-skill-breakdown{grid-column:1/-1}.tbe-breakdown-grid{display:flex;flex-wrap:wrap}.tbe-list-heading,.tbe-skill-head{font-weight:700;display:flex;gap:1em}.tbe-grid,.tbe-strand-columns,.tbe-magic-actions,.tbe-weapon-facts,.tbe-wound-flags{display:flex;flex-wrap:wrap;gap:.4em 1em}.tbe-equipment-card,.tbe-event{padding:.4em;border:1px solid #ccc;margin:.3em 0}.tbe-resolve-box{display:inline-block;min-width:1em;border:1px solid #555;text-align:center}.tbe-tip-up{display:none}details>summary{display:none}
+        @page{size:A4;margin:13mm}body{font:12px/1.35 TBE-Alegreya,Georgia,serif;color:#26352c;margin:0}h2{font:600 17px TBE-Cinzel,Georgia,serif;color:#55352d;border-bottom:2px solid #ad8248;margin:1.2em 0 .5em}h3{font:600 13px TBE-Cinzel,Georgia,serif;color:#55352d;border-bottom:1px solid #ad8248;margin:.8em 0 .4em}section{break-inside:auto;margin-bottom:1em}.tbe-header{display:flex;gap:1em;align-items:center}.tbe-header img{width:72px;height:72px;object-fit:cover}label{display:inline-flex;gap:.3em;align-items:baseline;margin:.2em .8em .2em 0}.print-value{font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}textarea,.tbe-list-row,.tbe-skill,.tbe-equipment-card,.tbe-wound-card{break-inside:avoid}.tbe-list-row,.tbe-skill,.tbe-equipment-card{border-bottom:1px solid #ddd;padding:.3em 0}.tbe-skill{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}.tbe-skill>:first-child{grid-column:span 1}.tbe-skill-breakdown{grid-column:1/-1}.tbe-breakdown-grid{display:flex;flex-wrap:wrap}.tbe-list-heading,.tbe-skill-head{font-weight:700;display:flex;gap:1em}.tbe-grid,.tbe-strand-columns,.tbe-magic-actions,.tbe-weapon-facts,.tbe-wound-flags{display:flex;flex-wrap:wrap;gap:.4em 1em}.tbe-equipment-card,.tbe-event{padding:.4em;border:1px solid #ccc;margin:.3em 0}.tbe-resolve-box{display:inline-block;min-width:1em;border:1px solid #555;text-align:center}.tbe-tip-up{display:none}details>summary{display:none}details.tbe-equipment-details>summary,details.tbe-collapsible-talent>summary{display:block;font-weight:700}
       </style></head><body>${printable.innerHTML}</body></html>`);
       printWindow.document.close();
       printWindow.setTimeout(() => printWindow.print(), 400);
     });
     this._collapsedSections ??= new Set();
     this._openSkillBreakdowns ??= new Set();
+    this._openTalents ??= new Set();
+    this._openEquipment ??= new Set();
     this.element.querySelectorAll("[data-collapse-section]").forEach(button => {
       const section = button.closest("section");
       const id = button.dataset.collapseSection;
@@ -834,6 +841,14 @@ class CharacterSheet extends HandlebarsSheet {
         if (collapsed) section.querySelectorAll("[data-skill-breakdown]").forEach(details => {
           details.open = false;
           this._openSkillBreakdowns.delete(details.dataset.skillBreakdown);
+        });
+        if (collapsed) section.querySelectorAll("[data-talent-details]").forEach(details => {
+          details.open = false;
+          this._openTalents.delete(details.dataset.talentDetails);
+        });
+        if (collapsed) section.querySelectorAll("[data-equipment-details]").forEach(details => {
+          details.open = false;
+          this._openEquipment.delete(details.dataset.equipmentDetails);
         });
       };
       setCollapsed(this._collapsedSections.has(id));
@@ -850,6 +865,22 @@ class CharacterSheet extends HandlebarsSheet {
       details.addEventListener("toggle", () => {
         if (details.open) this._openSkillBreakdowns.add(key);
         else this._openSkillBreakdowns.delete(key);
+      });
+    });
+    this.element.querySelectorAll("[data-talent-details]").forEach(details => {
+      const id = details.dataset.talentDetails;
+      details.open = this._openTalents.has(id) && !details.closest("section")?.classList.contains("tbe-section-collapsed");
+      details.addEventListener("toggle", () => {
+        if (details.open) this._openTalents.add(id);
+        else this._openTalents.delete(id);
+      });
+    });
+    this.element.querySelectorAll("[data-equipment-details]").forEach(details => {
+      const id = details.dataset.equipmentDetails;
+      details.open = this._openEquipment.has(id) && !details.closest("section")?.classList.contains("tbe-section-collapsed");
+      details.addEventListener("toggle", () => {
+        if (details.open) this._openEquipment.add(id);
+        else this._openEquipment.delete(id);
       });
     });
     this.element.querySelectorAll('input[type="checkbox"][name$=".thin"], input[type="checkbox"][name$=".savvy"]').forEach(input => {

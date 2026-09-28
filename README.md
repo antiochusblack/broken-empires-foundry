@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.19.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.20.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.19.0` and attach `broken-empires-foundry-v0.19.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.20.0` and attach `broken-empires-foundry-v0.20.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
