@@ -64,6 +64,18 @@ function skillTotals(actor, skillName, data) {
   return { ability, other, increases: ability + other, total: (Number(data?.value) || 0) + ability + other };
 }
 const key = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/_$/, "");
+const DEFAULT_SECTION_TABS = [
+  { id: "identity", label: "Identity" }, { id: "skills", label: "Skills" },
+  { id: "magic", label: "Magic" }, { id: "combat", label: "Combat" },
+  { id: "gear", label: "Gear" }, { id: "story", label: "Story" },
+  { id: "reference", label: "Reference" }
+];
+function orderedSectionTabs(order) {
+  const saved = Array.isArray(order) ? order : [];
+  const ids = [...new Set(saved.filter(id => DEFAULT_SECTION_TABS.some(tab => tab.id === id)))];
+  return [...ids, ...DEFAULT_SECTION_TABS.map(tab => tab.id).filter(id => !ids.includes(id))]
+    .map(id => DEFAULT_SECTION_TABS.find(tab => tab.id === id));
+}
 const skill = () => entry({ value: number(20), race: number(), culture: number(), lifeEvents: number(), career: number(), rounding: number(), xp: number(), other: number(), expertise: number(), savvy: new BooleanField({ initial: false }) });
 const strand = () => entry({ level: number(), thin: new BooleanField({ initial: false }) });
 
@@ -75,6 +87,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
     }
     return {
       description: string(), notes: string(), race: string(), sex: string(), size: string(), age: string(),
+      sectionOrder: new ArrayField(string(), { initial: DEFAULT_SECTION_TABS.map(tab => tab.id) }),
       culture: string(), career: string(), status: number(), silver: number(), xp: number(),
       abilityScores: new ArrayField(entry({ name: string(), descriptor: string() }), { initial: [{ name: "", descriptor: "" }, { name: "", descriptor: "" }] }),
       racialTraits: list({ name: string(), effect: string(), source: string() }, { name: "", effect: "", source: "" }),
@@ -214,8 +227,43 @@ const ARMOR_PENALTIES = [
   ["Athletics", "athleticsPenalty", ["Right Leg", "Left Leg"]],
   ["Perception", "perceptionPenalty", ["Head"]], ["Rise from Prone", "riseFromPronePenalty", ["Body"]]
 ];
+// Rulebook armour table, pp. 141–142: values apply only at the listed piece's location.
+const ARMOR_BOOK_PENALTIES = {
+  "Reinforced Leather": { body: -5, leg: -5 },
+  Mail: { body: -10, leg: -10, rise: -10 },
+  Bone: { body: -15, leg: -15, head: -10, rise: -20 },
+  Scale: { body: -15, leg: -15, head: -10, rise: -20 },
+  Plate: { body: -20, leg: -20, head: -20, rise: -30 }
+};
+function bookArmorPenalty(item, field) {
+  const type = Object.keys(ARMOR_BOOK_PENALTIES).find(name => item.name === name || item.name.startsWith(name + " "));
+  if (!type) return null;
+  const row = ARMOR_BOOK_PENALTIES[type];
+  const location = item.system.location;
+  if (!BODY_LOCATIONS.includes(location)) return null;
+  return location === "Body" ? (field === "riseFromPronePenalty" ? row.rise ?? 0 : ["stealthPenalty", "dodgePenalty"].includes(field) ? row.body : 0) :
+    ["Left Leg", "Right Leg"].includes(location) ? (field === "athleticsPenalty" ? row.leg : 0) :
+    location === "Head" ? (field === "perceptionPenalty" ? row.head ?? 0 : 0) : 0;
+}
+function missingArmorPenaltyFields(item) {
+  if (item.type !== "armor") return {};
+  const updates = {};
+  for (const [label, field, locations] of ARMOR_PENALTIES) {
+    if (Object.hasOwn(item._source.system, field)) continue;
+    const preset = bookArmorPenalty(item, field);
+    if (preset !== null) updates[`system.${field}`] = preset;
+    else if (locations.includes(item.system.location)) {
+      const match = (item.system.penalties || "").match(new RegExp(label + "[^−-]*[−-](\\d+)", "i"));
+      if (match) updates[`system.${field}`] = -Number(match[1]);
+    }
+  }
+  return updates;
+}
 function armorPenalty(item, label, field) {
   if (Object.hasOwn(item._source.system, field)) return Number(item.system[field]) || 0;
+  const preset = bookArmorPenalty(item, field);
+  if (preset !== null) return preset;
+  if (!ARMOR_PENALTIES.find(([, currentField, locations]) => currentField === field && locations.includes(item.system.location))) return 0;
   // Older armour items stored a category-wide description; use its matching location until edited.
   const text = item.system.penalties || "";
   const part = text.match(new RegExp(label + "[^−-]*[−-](\\d+)", "i"));
@@ -370,11 +418,15 @@ class CharacterSheet extends HandlebarsSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     context.system = this.actor.system;
+    context.sectionTabs = orderedSectionTabs(this.actor.system.sectionOrder);
+    context.canReorderTabs = this.actor.isOwner;
     context.maneuvers = COMBAT_MANEUVERS;
     context.combatModifiers = COMBAT_MODIFIERS;
     context.skillGroups = Object.entries(SKILLS).map(([category, names]) => ({
       category, rows: names.map(name => ({ name, description: SKILL_DESCRIPTIONS[name] || "", path: `system.skills.${key(category)}.${key(name)}`, strand: category === "Strands", data: this.actor.system.skills[key(category)][key(name)], ...skillTotals(this.actor, name, this.actor.system.skills[key(category)][key(name)]) }))
     }));
+    const strandRows = context.skillGroups.find(group => group.category === "Strands").rows;
+    context.strandColumns = [strandRows.slice(0, Math.ceil(strandRows.length / 2)), strandRows.slice(Math.ceil(strandRows.length / 2))];
     const customSkills = this.actor.system.customSkills.map((row, index) => ({ ...row, index, ...skillTotals(this.actor, row.name, row) }));
     context.customSkillGroups = Object.fromEntries(Object.keys(SKILLS).map(category => [category, customSkills.filter(row => row.category === category)]));
     context.otherCustomSkills = customSkills.filter(row => !Object.keys(SKILLS).includes(row.category));
@@ -676,7 +728,52 @@ class CharacterSheet extends HandlebarsSheet {
       const size = () => { field.style.height = "auto"; field.style.height = `${Math.max(field.scrollHeight, 34)}px`; };
       size(); field.addEventListener("input", size);
     });
-    this.element.querySelectorAll("[data-section]").forEach(button => button.addEventListener("click", event => {
+    const nav = this.element.querySelector(".tbe-nav");
+    const tabButtons = [...nav.querySelectorAll("[data-section]")];
+    for (const button of tabButtons) {
+      const section = this.element.querySelector(`#tbe-${button.dataset.section}`);
+      if (section) scroller.append(section);
+    }
+    scroller.scrollTop = this._savedScrollTop ?? 0;
+    if (this.actor.isOwner) {
+      const clearTabDrag = () => {
+        this._draggedSection = null;
+        tabButtons.forEach(button => button.classList.remove("tbe-tab-dragging", "tbe-tab-drop-target"));
+      };
+      for (const button of tabButtons) {
+        button.addEventListener("dragstart", event => {
+          this._draggedSection = button.dataset.section;
+          event.dataTransfer.setData("text/plain", `tbe-section:${this._draggedSection}`);
+          event.dataTransfer.effectAllowed = "move";
+          button.classList.add("tbe-tab-dragging");
+          event.stopPropagation();
+        });
+        button.addEventListener("dragend", clearTabDrag);
+      }
+      nav.addEventListener("dragover", event => {
+        if (!this._draggedSection) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        tabButtons.forEach(button => button.classList.toggle("tbe-tab-drop-target", button === event.target.closest("[data-section]") && button.dataset.section !== this._draggedSection));
+      });
+      nav.addEventListener("drop", async event => {
+        if (!this._draggedSection) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const moving = this._draggedSection;
+        const targetButton = event.target.closest("[data-section]");
+        const target = targetButton?.dataset.section;
+        clearTabDrag();
+        if (!target || target === moving) return;
+        const order = tabButtons.map(button => button.dataset.section).filter(id => id !== moving);
+        const bounds = targetButton.getBoundingClientRect();
+        const after = event.clientX > bounds.left + bounds.width / 2;
+        order.splice(order.indexOf(target) + (after ? 1 : 0), 0, moving);
+        this._savedScrollTop = scroller.scrollTop;
+        await this.actor.update({ "system.sectionOrder": order });
+      });
+    }
+    tabButtons.forEach(button => button.addEventListener("click", event => {
       event.preventDefault();
       const target = this.element.querySelector(`#tbe-${button.dataset.section}`);
       if (!scroller || !target) return;
@@ -818,11 +915,6 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       if (!this.actor.isOwner) return;
       await this.actor.update({ "system.applyDefensiveAP": !this.actor.system.applyDefensiveAP });
-    }));
-    this.element.querySelectorAll("[data-item-size]").forEach(select => select.addEventListener("change", async event => {
-      event.stopPropagation();
-      const item = this.actor.items.get(select.dataset.itemSize);
-      if (this.actor.isOwner && item && (ITEM_SIZES.includes(select.value) || select.value === "" || (item.type === "shield" && select.value === "Buckler"))) await item.update({ "system.size": select.value });
     }));
     this.element.querySelectorAll("[data-item-quantity]").forEach(input => input.addEventListener("change", async event => {
       event.stopPropagation();
@@ -1018,6 +1110,13 @@ Hooks.once("ready", async () => {
           ...item, folder: byName.get(item.system.category || (item.type === "shield" ? "Shields" : "Miscellaneous Items")) ?? null
         })), { pack: pack.collection });
       }
+      // Existing world compendiums keep their entries between releases.
+      for (const entry of index.filter(entry => entry.type === "armor")) {
+        const item = await pack.getDocument(entry._id);
+        if (!item) continue;
+        const fields = missingArmorPenaltyFields(item);
+        if (Object.keys(fields).length) await item.update(fields);
+      }
       const heavyEntry = index.find(entry => entry.name === "Heavy Crossbow" && entry.type === "weapon");
       if (heavyEntry) {
         const heavy = await pack.getDocument(heavyEntry._id);
@@ -1031,6 +1130,11 @@ Hooks.once("ready", async () => {
         if (update) { const { _id, ...fields } = update; await item.update(fields); }
       }
     } catch (error) { console.error("TBE: failed to initialise the equipment compendium", error); }
+    try {
+      const updates = game.items.contents.filter(item => item.type === "armor")
+        .map(item => ({ _id: item.id, ...missingArmorPenaltyFields(item) })).filter(update => Object.keys(update).length > 1);
+      if (updates.length) await Item.updateDocuments(updates);
+    } catch (error) { console.error("TBE: could not populate world armour item penalties", error); }
     try {
       let pack = game.packs.get("world.tbe-talents");
       if (!pack) pack = await foundry.documents.collections.CompendiumCollection.createCompendium({ name: "tbe-talents", label: "TBE Talents", type: "Item" });
@@ -1074,6 +1178,12 @@ Hooks.once("ready", async () => {
       } catch (error) { console.error(`TBE: could not migrate dropped item zones for ${actor.name}`, error); }
     }
     const oldCrossbows = actor.items.filter(item => item.type === "weapon" && item.name === "Heavy Crossbow" && item.system.notes === "2H; Piercing 3; Reload 1.");
+    const armorUpdates = actor.items.filter(item => item.type === "armor").map(item => ({ _id: item.id, ...missingArmorPenaltyFields(item) }))
+      .filter(update => Object.keys(update).length > 1);
+    if (armorUpdates.length) {
+      try { await actor.updateEmbeddedDocuments("Item", armorUpdates); }
+      catch (error) { console.error(`TBE: could not populate armour penalties for ${actor.name}`, error); }
+    }
     if (oldCrossbows.length) {
       try { await actor.updateEmbeddedDocuments("Item", oldCrossbows.map(item => ({ _id: item.id, "system.notes": "2H; Piercing 3; Reload 2 (two actions, normally two rounds)." }))); }
       catch (error) { console.error(`TBE: could not update heavy crossbows for ${actor.name}`, error); }

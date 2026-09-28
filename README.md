@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.14.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.15.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.14.0` and attach `broken-empires-foundry-v0.14.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.15.0` and attach `broken-empires-foundry-v0.15.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
@@ -27,6 +27,16 @@ The sheet shows lethal WP, nonlethal WP and their combined total at each body lo
 ## Attack and combat reference
 
 Weapons in Held and Ready or At Hand have an Attack button. Select a Combat skill, tick common modifiers and enter any other situational modifier. An At Hand weapon defaults to Draw and Attack (−20), which can be unchecked if already drawn; throwing knives and unarmed attacks are exempt. The chat message shows the d100 result, rolled SLs, critical state, general hit location, and an optional detailed-location lookup for the defender's ones die. No target token is required. The Reference section lists manoeuvres, common modifiers and turn reminders.
+
+## Changes in 0.15.0
+
+- Armour items receive the book's default skill penalties; existing edited penalty values remain editable and are preserved.
+- Combat values and Identity & Creation fields use compact layouts. Gear supplies use four columns and Strands use two.
+- Defensive AP selection and its single Apply Defensive AP switch appear beside armour protection by location.
+- Character inventory cards show Qty beside item names; size remains available on the Item sheet.
+- Piety and Binds use the normal skill layout, including Increases, Total % rolls and breakdowns.
+- Explanatory sheet text is available through information icons beside headings.
+- Character section tabs can be dragged into a preferred order, saved on that character.
 
 ## Changes in 0.14.0
 
