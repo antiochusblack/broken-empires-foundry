@@ -6,6 +6,7 @@
     <label>Source (how gained) <input name="system.source" type="text" value="{{system.source}}"></label>
     <label>Effect <textarea class="tbe-grow" rows="2" name="system.effect">{{system.effect}}</textarea></label>
     <label>Requirements <textarea class="tbe-grow" rows="2" name="system.requirements">{{system.requirements}}</textarea></label>
+    {{#if riseFighter}}<label>Rise a Fighter chosen skill <select name="system.riseSkill"><option value="">Choose skill</option>{{#each riseSkills as |name|}}<option value="{{name}}" {{#if (eq name ../system.riseSkill)}}selected{{/if}}>{{name}}</option>{{/each}}</select></label>{{/if}}
   {{else}}
     {{#if (eq document.type "race")}}
       <p>Drag this Race item onto a character to fill their Race Traits.</p>
@@ -17,6 +18,10 @@
         <select name="system.placement">{{#each placements as |choice|}}<option value="{{choice.value}}" {{#if (eq choice.value ../system.placement)}}selected{{/if}}>{{choice.label}}</option>{{/each}}</select>
       </label>
     {{/if}}
+    {{#unless (eq document.type "talent")}}<div class="tbe-grid">
+      <label>Size <select name="system.size"><option value="">Choose size</option>{{#if (eq document.type "shield")}}<option value="Buckler" {{#if (eq system.size "Buckler")}}selected{{/if}}>Buckler</option>{{/if}}{{#each itemSizes as |size|}}<option value="{{size}}" {{#if (eq size ../system.size)}}selected{{/if}}>{{size}}</option>{{/each}}</select></label>
+      {{#if owned}}<label>Quantity <input name="system.quantity" type="number" min="0" step="1" value="{{system.quantity}}"></label>{{/if}}
+    </div>{{/unless}}
     {{#if (eq document.type "weapon")}}
       <p>Attack and Parry use the character’s skills. Manoeuvre values are required Success Levels.</p>
       <div class="tbe-grid">
@@ -49,12 +54,13 @@
         <label class="tbe-check">Can be sundered <input type="checkbox" name="system.canSunder" {{#if system.canSunder}}checked{{/if}}></label>
         {{#if owned}}<label class="tbe-check">Currently sundered <input type="checkbox" name="system.sundered" {{#if system.sundered}}checked{{/if}}></label>{{/if}}
       </div>
-      <label>Armour skill penalties <textarea class="tbe-grow" rows="2" name="system.penalties">{{system.penalties}}</textarea></label>
+      <h3>Penalties when worn</h3><p>Enter negative values, such as −10. Only penalties appropriate to this piece’s body location apply.</p>
+      <div class="tbe-grid"><label>Stealth (body) <input type="number" name="system.stealthPenalty" value="{{penaltyFields.stealthPenalty}}"></label><label>Dodge (body) <input type="number" name="system.dodgePenalty" value="{{penaltyFields.dodgePenalty}}"></label><label>Rise from Prone (body) <input type="number" name="system.riseFromPronePenalty" value="{{penaltyFields.riseFromPronePenalty}}"></label><label>Athletics (legs) <input type="number" name="system.athleticsPenalty" value="{{penaltyFields.athleticsPenalty}}"></label><label>Perception (head) <input type="number" name="system.perceptionPenalty" value="{{penaltyFields.perceptionPenalty}}"></label></div>
       <p>Only one armour piece can protect each location. Carried armour costs 1 Inventory ENC per piece.</p>
     {{/if}}
     {{#if (eq document.type "shield")}}
       <div class="tbe-grid">
-        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Size <input name="system.size" value="{{system.size}}" placeholder="Buckler, Small, Medium, Large"></label>
+        <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label>
         <label>Armour Points (AP) <input name="system.protection" type="number" value="{{system.protection}}"></label><label>Shield Bash SL (ShB) <input name="system.shieldBash" value="{{system.shieldBash}}"></label>
         <label>Weapon ENC <input name="system.encumbrance" type="number" value="{{system.encumbrance}}"></label>
         {{#if owned}}<label class="tbe-check">Split (broken) <input type="checkbox" name="system.split" {{#if system.split}}checked{{/if}}></label>{{#if pinnableShield}}<label class="tbe-check" title="Pierce Through: 4 SL with a thrown spear or javelin when shield AP stops or reduces the attack. −2 shield AP until removed with a Minor Action; does not stack.">Pierced Through <input type="checkbox" name="system.pinned" {{#if system.pinned}}checked{{/if}}></label>{{/if}}{{/if}}
@@ -63,7 +69,7 @@
     {{#if (eq document.type "gear")}}
       <div class="tbe-grid">
         <label>Cost (sp) <input name="system.price" type="number" value="{{system.price}}"></label><label>Book category <input name="system.category" value="{{system.category}}"></label><label>ENC each <input name="system.encumbrance" type="number" step="0.5" min="0" value="{{system.encumbrance}}"></label>
-        {{#if owned}}<label>Quantity <input name="system.quantity" type="number" min="0" value="{{system.quantity}}"></label>{{/if}}
+
       </div>
     {{/if}}
     <label>Notes <textarea class="tbe-grow" rows="2" name="system.notes">{{system.notes}}</textarea></label>

@@ -93,19 +93,19 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       equipment: list({ name: string(), quantity: number(1), encumbrance: number(), notes: string() }),
       armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }),
       supply: entry({ gear: new StringField({ initial: "d12" }), ammo: new StringField({ initial: "d12" }), rations: new StringField({ initial: "d12" }), medical: new StringField({ initial: "d12" }) }),
-      encumbranceMax: number(6), weaponEncumbranceMax: number(6), equipmentLocations: new ArrayField(entry({ id: string(), name: string(), countsEncumbrance: new BooleanField({ initial: false }) }), { initial: [] }), droppedZone: string(), fraying: number(), trueName: string(), threads: string()
+      encumbranceMax: number(6), weaponEncumbranceMax: number(6), defensiveItemId: string(), applyDefensiveAP: new BooleanField({ initial: false }), equipmentLocations: new ArrayField(entry({ id: string(), name: string(), countsEncumbrance: new BooleanField({ initial: false }) }), { initial: [] }), droppedZone: string(), fraying: number(), trueName: string(), threads: string()
     };
   }
 }
 class TalentData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { source: string(), effect: string(), requirements: string(), category: string(), reference: string() }; }
+  static defineSchema() { return { source: string(), effect: string(), requirements: string(), category: string(), reference: string(), riseSkill: string() }; }
 }
 class RaceData extends foundry.abstract.TypeDataModel {
   static defineSchema() { return { traits: new ArrayField(entry({ name: string(), effect: string() }), { initial: [] }), notes: string() }; }
 }
 class WeaponData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
-    return { price: number(), category: string(), attackSkill: string(), reach: string(), damage: string(), chooseLocation: string(), circumventShield: string(), disarm: string(), trip: string(), encumbrance: number(), range: string(), notes: string(),
+    return { price: number(), category: string(), attackSkill: string(), reach: string(), damage: string(), chooseLocation: string(), circumventShield: string(), disarm: string(), trip: string(), encumbrance: number(), range: string(), notes: string(), size: string(), quantity: number(1),
       // Keep prototype values in existing worlds, even though they are not weapon statistics.
       attack: string(), parry: string(), clash: string(), counterstrike: string(), disruption: string(), threat: string(),
       freeAtHand: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }), zone: string(),
@@ -113,13 +113,13 @@ class WeaponData extends foundry.abstract.TypeDataModel {
   }
 }
 class ArmorData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { price: number(), category: string(), protection: number(), bulk: decimal(), training: new BooleanField({ initial: false }), canSunder: new BooleanField({ initial: false }), sundered: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "inventory" }), zone: string(), location: string(), penalties: string(), notes: string() }; }
+  static defineSchema() { return { price: number(), category: string(), protection: number(), bulk: decimal(), size: string(), quantity: number(1), training: new BooleanField({ initial: false }), canSunder: new BooleanField({ initial: false }), sundered: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "inventory" }), zone: string(), location: string(), penalties: string(), stealthPenalty: number(), dodgePenalty: number(), athleticsPenalty: number(), perceptionPenalty: number(), riseFromPronePenalty: number(), notes: string() }; }
 }
 class ShieldData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { price: number(), size: string(), protection: number(), shieldBash: string(), encumbrance: number(), split: new BooleanField({ initial: false }), pinned: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }), zone: string(), notes: string() }; }
+  static defineSchema() { return { price: number(), size: string(), quantity: number(1), protection: number(), shieldBash: string(), encumbrance: number(), split: new BooleanField({ initial: false }), pinned: new BooleanField({ initial: false }), placement: new StringField({ required: true, initial: "atHand" }), zone: string(), notes: string() }; }
 }
 class GearData extends foundry.abstract.TypeDataModel {
-  static defineSchema() { return { price: number(), category: string(), encumbrance: decimal(), quantity: number(1), placement: new StringField({ required: true, initial: "inventory" }), zone: string(), notes: string() }; }
+  static defineSchema() { return { price: number(), category: string(), size: string(), encumbrance: decimal(), quantity: number(1), placement: new StringField({ required: true, initial: "inventory" }), zone: string(), notes: string() }; }
 }
 const BODY_LOCATIONS = ["Head", "Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg"];
 const canPinShield = item => ["small", "medium", "large"].includes(String(item.system.size || "").trim().toLowerCase());
@@ -140,6 +140,14 @@ const inferWoundLocation = wound => {
   return "";
 };
 const itemENC = item => Math.max(0, Number(item.system.encumbrance) || 0);
+const itemQuantity = item => Math.max(0, Number(item.system.quantity ?? 1) || 0);
+const ITEM_SIZES = ["Tiny", "Small", "Medium", "Large", "Very Large"];
+const PHYSICAL_SKILLS = new Set(["Athletics", "Endurance", "Ride", "Sail/Boat", "Sleight of Hand", "Stealth", "Survival", "Track"]);
+const inventoryOverflowPenalty = (used, maximum) => {
+  const excess = Math.max(0, used - maximum);
+  return excess === 0 ? 0 : excess <= 3 ? -10 : excess <= 6 ? -20 : -30;
+};
+const physicalSkill = (name, category) => category === "Combat" || PHYSICAL_SKILLS.has(name);
 // Book thrown profiles also apply to older owned copies made before dual-use items existed.
 const LEGACY_THROWN = {
   Dagger: { damage: "1", range: "0", trip: "6", notes: "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled." },
@@ -201,6 +209,43 @@ function pierceThroughNoteUpdate(item) {
   return Object.keys(updates).length > 1 ? updates : null;
 }
 const itemPlacement = item => item.system.placement || (item.type === "armor" || item.type === "gear" ? "inventory" : "atHand");
+const ARMOR_PENALTIES = [
+  ["Stealth", "stealthPenalty", ["Body"]], ["Dodge", "dodgePenalty", ["Body"]],
+  ["Athletics", "athleticsPenalty", ["Right Leg", "Left Leg"]],
+  ["Perception", "perceptionPenalty", ["Head"]], ["Rise from Prone", "riseFromPronePenalty", ["Body"]]
+];
+function armorPenalty(item, label, field) {
+  if (Object.hasOwn(item._source.system, field)) return Number(item.system[field]) || 0;
+  // Older armour items stored a category-wide description; use its matching location until edited.
+  const text = item.system.penalties || "";
+  const part = text.match(new RegExp(label + "[^−-]*[−-](\\d+)", "i"));
+  return part ? -Number(part[1]) : 0;
+}
+function wornArmorPenalties(actor) {
+  const worn = actor.items.filter(item => item.type === "armor" && itemPlacement(item) === "worn");
+  return ARMOR_PENALTIES.map(([label, field, locations]) => {
+    const pieces = worn.filter(item => locations.includes(item.system.location) && itemQuantity(item) > 0);
+    const values = pieces.map(item => ({ name: item.name, value: armorPenalty(item, label, field) })).filter(row => row.value !== 0);
+    return { label, value: Math.min(0, ...values.map(row => row.value)), sources: values.map(row => `${row.name} (${row.value})`).join(", ") };
+  });
+}
+function armorPenaltyForSkill(actor, name) {
+  return wornArmorPenalties(actor).find(row => row.label === name)?.value ?? 0;
+}
+function swimmingArmorPenalty(actor) {
+  return actor.items.some(item => item.type === "armor" && itemPlacement(item) === "worn" && itemQuantity(item) > 0 &&
+    ["Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg"].includes(item.system.location) &&
+    (item.system.training || /^(Reinforced Leather|Mail|Bone|Scale|Plate)/i.test(item.name))) ? -30 : 0;
+}
+function inventoryUsed(actor) {
+  const locations = actor.system.equipmentLocations ?? [];
+  const items = actor.items.filter(item => ["weapon", "armor", "shield", "gear"].includes(item.type) &&
+    (itemPlacement(item) === "inventory" || (itemPlacement(item) === "worn" && item.type !== "armor") ||
+      (["ready", "atHand"].includes(itemPlacement(item)) && ["gear", "armor"].includes(item.type)) ||
+      locations.some(location => location.id === itemPlacement(item) && location.countsEncumbrance)));
+  return items.reduce((sum, item) => sum + (item.type === "armor" ? 1 : itemENC(item)) * itemQuantity(item), 0) +
+    Math.max(0, Math.ceil((Number(actor.system.silver) || 0) / 500));
+}
 const COMBAT_MANEUVERS = [
   ["Unbalance", "1 rolled SL", "Target takes −20 on its next skill roll; repeated uses do not stack."],
   ["Drive Back", "3 rolled SLs; melee", "Move an Engaged foe and follow; at 4 SLs you can push without following."],
@@ -244,6 +289,20 @@ const rollFlourish = outcome => outcome.criticalFailure ? "Oh fuck-a-doodle! Fum
 function generalHitLocation(value) {
   const digit = value % 10;
   return digit === 0 ? "Head" : digit <= 5 ? "Body" : digit <= 7 ? (digit === 6 ? "Right Arm" : "Left Arm") : (digit === 8 ? "Right Leg" : "Left Leg");
+}
+const DETAILED_HIT_LOCATIONS = {
+  Body: [["1–5", "Chest"], ["6–8", "Stomach"], ["9–0", "Groin"]],
+  Arm: [["1–2", "Shoulder"], ["3–4", "Bicep"], ["5", "Elbow"], ["6–8", "Forearm"], ["9–0", "Hand"]],
+  Leg: [["1–2", "Hip"], ["3–6", "Thigh"], ["7", "Knee"], ["8–9", "Shin"], ["0", "Foot"]],
+  Head: [["1–2", "Skull"], ["3–4", "Eye*"], ["5–6", "Face"], ["7", "Nose"], ["8–9", "Ear*"], ["0", "Neck"]]
+};
+function detailedHitLocationHtml(location) {
+  const group = location.endsWith("Arm") ? "Arm" : location.endsWith("Leg") ? "Leg" : location;
+  const rows = DETAILED_HIT_LOCATIONS[group];
+  return '<details class="tbe-hit-details"><summary>Detailed ' + location + ' location (defender’s ones die)</summary>' +
+    '<div class="tbe-hit-detail-grid">' + rows.map(([range, name]) => '<span>' + range + '</span><span>' + name + '</span>').join("") + '</div>' +
+    (group === "Head" ? '<small>* For Eye and Ear, an even defender’s ones die means right; odd means left.</small>' : '') +
+    '</details>';
 }
 async function importRulebookJournals() {
       if (!game.user.isGM) return;
@@ -325,6 +384,18 @@ class CharacterSheet extends HandlebarsSheet {
     context.shields = this.actor.items.filter(i => i.type === "shield");
     context.pinnableShields = Object.fromEntries(context.shields.map(item => [item.id, canPinShield(item)]));
     context.shieldAP = Object.fromEntries(context.shields.map(item => [item.id, shieldAP(item)]));
+    const readyWeapons = context.weapons.filter(item => itemPlacement(item) === "ready" && itemQuantity(item) > 0);
+    const twoWeaponFighter = context.talents.some(item => item.name.trim().toLowerCase() === "two-weapon fighter");
+    const shields = context.shields.filter(item => itemPlacement(item) === "ready" && itemQuantity(item) > 0)
+      .map(item => ({ id: item.id, name: item.name, ap: shieldAP(item), kind: "shield" }));
+    const secondaryWeapons = twoWeaponFighter ? readyWeapons.filter(item => item.system.category === "Light Weapons" &&
+      !/not secondary-hand compatible/i.test(item.system.notes || "") &&
+      readyWeapons.some(primary => (primary.id !== item.id || itemQuantity(item) >= 2) && ["Light Weapons", "Medium Weapons"].includes(primary.system.category)))
+      .map(item => ({ id: item.id, name: item.name, ap: item.name === "Parrying Dagger" ? 2 : 1, kind: "secondary weapon" })) : [];
+    context.defensiveSources = [...shields, ...secondaryWeapons].map(source => ({ ...source, selected: source.id === this.actor.system.defensiveItemId }));
+    context.defensiveSource = context.defensiveSources.find(source => source.selected) ?? null;
+    context.applyDefensiveAP = Boolean(this.actor.system.applyDefensiveAP && context.defensiveSource);
+    context.hasTwoWeaponFighter = twoWeaponFighter;
     context.armorItems = this.actor.items.filter(i => i.type === "armor");
     context.gearItems = this.actor.items.filter(i => i.type === "gear");
     const customLocations = this.actor.system.equipmentLocations ?? [];
@@ -332,6 +403,7 @@ class CharacterSheet extends HandlebarsSheet {
       ...LOCATION_OPTIONS, ...customLocations.filter(location => location.id && location.name).map(location => ({ value: location.id, label: location.name }))
     ]]));
     const equipment = this.actor.items.filter(i => ["weapon", "armor", "shield", "gear"].includes(i.type));
+    context.itemSizes = ITEM_SIZES;
     context.itemPlacements = Object.fromEntries(equipment.map(i => [i.id, itemPlacement(i)]));
     context.itemZones = Object.fromEntries(equipment.map(i => [i.id, i.system.zone]));
     context.itemNoteSegments = Object.fromEntries(equipment.map(i => [i.id, equipmentNoteSegments(i.system.notes)]));
@@ -348,25 +420,31 @@ class CharacterSheet extends HandlebarsSheet {
       }))
     ];
     const worn = context.armorItems.filter(i => itemPlacement(i) === "worn");
+    context.wornArmorPenalties = wornArmorPenalties(this.actor);
     context.armorSlots = BODY_LOCATIONS.map(location => {
       const pieces = worn.filter(i => i.system.location === location);
-      return { location, items: pieces, conflict: pieces.length > 1, protection: pieces.length === 1 ? (pieces[0].system.sundered ? 0 : pieces[0].system.protection) : 0 };
+      const protection = pieces.length === 1 && itemQuantity(pieces[0]) === 1 ? (pieces[0].system.sundered ? 0 : pieces[0].system.protection) : 0;
+      const defensive = context.applyDefensiveAP ? context.defensiveSource.ap : 0;
+      return { location, items: pieces, conflict: pieces.reduce((sum, item) => sum + itemQuantity(item), 0) > 1, protection, defensive, totalProtection: protection + defensive };
     });
     context.unassignedArmor = worn.filter(i => !BODY_LOCATIONS.includes(i.system.location));
     const atHand = this.actor.items.filter(i => ["weapon", "shield"].includes(i.type) && itemPlacement(i) === "atHand");
     const heldReady = this.actor.items.filter(i => ["weapon", "shield"].includes(i.type) && itemPlacement(i) === "ready");
-    const inventory = equipment.filter(i => itemPlacement(i) === "inventory" || (itemPlacement(i) === "worn" && i.type !== "armor") || (["ready", "atHand"].includes(itemPlacement(i)) && ["gear", "armor"].includes(i.type)) || customLocations.some(location => location.id === itemPlacement(i) && location.countsEncumbrance));
-    const freeAtHandWeapon = atHand.find(i => i.type === "weapon" && i.system.freeAtHand);
-    context.weaponENC = atHand.reduce((sum, i) => sum + (i === freeAtHandWeapon ? 0 : itemENC(i)), 0);
-    context.heldReadyENC = heldReady.reduce((sum, i) => sum + itemENC(i), 0);
-    context.inventoryENC = inventory.reduce((sum, i) => sum + (i.type === "armor" ? 1 : itemENC(i) * (i.type === "gear" ? Math.max(0, Number(i.system.quantity) || 0) : 1)), 0) + Math.max(0, Math.ceil((Number(this.actor.system.silver) || 0) / 500));
-    context.wornBulk = worn.reduce((sum, i) => sum + (Number(i.system.bulk) || 0), 0);
+    const freeAtHandWeapon = atHand.find(i => i.type === "weapon" && i.system.freeAtHand && itemQuantity(i) > 0);
+    context.weaponENC = atHand.reduce((sum, i) => sum + itemENC(i) * (itemQuantity(i) - (i === freeAtHandWeapon && itemQuantity(i) > 0 ? 1 : 0)), 0);
+    context.heldReadyENC = heldReady.reduce((sum, i) => sum + itemENC(i) * itemQuantity(i), 0);
+    context.inventoryENC = inventoryUsed(this.actor);
+    context.wornBulk = worn.reduce((sum, i) => sum + (Number(i.system.bulk) || 0) * itemQuantity(i), 0);
     context.armorInitiativePenalty = Math.ceil(context.wornBulk / 3);
     context.inventoryMax = this.actor.system.encumbranceMax || 6;
     context.weaponMax = this.actor.system.weaponEncumbranceMax ?? 6;
     context.weaponOver = context.weaponENC > context.weaponMax;
     context.inventoryOver = context.inventoryENC > context.inventoryMax;
-    context.carriedBurden = context.weaponENC + context.heldReadyENC + context.inventoryENC + context.wornBulk;
+    context.inventoryExcess = Math.max(0, context.inventoryENC - context.inventoryMax);
+    context.inventoryLimitExceeded = context.inventoryExcess >= 10;
+    context.inventoryOverflowPenalty = inventoryOverflowPenalty(context.inventoryENC, context.inventoryMax);
+    for (const group of context.skillGroups) for (const row of group.rows) row.overflowPenalty = physicalSkill(row.name, group.category) ? context.inventoryOverflowPenalty : 0;
+    for (const row of customSkills) row.overflowPenalty = physicalSkill(row.name, row.category) ? context.inventoryOverflowPenalty : 0;
     const resolve = this.actor.system.resolve;
     const max = Math.max(0, Math.floor(Number(resolve.max) || 0));
     const permanent = Math.min(max, Math.max(0, Math.floor(Number(resolve.permanentFatigue) || 0)));
@@ -510,6 +588,47 @@ class CharacterSheet extends HandlebarsSheet {
       const flavor = depleted ? `Oh shit, ${name} decreased! ${die} → ${next}.` : `${name} Supply holds at ${die}.`;
       await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor });
     }));
+    const rollCharacterSkill = async (name, data, category, rise = false) => {
+      const base = skillTotals(this.actor, name, data).total;
+      const inventory = physicalSkill(name, category) ? inventoryOverflowPenalty(inventoryUsed(this.actor), this.actor.system.encumbranceMax || 6) : 0;
+      const armour = armorPenaltyForSkill(this.actor, rise ? "Rise from Prone" : name);
+      const swim = name === "Athletics" && !rise ? swimmingArmorPenalty(this.actor) : 0;
+      const talents = this.actor.items.filter(item => item.type === "talent").map(item => item.name.trim().toLowerCase());
+      const riseReduction = rise ? (talents.includes("jump up") ? 20 : talents.includes("on your feet") ? 10 : 0) : 0;
+      const reducedArmour = rise ? Math.min(0, armour + riseReduction) : armour;
+      const details = await foundry.applications.api.DialogV2.input({
+        window: { title: rise ? `Rise from Prone — ${name}` : `Roll ${name}` },
+        content: `<div class="tbe-attack-dialog"><p>Base skill ${base}%. Adjust penalties for this attempt.</p>` +
+          `<label>Inventory overflow penalty <input name="overflow" type="number" step="1" value="${inventory}"></label>` +
+          (armour ? `<label class="tbe-check">Apply worn armour penalty (${reducedArmour}) <input name="useArmor" type="checkbox" checked></label>` : "") +
+          (swim ? `<label class="tbe-check">Swimming in heavy armour (${swim}) <input name="swimming" type="checkbox"></label>` : "") +
+          (rise ? `<label class="tbe-check">Engaged <input name="engaged" type="checkbox" checked></label><label>Additional Engaged foes beyond the first <input name="extraFoes" type="number" min="0" step="1" value="0"></label><p>Each additional foe: −10. If unengaged, success lets you move normally; failure lets you rise but prevents movement. If Engaged, failure leaves you Prone; success with 5+ SL costs no action.</p>` : "") +
+          `<label>Other modifier <input name="modifier" type="number" step="1" value="0"></label></div>`,
+        ok: { label: rise ? "Roll to rise" : "Roll skill" }
+      });
+      if (!details) return;
+      const overflow = Number(details.overflow), other = Number(details.modifier), extraFoes = rise ? Number(details.extraFoes) : 0;
+      if (![overflow, other, extraFoes].every(Number.isFinite) || extraFoes < 0) return;
+      const appliedArmour = details.useArmor ? reducedArmour : 0;
+      const appliedSwim = details.swimming ? swim : 0;
+      const foePenalty = rise && details.engaged ? -10 * extraFoes : 0;
+      const target = base + overflow + other + appliedArmour + appliedSwim + foePenalty;
+      const roll = await new Roll("1d100").evaluate();
+      const value = roll.total;
+      const outcome = attackOutcome(value, target, Number(data.expertise) || 0);
+      const result = outcome.critical ? "Critical success" : outcome.criticalFailure ? "Critical failure" : outcome.success ? "Success" : "Failure";
+      const escape = foundry.utils.escapeHTML;
+      const flourish = rollFlourish(outcome);
+      const riseResult = rise ? (details.engaged ? (outcome.success ? (outcome.sl >= 5 ? "Rise without spending your action." : "You are no longer Prone.") : "You remain Prone.") : (outcome.success ? "Rise and move normally." : "Rise, but you cannot move this turn.")) : "";
+      const content = '<div class="tbe-attack-card"><h3>' + escape(this.actor.name) + ' — ' + (rise ? 'Rise from Prone (' : '') + escape(name) + (rise ? ')' : '') + '</h3>' +
+        (flourish ? '<p class="tbe-roll-flourish">' + flourish + '</p>' : '') +
+        '<p>Base ' + base + '; Inventory overflow ' + overflow + '; Armour ' + appliedArmour + '; Swimming ' + appliedSwim +
+        '; Additional foes ' + foePenalty + '; Other ' + other + '; target <strong>' + target + '</strong>.</p>' +
+        '<p>Roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
+        '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p>' +
+        (rise ? '<p>' + riseResult + '</p>' : '') + '</div>';
+      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
+    };
     this.element.querySelectorAll("[data-roll-skill]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
       if (!this.actor.isOwner) return;
@@ -518,19 +637,24 @@ class CharacterSheet extends HandlebarsSheet {
       const data = foundry.utils.getProperty(this.actor.system, path.slice("system.".length));
       if (!data) return;
       const name = button.dataset.skillName;
-      const target = skillTotals(this.actor, name, data).total;
-      const roll = await new Roll("1d100").evaluate();
-      const value = roll.total;
-      const outcome = attackOutcome(value, target, Number(data.expertise) || 0);
-      const result = outcome.critical ? "Critical success" : outcome.criticalFailure ? "Critical failure" : outcome.success ? "Success" : "Failure";
-      const escape = foundry.utils.escapeHTML;
-      const flourish = rollFlourish(outcome);
-      const content = '<div class="tbe-attack-card"><h3>' + escape(this.actor.name) + ' — ' + escape(name) + '</h3>' +
-        (flourish ? '<p class="tbe-roll-flourish">' + flourish + '</p>' : '') +
-        '<p>Target <strong>' + target + '</strong>; roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
-        '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p></div>';
-      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
+      const category = path.startsWith("system.customSkills.") ? data.category : Object.entries(SKILLS).find(([group, names]) => names.includes(name))?.[0];
+      await rollCharacterSkill(name, data, category);
     }));
+    this.element.querySelector("[data-rise-from-prone]")?.addEventListener("click", async event => {
+      event.preventDefault();
+      if (!this.actor.isOwner) return;
+      const talent = this.actor.items.find(item => item.type === "talent" && item.name.trim().toLowerCase() === "rise a fighter");
+      const choices = talent && ["Endurance", "Might", "Willpower"].includes(talent.system.riseSkill) ? ["Athletics", talent.system.riseSkill] : ["Athletics"];
+      const choice = await foundry.applications.api.DialogV2.input({
+        window: { title: "Rise from Prone" },
+        content: `<label>Skill <select name="skill">${choices.map(name => `<option value="${name}">${name}</option>`).join("")}</select></label>${talent && choices.length === 1 ? '<p>Set the chosen alternative skill on your Rise a Fighter Talent item to use it here.</p>' : ''}`,
+        ok: { label: "Choose skill" }
+      });
+      if (!choice || !choices.includes(choice.skill)) return;
+      const name = choice.skill;
+      const group = Object.entries(SKILLS).find(([, names]) => names.includes(name));
+      await rollCharacterSkill(name, this.actor.system.skills[key(group[0])][key(name)], group[0], true);
+    });
     if (scroller) {
       scroller.scrollTop = this._savedScrollTop ?? 0;
       scroller.addEventListener("scroll", () => { this._savedScrollTop = scroller.scrollTop; }, { passive: true });
@@ -578,6 +702,7 @@ class CharacterSheet extends HandlebarsSheet {
       const stats = use.stats;
       const legacySkills = { Dagger: "Melee: Light", Cutlass: "Melee: Light", Broadsword: "Melee: Medium", Spear: "Melee: Medium", Staff: "Melee: Medium", "Fists/Kicks": "Might" };
       const preferred = stats.attackSkill || legacySkills[weapon.name] || "Melee: Medium";
+      const defaultOverflow = inventoryOverflowPenalty(inventoryUsed(this.actor), this.actor.system.encumbranceMax || 6);
       const options = ATTACK_SKILLS.map(name => '<option value="' + name + '"' + (name === preferred ? ' selected' : '') + '>' + name + '</option>').join("");
       const presets = [
         ["charge", 20, "Charge +20"], ["aim", 20, "Aim +20"],
@@ -585,13 +710,15 @@ class CharacterSheet extends HandlebarsSheet {
         ["beyondRange", -20, "One zone beyond range −20"],
         ["highGround", 10, "Higher elevation +10"], ["proneMelee", 20, "Melee vs Prone +20"],
         ["proneRanged", -20, "Ranged vs Prone −20"], ["offHand", -20, "Off hand −20"],
-        ["nonlethal", -10, "Lethal weapon for nonlethal injury −10"]
+        ["nonlethal", -10, "Lethal weapon for nonlethal injury −10"],
+        ["lethalFromNonlethal", -10, "Non-lethal weapon for lethal injury −10"]
       ];
       const presetFields = presets.map(([key, , label]) => '<label><input type="checkbox" name="mod_' + key + '"> ' + label + '</label>').join("");
       const details = await foundry.applications.api.DialogV2.input({
         window: { title: "Attack with " + weapon.name },
         content: '<div class="tbe-attack-dialog"><label>Skill <select name="skill">' + options +
-          '</select></label><label>Other modifier <input type="number" name="modifier" value="0" step="1"></label>' +
+          '</select></label><label>Inventory overflow penalty <input type="number" name="overflow" value="' + defaultOverflow + '" step="1"></label>' +
+          '<label>Other modifier <input type="number" name="modifier" value="0" step="1"></label>' +
           (use.isThrown ? '' : '<label><input type="checkbox" name="draw"' + (placement === "atHand" && weapon.name !== "Fists/Kicks" ? ' checked' : '') +
           '> Draw and attack (−20; uncheck if already drawn)</label>') + '<details><summary>Common modifiers</summary>' +
           presetFields + '</details><p>Use Other modifier for reach, talents and situational rulings. No token is required.</p></div>',
@@ -600,11 +727,11 @@ class CharacterSheet extends HandlebarsSheet {
       if (!details || !ATTACK_SKILLS.includes(details.skill)) return;
       const skillData = this.actor.system.skills.combat[key(details.skill)];
       const base = skillTotals(this.actor, details.skill, skillData).total;
-      const other = Number(details.modifier);
-      if (!Number.isFinite(other)) return;
+      const other = Number(details.modifier), overflow = Number(details.overflow);
+      if (!Number.isFinite(other) || !Number.isFinite(overflow)) return;
       const draw = Boolean(details.draw) && placement === "atHand" && weapon.name !== "Fists/Kicks" && !use.isThrown && !/throwing knives/i.test(weapon.name);
       const presetTotal = presets.reduce((sum, [name, amount]) => sum + (details["mod_" + name] ? amount : 0), 0);
-      const modifier = other + presetTotal - (draw ? 20 : 0);
+      const modifier = other + overflow + presetTotal - (draw ? 20 : 0);
       const target = base + modifier;
       const roll = await new Roll("1d100").evaluate();
       const value = roll.total;
@@ -614,10 +741,12 @@ class CharacterSheet extends HandlebarsSheet {
       const flourish = rollFlourish(outcome);
       const content = '<div class="tbe-attack-card"><h3>' + escape(this.actor.name) + ' — ' + escape(weapon.name) + (use.isThrown ? ' (thrown)' : '') +
         '</h3>' + (flourish ? '<p class="tbe-roll-flourish">' + flourish + '</p>' : '') +
-        '<p>' + escape(details.skill) + ' ' + base + ' ' + (modifier < 0 ? '−' : '+') + ' ' + Math.abs(modifier) +
+        '<p>' + escape(details.skill) + ' ' + base + '; Inventory overflow ' + overflow + '; other modifiers ' + (modifier - overflow) +
         ' = <strong>' + target + '</strong></p><p>Roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
         '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p>' +
-        (outcome.success ? '<p>General hit location from attacker’s ones die: <strong>' + generalHitLocation(value) + '</strong>.</p>' : '') +
+        (outcome.success ? '<div class="tbe-hit-location"><b>General hit location</b><strong>' + generalHitLocation(value) +
+          '</strong><small>Attacker’s ones die: ' + (value % 10) + '. Choose Location can override this; the defender’s ones die supplies the detailed location.</small></div>' +
+          detailedHitLocationHtml(generalHitLocation(value)) : '') +
         '<div class="tbe-attack-stats">' + [
           ["RCH", stats.reach], ["DMG", stats.damage], ["CL", stats.chooseLocation],
           ["CS", stats.circumventShield], ["DIS", stats.disarm], ["T", stats.trip],
@@ -685,6 +814,23 @@ class CharacterSheet extends HandlebarsSheet {
       const item = this.actor.items.get(input.dataset.itemZone);
       if (this.actor.isOwner && item && itemPlacement(item) === "dropped") await item.update({ "system.zone": input.value });
     }));
+    this.element.querySelectorAll("[data-toggle-defensive-ap]").forEach(button => button.addEventListener("click", async event => {
+      event.preventDefault();
+      if (!this.actor.isOwner) return;
+      await this.actor.update({ "system.applyDefensiveAP": !this.actor.system.applyDefensiveAP });
+    }));
+    this.element.querySelectorAll("[data-item-size]").forEach(select => select.addEventListener("change", async event => {
+      event.stopPropagation();
+      const item = this.actor.items.get(select.dataset.itemSize);
+      if (this.actor.isOwner && item && (ITEM_SIZES.includes(select.value) || select.value === "" || (item.type === "shield" && select.value === "Buckler"))) await item.update({ "system.size": select.value });
+    }));
+    this.element.querySelectorAll("[data-item-quantity]").forEach(input => input.addEventListener("change", async event => {
+      event.stopPropagation();
+      const item = this.actor.items.get(input.dataset.itemQuantity);
+      const quantity = Number(input.value);
+      if (this.actor.isOwner && item && Number.isInteger(quantity) && quantity >= 0) await item.update({ "system.quantity": quantity });
+      else if (item) input.value = itemQuantity(item);
+    }));
     this.element.querySelectorAll("[data-delete-item]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault(); this._savedScrollTop = scroller?.scrollTop ?? 0;
       const item = this.actor.items.get(button.dataset.deleteItem);
@@ -721,7 +867,10 @@ class CharacterSheet extends HandlebarsSheet {
       }
       const copy = item.toObject();
       delete copy._id;
-      if (area && item.type !== "talent") copy.system.placement = area;
+      if (item.type !== "talent") {
+        copy.system.quantity = 1;
+        if (area) copy.system.placement = area;
+      }
       await this.actor.createEmbeddedDocuments("Item", [copy]);
     }
   }
@@ -738,9 +887,13 @@ class TBEItemSheet extends ItemSheet {
     ] : PLACEMENTS[this.item.type] ?? [];
     context.locations = BODY_LOCATIONS;
     context.attackSkills = ATTACK_SKILLS;
+    context.itemSizes = ITEM_SIZES;
     context.owned = this.item.parent?.documentName === "Actor";
     context.pinnableShield = this.item.type === "shield" && canPinShield(this.item);
     context.noteSegments = equipmentNoteSegments(this.item.system.notes);
+    context.riseFighter = this.item.type === "talent" && this.item.name.trim().toLowerCase() === "rise a fighter";
+    context.riseSkills = ["Endurance", "Might", "Willpower"];
+    if (this.item.type === "armor") context.penaltyFields = Object.fromEntries(ARMOR_PENALTIES.map(([label, field]) => [field, armorPenalty(this.item, label, field)]));
     return context;
   }
   _onRender(context, options) {

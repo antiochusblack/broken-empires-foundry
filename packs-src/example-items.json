@@ -895,7 +895,12 @@
       "training": false,
       "canSunder": false,
       "location": "Head",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -909,7 +914,12 @@
       "training": false,
       "canSunder": false,
       "location": "Body",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -923,7 +933,12 @@
       "training": false,
       "canSunder": false,
       "location": "Right Arm",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -937,7 +952,12 @@
       "training": false,
       "canSunder": false,
       "location": "Left Arm",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -951,7 +971,12 @@
       "training": false,
       "canSunder": false,
       "location": "Right Leg",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -965,7 +990,12 @@
       "training": false,
       "canSunder": false,
       "location": "Left Leg",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -979,7 +1009,12 @@
       "training": false,
       "canSunder": false,
       "location": "Head",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -993,7 +1028,12 @@
       "training": false,
       "canSunder": false,
       "location": "Body",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1007,7 +1047,12 @@
       "training": false,
       "canSunder": false,
       "location": "Right Arm",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1021,7 +1066,12 @@
       "training": false,
       "canSunder": false,
       "location": "Left Arm",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1035,7 +1085,12 @@
       "training": false,
       "canSunder": false,
       "location": "Right Leg",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1049,7 +1104,12 @@
       "training": false,
       "canSunder": false,
       "location": "Left Leg",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1063,7 +1123,12 @@
       "training": false,
       "canSunder": true,
       "location": "Head",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1077,7 +1142,12 @@
       "training": false,
       "canSunder": true,
       "location": "Body",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1091,7 +1161,12 @@
       "training": false,
       "canSunder": true,
       "location": "Right Arm",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1105,7 +1180,12 @@
       "training": false,
       "canSunder": true,
       "location": "Left Arm",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1119,7 +1199,12 @@
       "training": false,
       "canSunder": true,
       "location": "Right Leg",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1133,7 +1218,12 @@
       "training": false,
       "canSunder": true,
       "location": "Left Leg",
-      "penalties": ""
+      "penalties": "",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1147,7 +1237,12 @@
       "training": true,
       "canSunder": true,
       "location": "Head",
-      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1161,7 +1256,12 @@
       "training": true,
       "canSunder": true,
       "location": "Body",
-      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5.",
+      "stealthPenalty": -5,
+      "dodgePenalty": -5,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1175,7 +1275,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Arm",
-      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1189,7 +1294,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Arm",
-      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1203,7 +1313,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Leg",
-      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -5,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1217,7 +1332,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Leg",
-      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5."
+      "penalties": "Body: Stealth and Dodge −5; either Leg: Athletics −5.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -5,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1231,7 +1351,12 @@
       "training": true,
       "canSunder": true,
       "location": "Head",
-      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1245,7 +1370,12 @@
       "training": true,
       "canSunder": true,
       "location": "Body",
-      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10.",
+      "stealthPenalty": -10,
+      "dodgePenalty": -10,
+      "riseFromPronePenalty": -10,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1259,7 +1389,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Arm",
-      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1273,7 +1408,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Arm",
-      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1287,7 +1427,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Leg",
-      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -10,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1301,7 +1446,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Leg",
-      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10."
+      "penalties": "Body: Stealth, Dodge and Rise from Prone −10; either Leg: Athletics −10.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -10,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1315,7 +1465,12 @@
       "training": true,
       "canSunder": true,
       "location": "Head",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": -10
     }
   },
   {
@@ -1329,7 +1484,12 @@
       "training": true,
       "canSunder": true,
       "location": "Body",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": -15,
+      "dodgePenalty": -15,
+      "riseFromPronePenalty": -20,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1343,7 +1503,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Arm",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1357,7 +1522,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Arm",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1371,7 +1541,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Leg",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -15,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1385,7 +1560,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Leg",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -15,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1399,7 +1579,12 @@
       "training": true,
       "canSunder": true,
       "location": "Head",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": -10
     }
   },
   {
@@ -1413,7 +1598,12 @@
       "training": true,
       "canSunder": true,
       "location": "Body",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": -15,
+      "dodgePenalty": -15,
+      "riseFromPronePenalty": -20,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1427,7 +1617,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Arm",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1441,7 +1636,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Arm",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1455,7 +1655,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Leg",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -15,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1469,7 +1674,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Leg",
-      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15."
+      "penalties": "Head: Perception −10; Body: Stealth and Dodge −15, Rise from Prone −20; either Leg: Athletics −15.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -15,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1483,7 +1693,12 @@
       "training": true,
       "canSunder": true,
       "location": "Head",
-      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": -20
     }
   },
   {
@@ -1497,7 +1712,12 @@
       "training": true,
       "canSunder": true,
       "location": "Body",
-      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20.",
+      "stealthPenalty": -20,
+      "dodgePenalty": -20,
+      "riseFromPronePenalty": -30,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1511,7 +1731,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Arm",
-      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1525,7 +1750,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Arm",
-      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": 0,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1539,7 +1769,12 @@
       "training": true,
       "canSunder": true,
       "location": "Right Leg",
-      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -20,
+      "perceptionPenalty": 0
     }
   },
   {
@@ -1553,7 +1788,12 @@
       "training": true,
       "canSunder": true,
       "location": "Left Leg",
-      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20."
+      "penalties": "Head: Perception −20; Body: Stealth and Dodge −20, Rise from Prone −30; either Leg: Athletics −20.",
+      "stealthPenalty": 0,
+      "dodgePenalty": 0,
+      "riseFromPronePenalty": 0,
+      "athleticsPenalty": -20,
+      "perceptionPenalty": 0
     }
   },
   {
