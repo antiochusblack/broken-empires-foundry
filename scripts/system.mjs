@@ -1,4 +1,5 @@
 import { castSpell } from "./spell-casting.mjs";
+import { requestMiracle } from "./divine-casting.mjs";
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
 const number = (initial = 0) => new NumberField({ required: true, integer: true, initial });
@@ -62,7 +63,8 @@ const BREAKDOWN_FIELDS = ["race", "culture", "lifeEvents", "career", "rounding",
 function skillTotals(actor, skillName, data) {
   const ability = abilityBonus(actor, skillName);
   const other = BREAKDOWN_FIELDS.reduce((sum, field) => sum + (Number(data?.[field]) || 0), 0);
-  return { ability, other, increases: ability + other, total: (Number(data?.value) || 0) + ability + other };
+  const spent = skillName === "Piety" ? Math.max(0, Number(actor.system.pietySpent) || 0) : 0;
+  return { ability, other, increases: ability + other, total: Math.max(0, (Number(data?.value) || 0) + ability + other - spent) };
 }
 const key = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/_$/, "");
 const DEFAULT_SECTION_TABS = [
@@ -90,7 +92,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       description: string(), notes: string(), race: string(), sex: string(), size: string(), age: string(),
       sectionOrder: new ArrayField(string(), { initial: DEFAULT_SECTION_TABS.map(tab => tab.id) }),
       equipmentAreaOrder: new ArrayField(string(), { initial: [] }),
-      culture: string(), career: string(), status: number(), silver: number(), xp: number(),
+      culture: string(), career: string(), status: number(), silver: number(), xp: number(), pietySpent: number(), holySymbolDie: new StringField({ required: true, initial: "d12" }),
       abilityScores: new ArrayField(entry({ name: string(), descriptor: string() }), { initial: [{ name: "", descriptor: "" }, { name: "", descriptor: "" }] }),
       racialTraits: list({ name: string(), effect: string(), source: string() }, { name: "", effect: "", source: "" }),
       personalityTraits: list({ name: string(), description: string() }, { name: "", description: "" }),
@@ -357,6 +359,88 @@ function detailedHitLocationHtml(location) {
     (group === "Head" ? '<small>* For Eye and Ear, an even defender’s ones die means right; odd means left.</small>' : '') +
     '</details>';
 }
+async function editChatRoll(message) {
+  const data = message.getFlag("broken-empires-foundry", "editableRoll");
+  if (!data || (!game.user.isGM && message.author?.id !== game.user.id)) return;
+  const escape = foundry.utils.escapeHTML;
+  const values = await foundry.applications.api.DialogV2.input({
+    window: { title: "Edit Roll" },
+    content: `<div class="tbe-attack-dialog"><label>Target number <input type="number" name="target" step="1" value="${data.target}"></label><label>Number rolled (1–100; 00 is 100) <input type="number" name="value" min="1" max="100" step="1" value="${data.value}"></label></div>`,
+    ok: { label: "Update roll" }
+  });
+  if (!values) return;
+  const target = Number(values.target), value = Number(values.value);
+  if (!Number.isInteger(target) || !Number.isInteger(value) || value < 1 || value > 100) {
+    ui.notifications.warn("Enter a whole target number and a roll from 1 to 100.");
+    return;
+  }
+  const outcome = attackOutcome(value, target, data.expertise || 0);
+  const result = outcome.critical ? "Critical success" : outcome.criticalFailure ? "Critical failure" : outcome.success ? "Success" : "Failure";
+  const card = document.createElement("div");
+  card.innerHTML = data.originalContent;
+  const body = card.querySelector(".tbe-attack-card");
+  if (!body) return;
+  const flourish = body.querySelector(".tbe-roll-flourish");
+  flourish?.remove();
+  if (rollFlourish(outcome)) {
+    const line = document.createElement("p");
+    line.className = "tbe-roll-flourish";
+    line.textContent = rollFlourish(outcome);
+    body.querySelector("h3")?.after(line);
+  }
+  const lines = [...body.children].filter(child => child.tagName === "P" && !child.classList.contains("tbe-roll-flourish"));
+  if (data.kind === "attack") {
+    const targetLine = lines[0];
+    targetLine.innerHTML = `${escape(data.skill)} ${data.base}; Inventory overflow ${data.overflow}; other modifiers ${data.otherModifiers} = <strong>${target}</strong>`;
+  } else {
+    const targetLine = lines[0];
+    targetLine.innerHTML = `Base ${data.base}; Inventory overflow ${data.overflow}; Armour ${data.armour}; Swimming ${data.swimming}; Additional foes ${data.foes}; Other ${data.other}; target <strong>${target}</strong>.`;
+  }
+  lines[1].innerHTML = `Roll <strong>${value === 100 ? "00" : String(value).padStart(2, "0")}</strong> — <strong>${result}</strong>; ${outcome.sl} rolled SLs.`;
+  if (data.kind === "attack") {
+    body.querySelector(".tbe-hit-location")?.remove();
+    body.querySelector(".tbe-hit-details")?.remove();
+    if (outcome.success) {
+      const location = generalHitLocation(value);
+      lines[1].insertAdjacentHTML("afterend", `<div class="tbe-hit-location"><b>General hit location</b><strong>${location}</strong><small>Attacker’s ones die: ${value % 10}. Choose Location can override this; the defender’s ones die supplies the detailed location.</small></div>${detailedHitLocationHtml(location)}`);
+    }
+  } else if (data.rise) {
+    const riseLine = lines[2];
+    if (riseLine) riseLine.textContent = data.engaged ? (outcome.success ? (outcome.sl >= 5 ? "Rise without spending your action." : "You are no longer Prone.") : "You remain Prone.") : (outcome.success ? "Rise and move normally." : "Rise, but you cannot move this turn.");
+  }
+  // A fixed total makes the visible Foundry roll agree with the manually edited number.
+  const correctedRoll = await new Roll(String(value)).evaluate();
+  await message.update({ content: await correctedRoll.render({ flavor: body.outerHTML }), flavor: body.outerHTML, rolls: [correctedRoll],
+    "flags.broken-empires-foundry.editableRoll": { ...data, target, value } });
+}
+
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  const card = html.querySelector?.(".tbe-attack-card");
+  if (!card || !message.getFlag("broken-empires-foundry", "editableRoll") || (!game.user.isGM && message.author?.id !== game.user.id)) return;
+  card.addEventListener("contextmenu", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelector(".tbe-edit-roll-menu")?.remove();
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "tbe-edit-roll-menu";
+    button.textContent = "Edit Roll";
+    button.style.cssText = `position:fixed;left:${Math.min(event.clientX, window.innerWidth - 110)}px;top:${Math.min(event.clientY, window.innerHeight - 38)}px;z-index:10000;width:105px;`;
+    button.addEventListener("click", () => { button.remove(); void editChatRoll(message); });
+    document.body.append(button);
+    document.addEventListener("click", e => { if (e.target !== button) button.remove(); }, { once: true });
+  });
+});
+
+Hooks.on("getChatMessageContextOptions", (_html, options) => {
+  options.push({ name: "Edit Roll", icon: '<i class="fas fa-pen"></i>', condition: element => {
+    const message = game.messages.get(element.dataset?.messageId ?? element[0]?.dataset?.messageId);
+    return Boolean(message?.getFlag("broken-empires-foundry", "editableRoll") && (game.user.isGM || message.author?.id === game.user.id));
+  }, callback: element => {
+    const message = game.messages.get(element.dataset?.messageId ?? element[0]?.dataset?.messageId);
+    if (message) void editChatRoll(message);
+  } });
+});
 async function importRulebookJournals() {
       if (!game.user.isGM) return;
       const picker = document.createElement("input");
@@ -436,6 +520,7 @@ class CharacterSheet extends HandlebarsSheet {
     context.customSkillGroups = Object.fromEntries(Object.keys(SKILLS).map(category => [category, customSkills.filter(row => row.category === category)]));
     context.otherCustomSkills = customSkills.filter(row => !Object.keys(SKILLS).includes(row.category));
     context.talents = this.actor.items.filter(i => i.type === "talent");
+    context.currentPiety = skillTotals(this.actor, "Piety", this.actor.system.skills.magic.piety).total;
     context.threads = this.actor.items.filter(i => i.type === "thread");
     context.weapons = this.actor.items.filter(i => i.type === "weapon");
     context.weaponUses = Object.fromEntries(context.weapons.map(item => [item.id, weaponUse(item)]));
@@ -627,6 +712,18 @@ class CharacterSheet extends HandlebarsSheet {
       }
       await this.actor.update({ "system.resolve.permanentFatigue": next, "system.resolve.value": Number(r.value) - delta });
     });
+    this.element.querySelector("[data-resolve-fatigue]")?.addEventListener("change", async event => {
+      const input = event.currentTarget, r = this.actor.system.resolve;
+      const next = Number(input.value), delta = next - Number(r.fatigue);
+      const current = Number(r.value) - delta;
+      const capacity = Number(r.max) - Number(r.permanentFatigue) - next;
+      if (!this.actor.isOwner || !Number.isInteger(next) || next < 0 || next > Number(r.max) - Number(r.permanentFatigue) || current < 0 || current > capacity) {
+        input.value = r.fatigue;
+        ui.notifications.warn("There is not enough available Resolve for that Fatigue change. Additional Fatigue causes a Fatigue-based wound.");
+        return;
+      }
+      await this.actor.update({ "system.resolve.fatigue": next, "system.resolve.value": current });
+    });
     this.element.querySelectorAll("[data-pin-shield]").forEach(input => input.addEventListener("change", async () => {
       const shield = this.actor.items.get(input.dataset.pinShield);
       if (!this.actor.isOwner || shield?.type !== "shield" || !canPinShield(shield)) return;
@@ -702,6 +799,10 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       if (this.actor.isOwner) await castSpell(this.actor, { skillTotals, attackOutcome, wornArmorPenalty: context.armorInitiativePenalty });
     });
+    this.element.querySelector("[data-request-miracle]")?.addEventListener("click", async event => {
+      event.preventDefault();
+      if (this.actor.isOwner) await requestMiracle(this.actor, { skillTotals, attackOutcome });
+    });
     this.element.querySelectorAll("[data-thread-points]").forEach(input => input.addEventListener("change", async event => {
       if (!this.actor.isOwner) return;
       const item = this.actor.items.get(input.dataset.threadPoints);
@@ -749,7 +850,9 @@ class CharacterSheet extends HandlebarsSheet {
         '<p>Roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
         '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p>' +
         (rise ? '<p>' + riseResult + '</p>' : '') + '</div>';
-      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
+      const message = await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
+      await message.setFlag("broken-empires-foundry", "editableRoll", { kind: "skill", target, value, expertise: Number(data.expertise) || 0,
+        originalContent: content, base, overflow, armour: appliedArmour, swimming: appliedSwim, foes: foePenalty, other, rise, engaged: Boolean(details.engaged) });
     };
     this.element.querySelectorAll("[data-roll-skill]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
@@ -759,6 +862,7 @@ class CharacterSheet extends HandlebarsSheet {
       const data = foundry.utils.getProperty(this.actor.system, path.slice("system.".length));
       if (!data) return;
       const name = button.dataset.skillName;
+      if (name === "Piety") { await requestMiracle(this.actor, { skillTotals, attackOutcome }); return; }
       const category = path.startsWith("system.customSkills.") ? data.category : Object.entries(SKILLS).find(([group, names]) => names.includes(name))?.[0];
       await rollCharacterSkill(name, data, category);
     }));
@@ -957,7 +1061,9 @@ class CharacterSheet extends HandlebarsSheet {
         ].map(([label, stat]) => `<span><b>${label}</b> ${escape(String(stat ?? ""))}</span>`).join("") + '</div>' +
         (stats.notes ? '<p><b>Notes:</b> ' + escape(stats.notes) + '</p>' : '') + '</div>';
       if (draw) await weapon.update({ "system.placement": "ready" });
-      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
+      const message = await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
+      await message.setFlag("broken-empires-foundry", "editableRoll", { kind: "attack", target, value, expertise: Number(skillData?.expertise) || 0,
+        originalContent: content, skill: details.skill, base, overflow, otherModifiers: modifier - overflow });
     }));
     this.element.querySelectorAll("[data-add]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
@@ -1270,6 +1376,25 @@ Hooks.once("ready", async () => {
       const missing = races.filter(race => !index.some(entry => entry.name === race.name && entry.type === "race"));
       if (missing.length) await Item.implementation.createDocuments(missing, { pack: pack.collection });
     } catch (error) { console.error("TBE: failed to initialise the races compendium", error); }
+    try {
+      let pack = game.packs.get("world.tbe-threads");
+      if (!pack) pack = await foundry.documents.collections.CompendiumCollection.createCompendium({ name: "tbe-threads", label: "TBE Example Threads", type: "Item" });
+      const response = await fetch("systems/broken-empires-foundry/packs-src/threads.json");
+      if (!response.ok) throw new Error(`Threads HTTP ${response.status}`);
+      const examples = await response.json();
+      const index = await pack.getIndex({ fields: ["type"] });
+      const missing = examples.filter(item => !index.some(entry => entry.type === "thread" && entry.name === item.name));
+      if (missing.length) {
+        const folders = pack.folders?.contents ?? [];
+        const names = ["Bind Threads", "Strand Threads"];
+        const absent = names.filter(name => !folders.some(folder => folder.name === name));
+        const created = absent.length ? await foundry.documents.Folder.createDocuments(absent.map(name => ({ name, type: "Item" })), { pack: pack.collection }) : [];
+        const byName = new Map([...folders, ...created].map(folder => [folder.name, folder.id]));
+        await Item.implementation.createDocuments(missing.map(item => ({ ...item,
+          folder: byName.get(item.system.bindsAndStrands.startsWith("Bind:") ? "Bind Threads" : "Strand Threads") ?? null
+        })), { pack: pack.collection });
+      }
+    } catch (error) { console.error("TBE: failed to initialise the example Threads compendium", error); }
   }
   for (const actor of game.actors.filter(a => a.type === "character")) {
     if (!actor.getFlag("broken-empires-foundry", "threadsMigrated")) {

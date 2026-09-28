@@ -68,6 +68,10 @@
 .tbe .tbe-talent-detail b { font-size:.8rem; opacity:.8; }
 .tbe .tbe-talent-detail span { white-space:pre-wrap; overflow-wrap:anywhere; }
 .tbe .tbe-thread-points { display:flex; align-items:center; gap:.5rem; }
+.tbe .tbe-piety-status { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1rem; margin:.35rem 0; }
+.tbe .tbe-piety-status label { display:flex; align-items:center; gap:.35rem; }
+.tbe .tbe-piety-status input { width:4rem; text-align:center; }
+.tbe .tbe-piety-status select { width:6rem; }
 .tbe-casting-dialog { display:grid; gap:.6rem; max-height:65vh; overflow:auto; padding:.3rem; }
 .tbe-casting-dialog label { display:grid; gap:.2rem; }
 .tbe-casting-dialog label:has(input[type=checkbox]) { display:flex; align-items:center; gap:.35rem; }
@@ -76,6 +80,11 @@
 .tbe-casting-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
 .tbe-casting-dialog input, .tbe-casting-dialog select, .tbe-casting-dialog textarea { box-sizing:border-box; width:100%; min-width:0; }
 .tbe-casting-dialog input[type=checkbox] { width:auto; }
+.tbe-casting-dialog .tbe-casting-total { display:flex; align-items:center; justify-content:space-between; padding:.4rem .6rem; border:1px solid #c99b54; border-radius:4px; font-weight:700; }
+.tbe-casting-dialog .tbe-casting-total output { font-size:1.3rem; font-variant-numeric:tabular-nums; }
+.tbe-casting-dialog .tbe-cast-tip { position:relative; cursor:help; text-decoration:underline dotted; text-underline-offset:2px; }
+.tbe-casting-dialog .tbe-cast-tip:hover::after, .tbe-casting-dialog .tbe-cast-tip:focus-visible::after { content:attr(data-tbe-tip); position:absolute; top:calc(100% + 5px); left:0; z-index:100; box-sizing:border-box; width:min(21rem,70vw); max-height:16rem; overflow:auto; padding:.55rem .65rem; border:1px solid #c99b54; border-radius:5px; background:#242027; color:#f7eee0; box-shadow:0 4px 16px #000b; font-size:.85rem; font-weight:400; line-height:1.4; white-space:normal; pointer-events:none; }
+.tbe-casting-dialog .tbe-casting-checks label:nth-child(3n) .tbe-cast-tip::after { left:auto; right:0; }
 @media(max-width:550px) { .tbe-casting-grid, .tbe-casting-checks { grid-template-columns:1fr; } }
 .tbe .tbe-thread-points input { width:4rem; text-align:center; }
 /* Full weapon statistics wrap into compact blocks at the default sheet width. */
@@ -256,6 +265,7 @@
 .tbe .tbe-info { display:inline-flex; align-items:center; justify-content:center; width:1.05rem; height:1.05rem; flex:none; border:1px solid currentColor; border-radius:50%; font:700 .75rem/1 sans-serif; text-transform:none; opacity:.85; }
 .tbe .tbe-info:focus-visible { outline:2px solid #c99b54; outline-offset:2px; }
 .tbe [data-tbe-tip].tbe-info:hover::after, .tbe [data-tbe-tip].tbe-info:focus-visible::after { top:calc(100% + 6px); bottom:auto; }
+.tbe [data-tbe-tip].tbe-info.tbe-tip-up:hover::after, .tbe [data-tbe-tip].tbe-info.tbe-tip-up:focus-visible::after { top:auto; bottom:calc(100% + 6px); }
 .tbe [data-tbe-tip].tbe-tip-left:hover::after, .tbe [data-tbe-tip].tbe-tip-left:focus-visible::after { left:auto; right:0; }
 .tbe .tbe-enc-inputs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.6rem; }
 .tbe .tbe-location-count { display:flex; align-items:center; flex:none; gap:.3rem; font-size:.8rem; text-transform:none; }
@@ -275,3 +285,17 @@
 
 .tbe .tbe-shield-pinned { width:max-content; max-width:100%; margin:.3rem 0; padding:.2rem .4rem; border:1px solid var(--color-border-light-primary,#777); border-radius:3px; }
 .tbe-roll-flourish { font-weight:700; font-size:1.1rem; }
+
+/* Consistent compact delete controls throughout the character sheet. */
+.tbe button:is([data-remove], [data-delete-item], [data-remove-location]) {
+  box-sizing:border-box; inline-size:1.9rem; block-size:1.9rem; min-inline-size:1.9rem; min-block-size:1.9rem;
+  flex:0 0 1.9rem; padding:0; margin:0; line-height:1; font-size:1.15rem;
+  display:inline-grid; place-items:center; justify-self:center; cursor:pointer;
+}
+.tbe .tbe-custom-skill > [data-remove] { justify-self:end; }
+.tbe .tbe-wound-flags > [data-remove] { margin-inline-start:auto; }
+.tbe .tbe-abilities, .tbe .tbe-traits { --columns:minmax(10rem,1fr) minmax(10rem,1fr) 1.9rem; }
+.tbe .tbe-resources { --columns:minmax(10rem,1fr) 5.5rem 1rem 5.5rem 1.9rem; }
+.tbe .tbe-histories { --columns:minmax(7rem,1fr) minmax(7rem,1fr) minmax(7rem,1fr) minmax(10rem,1.5fr) 1.9rem; }
+.tbe .tbe-relationships { --columns:minmax(8rem,1fr) minmax(9rem,1fr) minmax(10rem,2fr) 1.9rem; }
+.tbe .tbe-goals { --columns:minmax(12rem,1fr) 5rem 1.9rem; }

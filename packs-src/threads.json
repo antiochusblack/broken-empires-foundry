@@ -1,0 +1,482 @@
+[
+  {
+    "name": "Metamorph Glass",
+    "type": "thread",
+    "system": {
+      "description": "A sliver of cloudy glass that shows an object as it could become. Warm it between thumb and forefinger while altering an existing form.",
+      "useMode": "die",
+      "die": "d6",
+      "points": 0,
+      "bindsAndStrands": "Bind: Change. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Shedskin Needle",
+    "type": "thread",
+    "system": {
+      "description": "A needle made from the first shed scale of a river wyrm. Its owner threads it through a seam before changing that thing’s shape.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Bind: Change. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Chalk of the Empty Circle",
+    "type": "thread",
+    "system": {
+      "description": "White chalk whose circle remains faintly visible after it is wiped away. Break its tip while calling matter into being.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Bind: Conjure. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Hollow Bell",
+    "type": "thread",
+    "system": {
+      "description": "A palm-sized bell that makes no audible sound until a new thing answers it. Ring once at the start of a Conjure binding.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Bind: Conjure. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Reed King’s Knot",
+    "type": "thread",
+    "system": {
+      "description": "A marsh reed tied into a knot that tightens when a commanded thing obeys. Keep one hand on it while casting.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Bind: Control. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Tiller’s Last Command",
+    "type": "thread",
+    "system": {
+      "description": "A short length of rope taken from a ship’s abandoned helm. Each knot untied lends force to a command.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 4,
+      "bindsAndStrands": "Bind: Control. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Cinder Fang",
+    "type": "thread",
+    "system": {
+      "description": "An obsidian tooth with an edge warm enough to blister wax. Press it against the target’s image or shadow when ending something.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Bind: Destroy. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Ash of the Last Gate",
+    "type": "thread",
+    "system": {
+      "description": "Ash sealed in a black paper twist, swept from a gate destroyed in a siege. Scatter a pinch to hasten an ending.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 6,
+      "bindsAndStrands": "Bind: Destroy. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Rain-Cloud Lens",
+    "type": "thread",
+    "system": {
+      "description": "A small lens polished from stone found inside a thunderhead. Condensation forms on it when unseen facts are revealed.",
+      "useMode": "die",
+      "die": "d6",
+      "points": 0,
+      "bindsAndStrands": "Bind: Witness. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "The Unasked Question",
+    "type": "thread",
+    "system": {
+      "description": "A wax tablet scored with questions its maker never dared speak. Rub away one line to seek an answer.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Bind: Witness. Use only while physically touching the Thread; one Bind Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Whisper Jar",
+    "type": "thread",
+    "system": {
+      "description": "A stoppered jar holding the last breath of a storm messenger. Crack the seal and listen for sounds beyond the ordinary.",
+      "useMode": "die",
+      "die": "d6",
+      "points": 0,
+      "bindsAndStrands": "Strand: Air. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Blue Lightning Filament",
+    "type": "thread",
+    "system": {
+      "description": "A pale blue wire drawn from a lightning-struck bell. It hums when touched by cold, sound or heatless light.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 4,
+      "bindsAndStrands": "Strand: Air. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "White Hart’s Tooth",
+    "type": "thread",
+    "system": {
+      "description": "A tooth shed by a stag no hunter could catch. Hold it to call on the patterns of creatures native to this world.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Strand: Beasts. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Moth-Crown Dust",
+    "type": "thread",
+    "system": {
+      "description": "Iridescent dust gathered from the wings of moths that circle only moonless fires. Scatter sparingly over a beast’s trace.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Strand: Beasts. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Red Thread Ring",
+    "type": "thread",
+    "system": {
+      "description": "A brass ring cut with a narrow groove for a drop of blood. The metal warms when magic touches flesh or healing.",
+      "useMode": "die",
+      "die": "d10",
+      "points": 0,
+      "bindsAndStrands": "Strand: Body. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Midwife’s Bone Thimble",
+    "type": "thread",
+    "system": {
+      "description": "A smooth bone thimble passed between generations of village midwives. A tap against the skin steadies a Body spell.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Strand: Body. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "The Buried Compass",
+    "type": "thread",
+    "system": {
+      "description": "A needle that points toward the nearest unbroken bedrock instead of north. Grip its case while working stone or metal.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Strand: Earth. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Iron Orchard Pit",
+    "type": "thread",
+    "system": {
+      "description": "A seed of dark iron said to have fallen from a tree of ore. Each filed shaving carries a little of its weight.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 6,
+      "bindsAndStrands": "Strand: Earth. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Hearth’s First Coal",
+    "type": "thread",
+    "system": {
+      "description": "A coal preserved from the first fire lit in a winter refuge. It glows without consuming itself until its magic is spent.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Strand: Fire. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Ember Salt",
+    "type": "thread",
+    "system": {
+      "description": "Red salt crystallised where an old fire refused to die. Cast a few grains into a flame or lamp before shaping it.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Strand: Fire. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Root-Tongue Charm",
+    "type": "thread",
+    "system": {
+      "description": "A little knot of living root that curls around the wearer’s finger. It stirs when a plant grows or strains.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Strand: Plants. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Winterseed Husk",
+    "type": "thread",
+    "system": {
+      "description": "A husk from a seed that flowered under snow. Crush a fragment to coax life and structure from plants.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Strand: Plants. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Star-Sighted Prism",
+    "type": "thread",
+    "system": {
+      "description": "A cut crystal that splits starlight into impossible colours. Peer through it to orient magic toward distant planes.",
+      "useMode": "die",
+      "die": "d10",
+      "points": 0,
+      "bindsAndStrands": "Strand: Spheres. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Mapmaker’s Errant Pin",
+    "type": "thread",
+    "system": {
+      "description": "A silver map pin recovered from a chart of a place that does not exist. Twist its head when seeking a path beyond this world.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 4,
+      "bindsAndStrands": "Strand: Spheres. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Vigil Candle Stub",
+    "type": "thread",
+    "system": {
+      "description": "A candle stub from a wake that lasted seven nights. Its flame bends toward unseen spirits rather than the wind.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Strand: Spirit. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Vowkeeper’s Thread",
+    "type": "thread",
+    "system": {
+      "description": "A strip of linen tied around a hand when a solemn vow was kept at great cost. Unwind it to brace the soul.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Strand: Spirit. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Mirror of Half-Remembered Dreams",
+    "type": "thread",
+    "system": {
+      "description": "A tarnished pocket mirror that returns an expression a moment too late. Its reflection helps shape dreams and impressions.",
+      "useMode": "die",
+      "die": "d6",
+      "points": 0,
+      "bindsAndStrands": "Strand: Thought. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Ink of the Lost Name",
+    "type": "thread",
+    "system": {
+      "description": "A tiny vial of ink made from a forgotten scholar’s unfinished manuscript. Write one word to steady a thought or illusion.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 5,
+      "bindsAndStrands": "Strand: Thought. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Tideglass Vial",
+    "type": "thread",
+    "system": {
+      "description": "A vial of seawater that rises and falls though its cork is sealed. Turn it over to work liquid, ice or falling rain.",
+      "useMode": "die",
+      "die": "d8",
+      "points": 0,
+      "bindsAndStrands": "Strand: Water. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  },
+  {
+    "name": "Nine-Flood Pearl",
+    "type": "thread",
+    "system": {
+      "description": "A dull pearl recovered where nine rivers meet. Its surface thins as its wearer draws on the Water Strand.",
+      "useMode": "points",
+      "die": "d6",
+      "points": 6,
+      "bindsAndStrands": "Strand: Water. Use only while physically touching the Thread; one Strand Thread per casting."
+    },
+    "flags": {
+      "broken-empires-foundry": {
+        "exampleThread": true
+      }
+    }
+  }
+]
