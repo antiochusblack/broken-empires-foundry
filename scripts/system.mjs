@@ -625,10 +625,10 @@ class CharacterSheet extends HandlebarsSheet {
       ["rightArmUseless", "Right Arm unusable", "Even first Right Arm impairment: that arm cannot hold weapons or shields or perform skills requiring it until impairment is removed."],
       ["leftLegNoRunCharge", "Left Leg: no Run/Charge", "Even first Left Leg impairment: you cannot Run or Charge until this impairment is removed."],
       ["rightLegNoRunCharge", "Right Leg: no Run/Charge", "Even first Right Leg impairment: you cannot Run or Charge until this impairment is removed."],
-      ["impairedLeftLeg", "Left Leg impaired", impairmentHelp.Leg],
-      ["impairedRightLeg", "Right Leg impaired", impairmentHelp.Leg],
       ["impairedLeftArm", "Left Arm impaired", impairmentHelp.Arm],
-      ["impairedRightArm", "Right Arm impaired", impairmentHelp.Arm]
+      ["impairedRightArm", "Right Arm impaired", impairmentHelp.Arm],
+      ["impairedLeftLeg", "Left Leg impaired", impairmentHelp.Leg],
+      ["impairedRightLeg", "Right Leg impaired", impairmentHelp.Leg]
     ];
     if (this.actor.system.conditions?.armUseless) conditionHelp.push(["armUseless", "Arm unusable (old marker)", "Existing marker from the previous version: tick the affected Right or Left Arm above, then untick this old marker."]);
     if (this.actor.system.conditions?.noRunCharge) conditionHelp.push(["noRunCharge", "No Run/Charge (old marker)", "Existing marker from the previous version: tick the affected Right or Left Leg above, then untick this old marker."]);
@@ -1099,6 +1099,30 @@ class CharacterSheet extends HandlebarsSheet {
       const category = path.startsWith("system.customSkills.") ? data.category : Object.entries(SKILLS).find(([group, names]) => names.includes(name))?.[0];
       await rollCharacterSkill(name, data, category);
     }));
+    this.element.querySelector("[data-roll-initiative]")?.addEventListener("click", async event => {
+      event.preventDefault();
+      if (!this.actor.isOwner) return;
+      this._savedScrollTop = scroller?.scrollTop ?? 0;
+      await this.submit();
+      const base = Number(this.actor.system.attributes.initiative) || 0;
+      const persistentPenalty = Math.max(0, Number(this.actor.system.attributes.initiativePenalty) || 0);
+      const wornBulk = this.actor.items.filter(item => item.type === "armor" && itemPlacement(item) === "worn")
+        .reduce((sum, item) => sum + (Number(item.system.bulk) || 0) * itemQuantity(item), 0);
+      const armorPenalty = Math.ceil(wornBulk / 3);
+      const details = await foundry.applications.api.DialogV2.input({
+        window: { title: "Roll Initiative" },
+        content: `<div class="tbe-casting-dialog"><p>Roll d10 + Initiative ${base} − worn armour ${armorPenalty} − other Initiative penalty ${persistentPenalty}. Initiative is rerolled every round.</p><label>Other Modifier (+ or −) <input name="modifier" type="number" step="1" value="0"></label><p>If spending Resolve for this round, enter it as a positive modifier and mark the Resolve spent on the sheet.</p></div>`,
+        ok: { label: "Roll Initiative" }
+      });
+      if (!details) return;
+      const modifier = Number(details.modifier);
+      if (!Number.isInteger(modifier)) { ui.notifications.warn("Enter a whole number for the Other Modifier."); return; }
+      const roll = await new Roll("1d10").evaluate();
+      const total = roll.total + base - armorPenalty - persistentPenalty + modifier;
+      const sign = value => value < 0 ? `− ${Math.abs(value)}` : `+ ${value}`;
+      const flavor = `<div class="tbe-initiative-card"><h3>${foundry.utils.escapeHTML(this.actor.name)} — Initiative</h3><p>d10 ${roll.total} + Initiative ${base} − worn armour ${armorPenalty} − other Initiative penalty ${persistentPenalty} ${sign(modifier)} Other Modifier = <strong>${total}</strong></p></div>`;
+      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor });
+    });
     this.element.querySelector("[data-rise-from-prone]")?.addEventListener("click", async event => {
       event.preventDefault();
       if (!this.actor.isOwner) return;

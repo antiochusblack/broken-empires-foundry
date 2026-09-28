@@ -130,8 +130,6 @@
   .tbe .tbe-list-row > button, .tbe .tbe-armor-row > button, .tbe .tbe-inventory-row > button { flex:0 0 auto; }
 }
 /* Equipment is grouped by readiness; armor slots remain visible above carried items. */
-.tbe .tbe-enc-totals { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.45rem; margin:.7rem 0; }
-.tbe .tbe-enc-totals > div { display:flex; justify-content:space-between; gap:.35rem; padding:.45rem; border:1px solid var(--color-border-light-primary); border-radius:4px; }
 .tbe .tbe-over { color:var(--color-text-danger,#e96b65); font-weight:700; }
 .tbe .tbe-armor-slots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
 .tbe .tbe-defensive-ap { padding:.5rem .65rem; border:1px solid var(--color-border-light-primary); border-radius:5px; }
@@ -174,7 +172,7 @@
 .tbe .tbe-equipment-title > span { text-transform:capitalize; opacity:.8; }
 .tbe select { width:100%; min-width:0; }
 @container (max-width:600px) {
-  .tbe .tbe-armor-slots, .tbe .tbe-enc-totals { grid-template-columns:1fr; }
+  .tbe .tbe-armor-slots { grid-template-columns:1fr; }
 }
 .tbe .tbe-wound-overall { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; margin:.7rem 0; }
 .tbe .tbe-wound-overall > div { display:grid; gap:.2rem; padding:.45rem; border:1px solid var(--color-border-light-primary); border-radius:4px; }
@@ -196,6 +194,11 @@
 .tbe .tbe-equipment-title .tbe-item-link { flex:1 1 11rem; white-space:normal; overflow-wrap:anywhere; }
 .tbe .tbe-equipment-title > select { flex:0 0 10rem; width:10rem; }
 .tbe .tbe-inventory-area { min-height:4.5rem; padding:.2rem .4rem .6rem; border:1px dashed var(--color-border-light-primary); border-radius:5px; }
+.tbe .tbe-inventory-area > h3 { flex-wrap:wrap; justify-content:flex-start; }
+.tbe .tbe-area-heading { min-width:0; }
+.tbe .tbe-area-metric { display:inline-flex; align-items:baseline; flex-wrap:wrap; gap:.2rem; padding:.15rem .45rem; border:1px solid #b29a77; border-radius:4px; font:600 .8rem "TBE Alegreya",Georgia,serif; letter-spacing:0; text-transform:none; }
+.tbe .tbe-area-metric strong { font-weight:700; }
+.tbe .tbe-inventory-area > h3 > [data-add="item"] { margin-left:auto; }
 .tbe .tbe-area-drag { display:inline-block; margin-right:.45rem; cursor:grab; user-select:none; }
 .tbe .tbe-area-dragging { opacity:.55; }
 .tbe .tbe-area-drop-target { outline:2px solid #c99b54; outline-offset:2px; }
@@ -389,8 +392,6 @@
 .tbe-casting-dialog,.tbe-xp-ledger { font-family:"TBE Alegreya",Georgia,serif; font-size:1rem; }
 .tbe .tbe-wound-actions { display:flex; flex-wrap:wrap; gap:.4rem; margin:.5rem 0; }
 .tbe .tbe-condition-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.3rem .65rem; }
-.tbe .tbe-condition-grid .tbe-condition:nth-child(13) { grid-column:1; }
-.tbe .tbe-condition-grid .tbe-condition:nth-child(15) { grid-column:1; }
 .tbe .tbe-condition { display:flex; align-items:center; gap:.4rem; font-weight:400; cursor:help; }
 .tbe .tbe-condition input { width:auto; flex:none; }
 .tbe .tbe-wound-flags { gap:.4rem .8rem; }
