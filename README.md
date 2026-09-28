@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.15.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.16.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.15.0` and attach `broken-empires-foundry-v0.15.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.16.0` and attach `broken-empires-foundry-v0.16.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
@@ -27,6 +27,15 @@ The sheet shows lethal WP, nonlethal WP and their combined total at each body lo
 ## Attack and combat reference
 
 Weapons in Held and Ready or At Hand have an Attack button. Select a Combat skill, tick common modifiers and enter any other situational modifier. An At Hand weapon defaults to Draw and Attack (−20), which can be unchecked if already drawn; throwing knives and unarmed attacks are exempt. The chat message shows the d100 result, rolled SLs, critical state, general hit location, and an optional detailed-location lookup for the defender's ones die. No target token is required. The Reference section lists manoeuvres, common modifiers and turn reminders.
+
+## Changes in 0.16.0
+
+- Main section headings match the tabs: Identity, Skills, Magic, Combat, Gear, Story, and Reference.
+- Threads are draggable Items with a description, Thread die or points, and room for applicable Binds and Strands. Legacy Threads text is copied into an Item on world startup.
+- Equipment locations, including custom locations, can be dragged into a saved order per character.
+- True Name and Fraying sit in one compact row.
+- Resolve tracks use slashes for spent Resolve and crosses for Fatigue, with click and right-click controls. Taking Fatigue does not erase spent Resolve; a full track warns of Fatigue-based wounds.
+- Cast a spell guides shaping, Bind and Strand requisites, casting roll, Threads, mitigation, Weave Reaction roll, and chat summary. GM judgement is needed for costs, applicability and reaction effects.
 
 ## Changes in 0.15.0
 

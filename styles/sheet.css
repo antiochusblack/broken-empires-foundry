@@ -5,6 +5,8 @@
 .tbe input, .tbe textarea { box-sizing:border-box; width:100%; min-width:0; font-weight:400; }
 .tbe textarea { min-height:5rem; resize:vertical; }
 .tbe .tbe-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
+.tbe .tbe-grid.tbe-magic-identity { grid-template-columns:minmax(0,1fr) 7rem; align-items:end; }
+@container (max-width:350px) { .tbe .tbe-grid.tbe-magic-identity { grid-template-columns:1fr; } }
 .tbe .tbe-grid.tbe-identity-fields { grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,.7fr) minmax(0,.6fr); gap:.45rem .65rem; }
 @container (max-width:650px) { .tbe .tbe-grid.tbe-identity-fields { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @container (max-width:350px) { .tbe .tbe-grid.tbe-identity-fields { grid-template-columns:1fr; } }
@@ -65,6 +67,17 @@
 .tbe .tbe-talent-detail { display:grid; grid-template-columns:6rem minmax(0,1fr); gap:.4rem; margin:.25rem 0; align-items:start; }
 .tbe .tbe-talent-detail b { font-size:.8rem; opacity:.8; }
 .tbe .tbe-talent-detail span { white-space:pre-wrap; overflow-wrap:anywhere; }
+.tbe .tbe-thread-points { display:flex; align-items:center; gap:.5rem; }
+.tbe-casting-dialog { display:grid; gap:.6rem; max-height:65vh; overflow:auto; padding:.3rem; }
+.tbe-casting-dialog label { display:grid; gap:.2rem; }
+.tbe-casting-dialog label:has(input[type=checkbox]) { display:flex; align-items:center; gap:.35rem; }
+.tbe-casting-dialog fieldset { min-width:0; }
+.tbe-casting-checks { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.2rem .5rem; }
+.tbe-casting-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+.tbe-casting-dialog input, .tbe-casting-dialog select, .tbe-casting-dialog textarea { box-sizing:border-box; width:100%; min-width:0; }
+.tbe-casting-dialog input[type=checkbox] { width:auto; }
+@media(max-width:550px) { .tbe-casting-grid, .tbe-casting-checks { grid-template-columns:1fr; } }
+.tbe .tbe-thread-points input { width:4rem; text-align:center; }
 /* Full weapon statistics wrap into compact blocks at the default sheet width. */
 .tbe .tbe-weapon-cards { display:grid; gap:.65rem; }
 .tbe .tbe-weapon-card { border:1px solid var(--color-border-light-primary); border-radius:5px; padding:.5rem .65rem; min-width:0; }
@@ -158,6 +171,9 @@
 .tbe .tbe-equipment-title .tbe-item-link { flex:1 1 11rem; white-space:normal; overflow-wrap:anywhere; }
 .tbe .tbe-equipment-title > select { flex:0 0 10rem; width:10rem; }
 .tbe .tbe-inventory-area { min-height:4.5rem; padding:.2rem .4rem .6rem; border:1px dashed var(--color-border-light-primary); border-radius:5px; }
+.tbe .tbe-area-drag { display:inline-block; margin-right:.45rem; cursor:grab; user-select:none; }
+.tbe .tbe-area-dragging { opacity:.55; }
+.tbe .tbe-area-drop-target { outline:2px solid #c99b54; outline-offset:2px; }
 .tbe .tbe-inventory-area .tbe-equipment-cards { min-height:2rem; }
 @container (max-width:700px) {
   .tbe .tbe-wound-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -246,8 +262,9 @@
 .tbe .tbe-location-count input { width:auto; }
 .tbe .tbe-resolve-track { display:flex; flex-wrap:wrap; gap:.22rem; padding:.55rem; border:1px solid var(--color-border-light-primary); border-radius:5px; }
 .tbe .tbe-resolve-box { flex:0 0 1.65rem; width:1.65rem; height:1.65rem; padding:0; border:1px solid #bd9d73; border-radius:2px; font-size:1.3rem; line-height:1; cursor:pointer; }
-.tbe .tbe-resolve-available { background:#589f83; }
-.tbe .tbe-resolve-spent { background:transparent; }
+.tbe .tbe-resolve-available { background:transparent; }
+.tbe .tbe-resolve-spent { background:color-mix(in srgb,#589f83 15%,transparent); color:#7dd6ad; }
+.tbe .tbe-resolve-help { margin:.35rem 0; font-size:.8rem; }
 .tbe .tbe-resolve-fatigue { background:#e1b565; color:#241a17; }
 .tbe .tbe-resolve-permanent { background:#9b6068; color:white; cursor:default; }
 .tbe .tbe-race-trait { border:1px solid var(--color-border-light-primary); border-radius:4px; padding:.45rem; }

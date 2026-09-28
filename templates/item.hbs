@@ -1,5 +1,12 @@
 <div class="tbe-sheet-body">
   <label>Name <input name="name" type="text" value="{{document.name}}"></label>
+  {{#if (eq document.type "thread")}}
+    <label>Description <textarea class="tbe-grow" rows="2" name="system.description">{{system.description}}</textarea></label>
+    <div class="tbe-grid"><label>Track as <select name="system.useMode"><option value="die" {{#if (eq system.useMode "die")}}selected{{/if}}>Thread die</option><option value="points" {{#if (eq system.useMode "points")}}selected{{/if}}>Consumable points</option></select></label>
+      <label>Thread die <select name="system.die">{{#each threadDice as |die|}}<option value="{{die}}" {{#if (eq die ../system.die)}}selected{{/if}}>{{die}}</option>{{/each}}</select></label>
+      <label>Points remaining <input name="system.points" type="number" min="0" step="1" value="{{system.points}}"></label></div>
+    <label>Applicable Binds and Strands <textarea class="tbe-grow" rows="3" name="system.bindsAndStrands">{{system.bindsAndStrands}}</textarea></label>
+  {{else}}
   {{#if (eq document.type "talent")}}
     <label>Book category <input name="system.category" type="text" value="{{system.category}}"></label>
     <label>Rules reference <input name="system.reference" type="text" value="{{system.reference}}"></label>
@@ -76,5 +83,6 @@
     {{#if (eq document.type "weapon")}}<div class="tbe-note-preview" aria-label="Weapon notes with rule explanations">{{#each noteSegments as |part|}}{{#if part.tooltip}}<span class="tbe-note-term" tabindex="0" data-tbe-tip="{{part.tooltip}}">{{part.text}}</span>{{else}}{{part.text}}{{/if}}{{/each}}</div>{{/if}}
     {{#if (eq document.type "armor")}}<div class="tbe-note-preview" aria-label="Armour notes with rule explanations">{{#each noteSegments as |part|}}{{#if part.tooltip}}<span class="tbe-note-term" tabindex="0" data-tbe-tip="{{part.tooltip}}">{{part.text}}</span>{{else}}{{part.text}}{{/if}}{{/each}}</div>{{/if}}
     {{/if}}
+  {{/if}}
   {{/if}}
 </div>

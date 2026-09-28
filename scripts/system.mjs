@@ -1,3 +1,4 @@
+import { castSpell } from "./spell-casting.mjs";
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
 const number = (initial = 0) => new NumberField({ required: true, integer: true, initial });
@@ -88,6 +89,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
     return {
       description: string(), notes: string(), race: string(), sex: string(), size: string(), age: string(),
       sectionOrder: new ArrayField(string(), { initial: DEFAULT_SECTION_TABS.map(tab => tab.id) }),
+      equipmentAreaOrder: new ArrayField(string(), { initial: [] }),
       culture: string(), career: string(), status: number(), silver: number(), xp: number(),
       abilityScores: new ArrayField(entry({ name: string(), descriptor: string() }), { initial: [{ name: "", descriptor: "" }, { name: "", descriptor: "" }] }),
       racialTraits: list({ name: string(), effect: string(), source: string() }, { name: "", effect: "", source: "" }),
@@ -115,6 +117,9 @@ class TalentData extends foundry.abstract.TypeDataModel {
 }
 class RaceData extends foundry.abstract.TypeDataModel {
   static defineSchema() { return { traits: new ArrayField(entry({ name: string(), effect: string() }), { initial: [] }), notes: string() }; }
+}
+class ThreadData extends foundry.abstract.TypeDataModel {
+  static defineSchema() { return { description: string(), useMode: new StringField({ required: true, initial: "die", choices: ["die", "points"] }), die: new StringField({ required: true, initial: "d6", choices: ["d6", "d8", "d10", "d12", "depleted"] }), points: number(), bindsAndStrands: string() }; }
 }
 class WeaponData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
@@ -431,6 +436,7 @@ class CharacterSheet extends HandlebarsSheet {
     context.customSkillGroups = Object.fromEntries(Object.keys(SKILLS).map(category => [category, customSkills.filter(row => row.category === category)]));
     context.otherCustomSkills = customSkills.filter(row => !Object.keys(SKILLS).includes(row.category));
     context.talents = this.actor.items.filter(i => i.type === "talent");
+    context.threads = this.actor.items.filter(i => i.type === "thread");
     context.weapons = this.actor.items.filter(i => i.type === "weapon");
     context.weaponUses = Object.fromEntries(context.weapons.map(item => [item.id, weaponUse(item)]));
     context.shields = this.actor.items.filter(i => i.type === "shield");
@@ -459,7 +465,7 @@ class CharacterSheet extends HandlebarsSheet {
     context.itemPlacements = Object.fromEntries(equipment.map(i => [i.id, itemPlacement(i)]));
     context.itemZones = Object.fromEntries(equipment.map(i => [i.id, i.system.zone]));
     context.itemNoteSegments = Object.fromEntries(equipment.map(i => [i.id, equipmentNoteSegments(i.system.notes)]));
-    context.equipmentAreas = [
+    const equipmentAreas = [
       { key: "ready", title: "Held and Ready", items: equipment.filter(i => itemPlacement(i) === "ready") },
       { key: "atHand", title: "At Hand", items: equipment.filter(i => itemPlacement(i) === "atHand") },
       { key: "worn", title: "Worn", items: equipment.filter(i => itemPlacement(i) === "worn") },
@@ -471,6 +477,12 @@ class CharacterSheet extends HandlebarsSheet {
         countsEncumbrance: location.countsEncumbrance, items: equipment.filter(i => itemPlacement(i) === location.id)
       }))
     ];
+    const savedAreaOrder = this.actor.system.equipmentAreaOrder ?? [];
+    const defaultAreaOrder = equipmentAreas.map(area => area.key);
+    context.equipmentAreas = equipmentAreas.sort((a, b) => {
+      const aIndex = savedAreaOrder.indexOf(a.key), bIndex = savedAreaOrder.indexOf(b.key);
+      return (aIndex < 0 ? defaultAreaOrder.indexOf(a.key) + savedAreaOrder.length : aIndex) - (bIndex < 0 ? defaultAreaOrder.indexOf(b.key) + savedAreaOrder.length : bIndex);
+    });
     const worn = context.armorItems.filter(i => itemPlacement(i) === "worn");
     context.wornArmorPenalties = wornArmorPenalties(this.actor);
     context.armorSlots = BODY_LOCATIONS.map(location => {
@@ -503,8 +515,9 @@ class CharacterSheet extends HandlebarsSheet {
     const temporary = Math.min(max - permanent, Math.max(0, Math.floor(Number(resolve.fatigue) || 0)));
     const current = Math.max(0, Math.min(max - permanent - temporary, Math.floor(Number(resolve.value) || 0)));
     context.resolveTrack = Array.from({ length: max }, (_, index) => {
-      const state = index >= max - permanent ? "permanent" : index >= max - permanent - temporary ? "fatigue" : index < current ? "available" : "spent";
-      return { index, state, permanent: state === "permanent", fatigue: state === "fatigue", available: state === "available" };
+      const spent = max - permanent - temporary - current;
+      const state = index >= max - permanent ? "permanent" : index >= max - permanent - temporary ? "fatigue" : index < spent ? "spent" : "available";
+      return { index, state, permanent: state === "permanent", fatigue: state === "fatigue", spent: state === "spent" };
     });
     context.supplyDisplay = Object.fromEntries(["gear", "ammo", "rations", "medical"].map(type => [type, this.actor.system.supply[type] || "d12"]));
     const ll = Number(this.actor.system.attributes.lethalityLevel) || 0;
@@ -569,19 +582,51 @@ class CharacterSheet extends HandlebarsSheet {
         await this.actor.update({ [input.name]: false });
       });
     });
-    this.element.querySelectorAll("[data-resolve-box]").forEach(button => button.addEventListener("click", async event => {
-      event.preventDefault();
-      if (!this.actor.isOwner) return;
-      const state = button.classList;
-      const resolve = this.actor.system.resolve;
-      if (state.contains("tbe-resolve-permanent")) return;
-      if (state.contains("tbe-resolve-fatigue")) {
-        await this.actor.update({ "system.resolve.fatigue": Math.max(0, Number(resolve.fatigue) - 1) });
-      } else {
-        const maxAvailable = Math.max(0, Number(resolve.max) - Number(resolve.fatigue) - Number(resolve.permanentFatigue));
-        await this.actor.update({ "system.resolve.value": Math.max(0, Math.min(maxAvailable, Number(resolve.value) + (state.contains("tbe-resolve-spent") ? 1 : -1))) });
+    this.element.querySelectorAll("[data-resolve-box]").forEach(button => {
+      button.addEventListener("click", async event => {
+        event.preventDefault();
+        if (!this.actor.isOwner) return;
+        const resolve = this.actor.system.resolve;
+        if (button.classList.contains("tbe-resolve-permanent")) return;
+        if (button.classList.contains("tbe-resolve-fatigue")) {
+          await this.actor.update({ "system.resolve.fatigue": Math.max(0, Number(resolve.fatigue) - 1), "system.resolve.value": Number(resolve.value) + 1 });
+        } else if (button.classList.contains("tbe-resolve-spent")) {
+          await this.actor.update({ "system.resolve.value": Number(resolve.value) + 1 });
+        } else if (Number(resolve.value) > 0) {
+          await this.actor.update({ "system.resolve.value": Number(resolve.value) - 1 });
+        }
+      });
+      button.addEventListener("contextmenu", async event => {
+        event.preventDefault(); event.stopPropagation();
+        if (!this.actor.isOwner || button.classList.contains("tbe-resolve-permanent")) return;
+        const r = this.actor.system.resolve;
+        if (button.classList.contains("tbe-resolve-fatigue")) {
+          await this.actor.update({ "system.resolve.fatigue": Math.max(0, Number(r.fatigue) - 1), "system.resolve.value": Number(r.value) + 1 });
+        } else if (Number(r.value) > 0) {
+          await this.actor.update({ "system.resolve.fatigue": Number(r.fatigue) + 1, "system.resolve.value": Number(r.value) - 1 });
+        } else ui.notifications.warn("Resolve track full: additional Fatigue causes a Fatigue-based wound. Record the wound in the Wounds section.");
+      });
+    });
+    this.element.querySelector("[data-resolve-max]")?.addEventListener("change", async event => {
+      const input = event.currentTarget, r = this.actor.system.resolve;
+      const next = Number(input.value), delta = next - Number(r.max);
+      if (!this.actor.isOwner || !Number.isInteger(next) || next < 0 || Number(r.value) + delta < 0) {
+        input.value = r.max;
+        ui.notifications.warn("Recover spent Resolve or remove Fatigue before reducing the track further.");
+        return;
       }
-    }));
+      await this.actor.update({ "system.resolve.max": next, "system.resolve.value": Number(r.value) + delta });
+    });
+    this.element.querySelector("[data-permanent-fatigue]")?.addEventListener("change", async event => {
+      const input = event.currentTarget, r = this.actor.system.resolve;
+      const next = Number(input.value), delta = next - Number(r.permanentFatigue);
+      if (!this.actor.isOwner || !Number.isInteger(next) || next < 0 || Number(r.value) - delta < 0) {
+        input.value = r.permanentFatigue;
+        ui.notifications.warn("The track is full. Additional Fatigue causes a Fatigue-based wound.");
+        return;
+      }
+      await this.actor.update({ "system.resolve.permanentFatigue": next, "system.resolve.value": Number(r.value) - delta });
+    });
     this.element.querySelectorAll("[data-pin-shield]").forEach(input => input.addEventListener("change", async () => {
       const shield = this.actor.items.get(input.dataset.pinShield);
       if (!this.actor.isOwner || shield?.type !== "shield" || !canPinShield(shield)) return;
@@ -590,7 +635,7 @@ class CharacterSheet extends HandlebarsSheet {
     this.element.querySelector("[data-add-fatigue]")?.addEventListener("click", async event => {
       event.preventDefault();
       const r = this.actor.system.resolve;
-      if (Number(r.fatigue) + Number(r.permanentFatigue) >= Number(r.max)) { ui.notifications.warn("Every space is marked as Fatigue or Permanent Fatigue; no more can be marked on this track."); return; }
+      if (Number(r.value) <= 0) { ui.notifications.warn("Resolve track full: additional Fatigue causes a Fatigue-based wound. Record the wound in the Wounds section."); return; }
       const fatigue = Number(r.fatigue) + 1;
       await this.actor.update({ "system.resolve.fatigue": fatigue, "system.resolve.value": Math.max(0, Number(r.value) - 1) });
     });
@@ -639,6 +684,31 @@ class CharacterSheet extends HandlebarsSheet {
       const name = category[0].toUpperCase() + category.slice(1);
       const flavor = depleted ? `Oh shit, ${name} decreased! ${die} → ${next}.` : `${name} Supply holds at ${die}.`;
       await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor });
+    }));
+    this.element.querySelectorAll("[data-roll-thread]").forEach(button => button.addEventListener("click", async event => {
+      event.preventDefault();
+      if (!this.actor.isOwner) return;
+      const item = this.actor.items.get(button.dataset.rollThread);
+      if (item?.type !== "thread" || item.system.useMode !== "die") return;
+      const die = item.system.die;
+      const steps = ["d12", "d10", "d8", "d6", "depleted"];
+      if (!steps.includes(die) || die === "depleted") { ui.notifications.warn(`${item.name} is depleted.`); return; }
+      const roll = await new Roll(`1${die}`).evaluate();
+      const next = roll.total <= 2 ? steps[steps.indexOf(die) + 1] : die;
+      if (next !== die) await item.update({ "system.die": next });
+      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: `${foundry.utils.escapeHTML(item.name)} — Thread die (${die}), ${roll.total} Mastery${next !== die ? `; now ${next}` : ""}` });
+    }));
+    this.element.querySelector("[data-cast-spell]")?.addEventListener("click", async event => {
+      event.preventDefault();
+      if (this.actor.isOwner) await castSpell(this.actor, { skillTotals, attackOutcome, wornArmorPenalty: context.armorInitiativePenalty });
+    });
+    this.element.querySelectorAll("[data-thread-points]").forEach(input => input.addEventListener("change", async event => {
+      if (!this.actor.isOwner) return;
+      const item = this.actor.items.get(input.dataset.threadPoints);
+      if (item?.type !== "thread" || item.system.useMode !== "points") return;
+      const points = Number(input.value);
+      if (Number.isInteger(points) && points >= 0) await item.update({ "system.points": points });
+      else input.value = item.system.points;
     }));
     const rollCharacterSkill = async (name, data, category, rise = false) => {
       const base = skillTotals(this.actor, name, data).total;
@@ -773,6 +843,42 @@ class CharacterSheet extends HandlebarsSheet {
         await this.actor.update({ "system.sectionOrder": order });
       });
     }
+    const areaElements = [...this.element.querySelectorAll(".tbe-inventory-area[data-drop-area]")];
+    if (this.actor.isOwner) {
+      const clearAreaDrag = () => {
+        this._draggedArea = null;
+        areaElements.forEach(area => area.classList.remove("tbe-area-dragging", "tbe-area-drop-target"));
+      };
+      for (const area of areaElements) {
+        const handle = area.querySelector("[data-drag-area]");
+        handle.addEventListener("dragstart", event => {
+          this._draggedArea = area.dataset.dropArea;
+          event.dataTransfer.setData("text/plain", `tbe-area:${this._draggedArea}`);
+          event.dataTransfer.effectAllowed = "move";
+          area.classList.add("tbe-area-dragging");
+          event.stopPropagation();
+        });
+        handle.addEventListener("dragend", clearAreaDrag);
+        area.addEventListener("dragover", event => {
+          if (!this._draggedArea) return;
+          event.preventDefault(); event.stopPropagation();
+          event.dataTransfer.dropEffect = "move";
+          areaElements.forEach(other => other.classList.toggle("tbe-area-drop-target", other === area && other.dataset.dropArea !== this._draggedArea));
+        });
+        area.addEventListener("drop", async event => {
+          if (!this._draggedArea) return;
+          event.preventDefault(); event.stopPropagation();
+          const moving = this._draggedArea, target = area.dataset.dropArea;
+          clearAreaDrag();
+          if (target === moving) return;
+          const order = areaElements.map(other => other.dataset.dropArea).filter(id => id !== moving);
+          const bounds = area.getBoundingClientRect();
+          order.splice(order.indexOf(target) + (event.clientY > bounds.top + bounds.height / 2 ? 1 : 0), 0, moving);
+          this._savedScrollTop = scroller.scrollTop;
+          await this.actor.update({ "system.equipmentAreaOrder": order });
+        });
+      }
+    }
     tabButtons.forEach(button => button.addEventListener("click", event => {
       event.preventDefault();
       const target = this.element.querySelector(`#tbe-${button.dataset.section}`);
@@ -857,10 +963,10 @@ class CharacterSheet extends HandlebarsSheet {
       event.preventDefault();
       this._savedScrollTop = scroller?.scrollTop ?? 0;
       const collection = button.dataset.add;
-      if (["item", "talent", "weapon", "armor", "shield", "gear"].includes(collection)) {
-        const typeOptions = ["weapon", "armor", "shield", "gear", "talent"];
+      if (["item", "talent", "thread", "weapon", "armor", "shield", "gear"].includes(collection)) {
+        const typeOptions = ["weapon", "armor", "shield", "gear", "talent", "thread"];
         const area = button.dataset.area;
-        const allowedTypes = area ? typeOptions.filter(type => type !== "talent") : typeOptions;
+        const allowedTypes = area ? typeOptions.filter(type => !["talent", "thread"].includes(type)) : typeOptions;
         const typeSelect = collection === "item" ? `<label>Type <select name="type">${allowedTypes.map(type => `<option value="${type}">${type === "armor" ? "Armour" : type[0].toUpperCase() + type.slice(1)}</option>`).join("")}</select></label>` : "";
         const details = await foundry.applications.api.DialogV2.input({
           window: { title: `Add ${collection === "item" ? "Item" : collection === "armor" ? "Armour" : collection}` },
@@ -951,15 +1057,15 @@ class CharacterSheet extends HandlebarsSheet {
         "system.racialTraits": [...manual, ...item.system.traits.map(trait => ({ name: trait.name, effect: trait.effect, source: item.name }))] });
       return;
     }
-    if (item && ["talent", "weapon", "armor", "shield", "gear"].includes(item.type)) {
+    if (item && ["talent", "thread", "weapon", "armor", "shield", "gear"].includes(item.type)) {
       const area = event.target.closest("[data-drop-area]")?.dataset.dropArea;
       if (item.parent?.documentName === "Actor" && item.parent.id === this.actor.id) {
-        if (area && item.type !== "talent") await item.update({ "system.placement": area });
+        if (area && !["talent", "thread"].includes(item.type)) await item.update({ "system.placement": area });
         return;
       }
       const copy = item.toObject();
       delete copy._id;
-      if (item.type !== "talent") {
+      if (!["talent", "thread"].includes(item.type)) {
         copy.system.quantity = 1;
         if (area) copy.system.placement = area;
       }
@@ -981,6 +1087,7 @@ class TBEItemSheet extends ItemSheet {
     context.attackSkills = ATTACK_SKILLS;
     context.itemSizes = ITEM_SIZES;
     context.owned = this.item.parent?.documentName === "Actor";
+    context.threadDice = ["d6", "d8", "d10", "d12", "depleted"];
     context.pinnableShield = this.item.type === "shield" && canPinShield(this.item);
     context.noteSegments = equipmentNoteSegments(this.item.system.notes);
     context.riseFighter = this.item.type === "talent" && this.item.name.trim().toLowerCase() === "rise a fighter";
@@ -1079,12 +1186,13 @@ Hooks.once("init", () => {
   CONFIG.Actor.dataModels.character = CharacterData;
   CONFIG.Item.dataModels.talent = TalentData;
   CONFIG.Item.dataModels.race = RaceData;
+  CONFIG.Item.dataModels.thread = ThreadData;
   CONFIG.Item.dataModels.weapon = WeaponData;
   CONFIG.Item.dataModels.armor = ArmorData;
   CONFIG.Item.dataModels.shield = ShieldData;
   CONFIG.Item.dataModels.gear = GearData;
   foundry.documents.collections.Actors.registerSheet("broken-empires-foundry", CharacterSheet, { types: ["character"], makeDefault: true, label: "TBE Character" });
-  foundry.documents.collections.Items.registerSheet("broken-empires-foundry", TBEItemSheet, { types: ["talent", "race", "weapon", "armor", "shield", "gear"], makeDefault: true, label: "TBE Item" });
+  foundry.documents.collections.Items.registerSheet("broken-empires-foundry", TBEItemSheet, { types: ["talent", "race", "thread", "weapon", "armor", "shield", "gear"], makeDefault: true, label: "TBE Item" });
 });
 
 // Preserve the three values entered on the 0.1.x test sheet when opening an old world.
@@ -1164,6 +1272,13 @@ Hooks.once("ready", async () => {
     } catch (error) { console.error("TBE: failed to initialise the races compendium", error); }
   }
   for (const actor of game.actors.filter(a => a.type === "character")) {
+    if (!actor.getFlag("broken-empires-foundry", "threadsMigrated")) {
+      try {
+        const oldThreads = String(actor._source.system?.threads ?? "").trim();
+        if (oldThreads) await actor.createEmbeddedDocuments("Item", [{ name: "Legacy Threads", type: "thread", system: { description: oldThreads } }]);
+        await actor.setFlag("broken-empires-foundry", "threadsMigrated", true);
+      } catch (error) { console.error(`TBE: could not migrate Threads for ${actor.name}`, error); }
+    }
     const weaponNoteUpdates = actor.items.map(pierceThroughNoteUpdate).filter(Boolean);
     if (weaponNoteUpdates.length) {
       try { await actor.updateEmbeddedDocuments("Item", weaponNoteUpdates); }

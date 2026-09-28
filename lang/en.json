@@ -6,7 +6,8 @@
       "weapon": "Weapon",
       "armor": "Armour",
       "shield": "Shield",
-      "gear": "Gear"
+      "gear": "Gear",
+      "thread": "Thread"
     }
   }
 }
