@@ -1,5 +1,6 @@
 import { castSpell } from "./spell-casting.mjs";
 import { requestMiracle } from "./divine-casting.mjs";
+import { rollWoundDie, rollInfectionDie } from "./wound-rolls.mjs";
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
 const number = (initial = 0) => new NumberField({ required: true, integer: true, initial });
@@ -92,7 +93,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       description: string(), notes: string(), race: string(), sex: string(), size: string(), age: string(),
       sectionOrder: new ArrayField(string(), { initial: DEFAULT_SECTION_TABS.map(tab => tab.id) }),
       equipmentAreaOrder: new ArrayField(string(), { initial: [] }),
-      culture: string(), career: string(), status: number(), silver: number(), xp: number(), pietySpent: number(), holySymbolDie: new StringField({ required: true, initial: "d12" }),
+      culture: string(), career: string(), status: number(), silver: number(), xp: number(), xpEntries: new ArrayField(entry({ date: string(), description: string(), amount: number() }), { initial: [] }), pietySpent: number(), holySymbolDie: new StringField({ required: true, initial: "d12" }),
       abilityScores: new ArrayField(entry({ name: string(), descriptor: string() }), { initial: [{ name: "", descriptor: "" }, { name: "", descriptor: "" }] }),
       racialTraits: list({ name: string(), effect: string(), source: string() }, { name: "", effect: "", source: "" }),
       personalityTraits: list({ name: string(), description: string() }, { name: "", description: "" }),
@@ -103,6 +104,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       resolve: entry({ value: number(10), max: number(10), fatigue: number(), permanentFatigue: number() }),
       attributes: entry({ initiative: number(10), initiativePenalty: number(), toughness: number(), deathThreshold: number(), lethalityLevel: number() }),
       sepsisDeadline: string(),
+      conditions: entry(Object.fromEntries(["shock", "unconscious", "stunned", "prone", "dying", "dead", "armUseless", "noRunCharge", "impairedHead", "impairedBody", "impairedRightArm", "impairedLeftArm", "impairedRightLeg", "impairedLeftLeg"].map(name => [name, new BooleanField({ initial: false })]))),
       wounds: list({ generalLocation: string(), location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }), septic: new BooleanField({ initial: false }) }, { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }),
       skills: new SchemaField(skills),
       customSkills: list({ name: string(), category: string(), description: string(), value: number(), race: number(), culture: number(), lifeEvents: number(), career: number(), rounding: number(), xp: number(), other: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }, { name: "", category: "Other", description: "", value: 0, race: 0, culture: 0, lifeEvents: 0, career: 0, rounding: 0, xp: 0, other: 0, expertise: 0, savvy: false }),
@@ -359,6 +361,67 @@ function detailedHitLocationHtml(location) {
     (group === "Head" ? '<small>* For Eye and Ear, an even defender’s ones die means right; odd means left.</small>' : '') +
     '</details>';
 }
+function xpTotals(actor) {
+  const entries = actor.system.xpEntries ?? [];
+  const earned = entries.reduce((sum, row) => sum + Math.max(0, Number(row.amount) || 0), 0);
+  const spent = entries.reduce((sum, row) => sum + Math.max(0, -(Number(row.amount) || 0)), 0);
+  const total = (Number(actor.system.xp) || 0) + earned;
+  return { total, spent, current: total - spent };
+}
+
+async function openXpLedger(actor) {
+  if (!actor.isOwner) return;
+  const escape = foundry.utils.escapeHTML;
+  const entries = (actor.system.xpEntries ?? []).map(row => ({ date: row.date, description: row.description, amount: Number(row.amount) || 0 }));
+  const rowHtml = (row, index) => `<div class="tbe-xp-entry" data-xp-index="${index}"><input type="date" data-xp-field="date" value="${escape(row.date || "")}" aria-label="XP date"><input type="text" data-xp-field="description" value="${escape(row.description || "")}" placeholder="What was earned or purchased?" aria-label="XP description"><input type="number" data-xp-field="amount" step="1" value="${row.amount}" aria-label="XP amount; positive reward or negative expenditure"><button type="button" data-xp-delete="${index}" aria-label="Delete XP entry" title="Delete XP entry">×</button></div>`;
+  let saved = Promise.resolve();
+  const persist = () => { saved = saved.then(() => actor.update({ "system.xpEntries": entries.map(row => ({ ...row })) })); return saved; };
+  await foundry.applications.api.DialogV2.input({
+    window: { title: `${actor.name} — XP log`, resizable: true }, position: { width: 720 },
+    content: `<div class="tbe-xp-ledger"><p>Enter positive XP for rewards and negative XP for purchases. Changes save automatically.</p><div data-xp-summary></div><div class="tbe-xp-entry tbe-xp-head"><b>Date</b><b>Reward or purchase</b><b>XP (+/−)</b><span></span></div><div data-xp-entries>${entries.map(rowHtml).join("")}</div><button type="button" data-xp-add>+ Add entry</button></div>`,
+    ok: { label: "Close" },
+    render: (_event, dialog) => {
+      const root = dialog.element.querySelector(".tbe-xp-ledger");
+      if (!root) return;
+      const refresh = () => {
+        const earned = entries.reduce((sum, row) => sum + Math.max(0, row.amount || 0), 0);
+        const spent = entries.reduce((sum, row) => sum + Math.max(0, -(row.amount || 0)), 0);
+        const total = (Number(actor.system.xp) || 0) + earned;
+        root.querySelector("[data-xp-summary]").textContent = `Total ${total} XP · Spent ${spent} XP · Current ${total - spent} XP`;
+      };
+      refresh();
+      root.addEventListener("change", event => {
+        const field = event.target.dataset.xpField;
+        const index = Number(event.target.closest("[data-xp-index]")?.dataset.xpIndex);
+        if (!field || !entries[index]) return;
+        if (field === "amount") {
+          const amount = Number(event.target.value);
+          if (!Number.isInteger(amount)) { event.target.value = entries[index].amount; return; }
+          entries[index].amount = amount;
+        } else entries[index][field] = event.target.value;
+        refresh(); void persist();
+      });
+      root.querySelector("[data-xp-add]").addEventListener("click", () => {
+        const row = { date: new Date().toLocaleDateString("en-CA"), description: "", amount: 0 };
+        entries.push(row);
+        root.querySelector("[data-xp-entries]").insertAdjacentHTML("beforeend", rowHtml(row, entries.length - 1));
+        void persist();
+      });
+      root.addEventListener("click", async event => {
+        const button = event.target.closest("[data-xp-delete]");
+        if (!button) return;
+        const index = Number(button.dataset.xpDelete);
+        if (!Number.isInteger(index) || !entries[index]) return;
+        const confirmed = await foundry.applications.api.DialogV2.confirm({ window: { title: "Delete XP log entry?" }, content: "Delete this XP award or purchase from the log?", yes: { label: "Delete" }, no: { label: "Cancel" } });
+        if (!confirmed) return;
+        entries.splice(index, 1);
+        root.querySelector("[data-xp-entries]").innerHTML = entries.map(rowHtml).join("");
+        refresh(); void persist();
+      });
+    }
+  });
+  await saved;
+}
 async function editChatRoll(message) {
   const data = message.getFlag("broken-empires-foundry", "editableRoll");
   if (!data || (!game.user.isGM && message.author?.id !== game.user.id)) return;
@@ -414,30 +477,16 @@ async function editChatRoll(message) {
     "flags.broken-empires-foundry.editableRoll": { ...data, target, value } });
 }
 
-Hooks.on("renderChatMessageHTML", (message, html) => {
-  const card = html.querySelector?.(".tbe-attack-card");
-  if (!card || !message.getFlag("broken-empires-foundry", "editableRoll") || (!game.user.isGM && message.author?.id !== game.user.id)) return;
-  card.addEventListener("contextmenu", event => {
-    event.preventDefault();
-    event.stopPropagation();
-    document.querySelector(".tbe-edit-roll-menu")?.remove();
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "tbe-edit-roll-menu";
-    button.textContent = "Edit Roll";
-    button.style.cssText = `position:fixed;left:${Math.min(event.clientX, window.innerWidth - 110)}px;top:${Math.min(event.clientY, window.innerHeight - 38)}px;z-index:10000;width:105px;`;
-    button.addEventListener("click", () => { button.remove(); void editChatRoll(message); });
-    document.body.append(button);
-    document.addEventListener("click", e => { if (e.target !== button) button.remove(); }, { once: true });
-  });
-});
-
 Hooks.on("getChatMessageContextOptions", (_html, options) => {
-  options.push({ name: "Edit Roll", icon: '<i class="fas fa-pen"></i>', condition: element => {
-    const message = game.messages.get(element.dataset?.messageId ?? element[0]?.dataset?.messageId);
+  const selectedMessage = element => {
+    const node = element instanceof HTMLElement ? element : element?.[0];
+    return game.messages.get(node?.closest("[data-message-id]")?.dataset.messageId);
+  };
+  options.push({ label: "Edit Roll", icon: "fa-solid fa-pen", visible: element => {
+    const message = selectedMessage(element);
     return Boolean(message?.getFlag("broken-empires-foundry", "editableRoll") && (game.user.isGM || message.author?.id === game.user.id));
-  }, callback: element => {
-    const message = game.messages.get(element.dataset?.messageId ?? element[0]?.dataset?.messageId);
+  }, onClick: element => {
+    const message = selectedMessage(element);
     if (message) void editChatRoll(message);
   } });
 });
@@ -507,6 +556,19 @@ class CharacterSheet extends HandlebarsSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     context.system = this.actor.system;
+    const conditionHelp = [
+      ["shock", "Shock", "Prone and unable to act meaningfully; 3 Resolve can avoid dropping into Shock. Remove impairment and Shock through treatment."],
+      ["unconscious", "Unconscious", "Unaware and unable to act. Even Head impairment causes unconsciousness and Shock."],
+      ["stunned", "Stunned", "Odd first Head impairment: lose the next action; you can still defend and move if possible."],
+      ["prone", "Prone", "Lying on the ground; use Rise from Prone to stand under the appropriate circumstances."],
+      ["dying", "Dying", "In Shock with lethal WP over Lethality Level. Make a Dying Wound Die check at the end of each round."],
+      ["dead", "Dead", "Lethal WP over Death Threshold kills immediately under the standard rule; optional critical injury rules may change this."],
+      ["armUseless", "Arm unusable", "An even first Arm impairment makes that arm unusable until impairment is removed."],
+      ["noRunCharge", "Cannot Run/Charge", "An even first Leg impairment prevents Run and Charge until impairment is removed."],
+      ...BODY_LOCATIONS.map(location => [`impaired${location.replace(/\s/g, "")}`, `${location} impaired`, "The location has failed a Wound Die check; a second impairment here causes Shock (and unconsciousness for Head)."])
+    ];
+    context.conditionOptions = conditionHelp.map(([key, label, help]) => ({ key, label, help, active: Boolean(this.actor.system.conditions?.[key]) }));
+    context.xp = xpTotals(this.actor);
     context.sectionTabs = orderedSectionTabs(this.actor.system.sectionOrder);
     context.canReorderTabs = this.actor.isOwner;
     context.maneuvers = COMBAT_MANEUVERS;
@@ -621,6 +683,48 @@ class CharacterSheet extends HandlebarsSheet {
   _onRender(context, options) {
     super._onRender(context, options);
     const scroller = this.element.querySelector(".tbe-sheet-body");
+    this.element.querySelectorAll("[data-wound-roll]").forEach(button => button.addEventListener("click", () => void rollWoundDie(this.actor, Number(button.dataset.woundRoll))));
+    this.element.querySelectorAll("[data-infection-roll]").forEach(button => button.addEventListener("click", () => void rollInfectionDie(this.actor, { mode: button.dataset.infectionRoll, index: Number(button.dataset.woundIndex ?? -1) })));
+    this.element.querySelector("[data-xp-ledger]")?.addEventListener("click", () => void openXpLedger(this.actor));
+    this.element.querySelector("[data-xp-total]")?.addEventListener("change", async event => {
+      const amount = Number(event.target.value);
+      if (!this.actor.isOwner || !Number.isInteger(amount)) { event.target.value = xpTotals(this.actor).total; return; }
+      const earned = (this.actor.system.xpEntries ?? []).reduce((sum, row) => sum + Math.max(0, Number(row.amount) || 0), 0);
+      await this.actor.update({ "system.xp": amount - earned });
+    });
+    this.element.querySelector("[data-backup-character]")?.addEventListener("click", () => this.actor.exportToJSON());
+    this.element.querySelector("[data-save-pdf]")?.addEventListener("click", () => {
+      const printable = this.element.querySelector(".tbe-sheet-body")?.cloneNode(true);
+      if (!printable) return;
+      printable.querySelectorAll(".tbe-section-collapsed").forEach(section => section.classList.remove("tbe-section-collapsed"));
+      printable.querySelectorAll("details").forEach(details => { details.open = true; });
+      printable.querySelectorAll("input, textarea, select").forEach(field => {
+        if (field.type === "hidden") { field.remove(); return; }
+        const value = document.createElement("span");
+        value.className = "print-value";
+        value.textContent = field.type === "checkbox" ? (field.checked ? "✓" : "☐") : field.tagName === "SELECT" ? field.selectedOptions[0]?.textContent ?? "" : field.value || "—";
+        field.replaceWith(value);
+      });
+      printable.querySelectorAll("button").forEach(button => {
+        if (button.matches(".tbe-skill-roll, .tbe-item-link, .tbe-resolve-box")) {
+          const value = document.createElement("span");
+          value.className = button.matches(".tbe-resolve-box") ? "tbe-resolve-box" : "print-value";
+          value.textContent = button.textContent;
+          button.replaceWith(value);
+        } else button.remove();
+      });
+      printable.querySelectorAll(".tbe-nav, .tbe-sheet-export, .tbe-info, .tbe-area-drag").forEach(node => node.remove());
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) { ui.notifications.warn("Allow pop-ups to save the character sheet as a PDF."); return; }
+      const title = foundry.utils.escapeHTML(this.actor.name);
+      printWindow.document.open();
+      printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title} — character sheet</title><style>
+        @font-face{font-family:TBE-Cinzel;src:url(/systems/broken-empires-foundry/styles/fonts/cinzel-semibold.ttf)}@font-face{font-family:TBE-Alegreya;src:url(/systems/broken-empires-foundry/styles/fonts/alegreya-regular.ttf)}
+        @page{size:A4;margin:13mm}body{font:12px/1.35 TBE-Alegreya,Georgia,serif;color:#26352c;margin:0}h2{font:600 17px TBE-Cinzel,Georgia,serif;color:#55352d;border-bottom:2px solid #ad8248;margin:1.2em 0 .5em}h3{font:600 13px TBE-Cinzel,Georgia,serif;color:#55352d;border-bottom:1px solid #ad8248;margin:.8em 0 .4em}section{break-inside:auto;margin-bottom:1em}.tbe-header{display:flex;gap:1em;align-items:center}.tbe-header img{width:72px;height:72px;object-fit:cover}label{display:inline-flex;gap:.3em;align-items:baseline;margin:.2em .8em .2em 0}.print-value{font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}textarea,.tbe-list-row,.tbe-skill,.tbe-equipment-card,.tbe-wound-card{break-inside:avoid}.tbe-list-row,.tbe-skill,.tbe-equipment-card{border-bottom:1px solid #ddd;padding:.3em 0}.tbe-skill{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}.tbe-skill>:first-child{grid-column:span 1}.tbe-skill-breakdown{grid-column:1/-1}.tbe-breakdown-grid{display:flex;flex-wrap:wrap}.tbe-list-heading,.tbe-skill-head{font-weight:700;display:flex;gap:1em}.tbe-grid,.tbe-strand-columns,.tbe-magic-actions,.tbe-weapon-facts,.tbe-wound-flags{display:flex;flex-wrap:wrap;gap:.4em 1em}.tbe-equipment-card,.tbe-event{padding:.4em;border:1px solid #ccc;margin:.3em 0}.tbe-resolve-box{display:inline-block;min-width:1em;border:1px solid #555;text-align:center}.tbe-tip-up{display:none}details>summary{display:none}
+      </style></head><body>${printable.innerHTML}</body></html>`);
+      printWindow.document.close();
+      printWindow.setTimeout(() => printWindow.print(), 400);
+    });
     this._collapsedSections ??= new Set();
     this._openSkillBreakdowns ??= new Set();
     this.element.querySelectorAll("[data-collapse-section]").forEach(button => {

@@ -299,3 +299,82 @@
 .tbe .tbe-histories { --columns:minmax(7rem,1fr) minmax(7rem,1fr) minmax(7rem,1fr) minmax(10rem,1.5fr) 1.9rem; }
 .tbe .tbe-relationships { --columns:minmax(8rem,1fr) minmax(9rem,1fr) minmax(10rem,2fr) 1.9rem; }
 .tbe .tbe-goals { --columns:minmax(12rem,1fr) 5rem 1.9rem; }
+
+.tbe .tbe-magic-actions { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:.15rem 0 .75rem; }
+.tbe .tbe-magic-actions button { flex:none; }
+.tbe .tbe-sheet-export { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:flex-end; }
+.tbe .tbe-sheet-export button { flex:none; }
+.tbe .tbe-xp-summary { grid-column:span 2; display:flex; flex-wrap:wrap; align-items:end; gap:.4rem .65rem; }
+.tbe .tbe-xp-summary label { flex:0 0 5.2rem; }
+.tbe .tbe-xp-summary output { box-sizing:border-box; display:block; min-height:2rem; padding:.35rem; text-align:center; border:1px solid currentColor; border-radius:3px; }
+.tbe .tbe-xp-summary button { flex:none; margin-bottom:.05rem; }
+.tbe-xp-ledger { display:grid; gap:.45rem; max-height:65vh; overflow:auto; }
+.tbe-xp-ledger .tbe-xp-entry { display:grid; grid-template-columns:8rem minmax(10rem,1fr) 5.5rem 2rem; gap:.4rem; align-items:center; }
+.tbe-xp-ledger .tbe-xp-entry input { box-sizing:border-box; width:100%; min-width:0; }
+.tbe-xp-ledger .tbe-xp-entry button { width:2rem; min-width:2rem; height:2rem; padding:0; }
+.tbe-xp-ledger [data-xp-summary] { font-weight:700; padding:.4rem; border:1px solid currentColor; border-radius:3px; }
+
+/* Parchment and ink theme. Fonts ship with the system for offline worlds. */
+@font-face { font-family:"TBE Cinzel"; src:url("./fonts/cinzel-semibold.ttf") format("truetype"); font-weight:600; font-display:swap; }
+@font-face { font-family:"TBE Alegreya"; src:url("./fonts/alegreya-regular.ttf") format("truetype"); font-weight:400; font-display:swap; }
+@font-face { font-family:"TBE Alegreya"; src:url("./fonts/alegreya-semibold.ttf") format("truetype"); font-weight:600 900; font-display:swap; }
+.tbe.character-sheet {
+  --color-bg-primary:#f5ecd7;
+  --color-border-light-primary:#ad9168;
+  --color-text-primary:#26352c;
+  color:#29372d;
+  background:#202923;
+  font-family:"TBE Alegreya", Georgia, serif;
+  font-size:1.02rem;
+}
+.tbe.character-sheet .tbe-sheet-body {
+  background:radial-gradient(circle at 24% 34%,#81674618 0 1px,transparent 1.5px) 0 0/39px 37px,
+    linear-gradient(145deg,#f3e8ce,#e0cfaa);
+  border:5px solid #ad8248;
+  box-shadow:inset 0 0 0 2px #795b39, inset 0 0 0 8px #f4e9cf;
+}
+.tbe.character-sheet .tbe-header { padding:.65rem .85rem; border-radius:5px; background:#29362e; color:#f1e5c6; }
+.tbe.character-sheet .tbe-header input { color:#f7eed9; background:#3a463b; border-color:#b6955b; }
+.tbe.character-sheet .tbe-header img { border:2px solid #c19c60; }
+.tbe.character-sheet .tbe-nav { background:#2a382f; border-radius:4px; padding:.38rem; }
+.tbe.character-sheet .tbe-nav button { font-family:"TBE Cinzel", Georgia, serif; font-size:.8rem; font-weight:600; color:#f2e5c4; background:#34443a; border:1px solid #866a44; border-radius:3px; }
+.tbe.character-sheet .tbe-nav button:hover,
+.tbe.character-sheet .tbe-nav button:focus-visible { background:#604039; color:#fff0cc; border-color:#c49a5e; }
+.tbe.character-sheet .tbe-sheet-body > section { background:#f0e3c8d9; border:1px solid #bea47b; box-shadow:0 2px 5px #59452a12; }
+.tbe.character-sheet .tbe-sheet-body > section:nth-of-type(even) { background:#e7d6b7e6; }
+.tbe.character-sheet section h2,
+.tbe.character-sheet section h3 { font-family:"TBE Cinzel", Georgia, serif; color:#55352d; border-bottom:1px solid #b68c54; padding-bottom:.25rem; letter-spacing:.02em; }
+.tbe.character-sheet section h2 { font-size:1.2rem; border-bottom-width:2px; }
+.tbe.character-sheet section h3 { font-size:.93rem; }
+.tbe.character-sheet input:not([type=checkbox]),
+.tbe.character-sheet select,
+.tbe.character-sheet textarea { font-family:"TBE Alegreya", Georgia, serif; font-size:1rem; color:#26352c; background:#fcf6e9; border:1px solid #ae916a; border-radius:3px; }
+.tbe.character-sheet input::placeholder,
+.tbe.character-sheet textarea::placeholder { color:#776c59; opacity:1; }
+.tbe.character-sheet button:not(.tbe-collapse-toggle):not(.tbe-skill-roll):not(.tbe-portrait):not(.tbe-nav button):not(.tbe-resolve-box):not(.tbe-item-link) { font-family:"TBE Alegreya", Georgia, serif; color:#f9efd8; background:#5a3931; border:1px solid #a88351; border-radius:4px; }
+.tbe.character-sheet button:is([data-remove], [data-delete-item], [data-remove-location]) { color:#fff0d7; background:#653d37; }
+.tbe.character-sheet button:hover { filter:brightness(1.14); }
+.tbe.character-sheet .tbe-skill:nth-child(even) { background:#dbc6a54d; }
+.tbe.character-sheet .tbe-talent-card,
+.tbe.character-sheet .tbe-weapon-card,
+.tbe.character-sheet .tbe-equipment-card,
+.tbe.character-sheet .tbe-wound-card,
+.tbe.character-sheet .tbe-race-trait { background:#f9efdc; border-color:#b29a77; }
+.tbe.character-sheet .tbe-weapon-facts > div { background:#ead8b8; }
+.tbe.character-sheet .tbe-resolve-spent { color:#23513c; }
+.tbe.character-sheet .tbe-overflow-badge,
+.tbe.character-sheet .tbe-over { color:#9b362e; }
+.tbe.character-sheet .tbe-item-link { color:#253a2b; background:transparent; font-family:"TBE Alegreya",Georgia,serif; font-size:1.05rem; }
+.tbe.character-sheet .tbe-skill-roll { color:#234b34; }
+.tbe.item-sheet { font-family:"TBE Alegreya",Georgia,serif; color:#29372d; background:#e8d8b9; }
+.tbe.item-sheet .tbe-sheet-body { background:linear-gradient(145deg,#f3e8ce,#e1d0ab); border:3px solid #ad8248; }
+.tbe.item-sheet h2,.tbe.item-sheet h3 { font-family:"TBE Cinzel",Georgia,serif; color:#55352d; border-bottom:1px solid #ad8248; }
+.tbe.item-sheet input,.tbe.item-sheet textarea,.tbe.item-sheet select { font-family:"TBE Alegreya",Georgia,serif; color:#26352c; background:#fcf6e9; border:1px solid #ae916a; }
+.tbe-casting-dialog,.tbe-xp-ledger { font-family:"TBE Alegreya",Georgia,serif; font-size:1rem; }
+.tbe .tbe-wound-actions { display:flex; flex-wrap:wrap; gap:.4rem; margin:.5rem 0; }
+.tbe .tbe-condition-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(10rem,1fr)); gap:.3rem .65rem; }
+.tbe .tbe-condition { display:flex; align-items:center; gap:.4rem; font-weight:400; cursor:help; }
+.tbe .tbe-condition input { width:auto; flex:none; }
+.tbe .tbe-wound-flags { gap:.4rem .8rem; }
+.tbe .tbe-wound-flags > button { margin-left:0; }
+.tbe .tbe-wound-flags > [data-remove] { margin-left:auto; }
