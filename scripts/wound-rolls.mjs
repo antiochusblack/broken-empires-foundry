@@ -24,7 +24,7 @@ export async function rollWoundDie(actor, index) {
   let updates = {};
   await rollDie(actor, 10, `Wound Die — ${location}`, (die, result) => {
     if (die === 10 || result > totalWP) return `<p>${totalWP} WP in ${escape(location)}: <strong>not impaired</strong>${die === 10 ? " (natural 10 always avoids impairment)" : ""}.</p>${thresholdNotice}`;
-    const outcome = [`${totalWP} WP in ${escape(location)}: <strong>${previous ? "second impairment" : "impaired"}</strong>.`];
+    const outcome = [];
     updates[`system.conditions.${impairmentKey(location)}`] = true;
     if (previous) {
       updates["system.conditions.shock"] = true;
@@ -34,10 +34,10 @@ export async function rollWoundDie(actor, index) {
     } else if (location === "Body") outcome.push(`Roll Endurance or fall into Shock for ${die} minutes. Mark Shock and Prone if that roll fails.`);
     else if (location.endsWith("Arm")) {
       outcome.push(`Drop items held in that hand.${die % 2 === 0 ? " Even die: the arm is unusable until impairment is removed." : ""}`);
-      if (die % 2 === 0) updates["system.conditions.armUseless"] = true;
+      if (die % 2 === 0) updates[`system.conditions.${location.startsWith("Right") ? "rightArmUseless" : "leftArmUseless"}`] = true;
     } else if (location.endsWith("Leg")) {
       outcome.push(die % 2 ? "Odd die: fall Prone." : "Even die: cannot Run or Charge until impairment is removed.");
-      updates[die % 2 ? "system.conditions.prone" : "system.conditions.noRunCharge"] = true;
+      updates[die % 2 ? "system.conditions.prone" : `system.conditions.${location.startsWith("Right") ? "rightLegNoRunCharge" : "leftLegNoRunCharge"}`] = true;
     } else if (die % 2) {
       outcome.push("Odd die: momentarily stunned; lose the next action, but can defend and move if possible.");
       updates["system.conditions.stunned"] = true;
@@ -51,7 +51,8 @@ export async function rollWoundDie(actor, index) {
       updates["system.conditions.dying"] = true;
       outcome.push(`Lethal WP ${lethalWP} exceeds LL ${actor.system.attributes.lethalityLevel}: Dying while in Shock; follow the end-of-round Dying checks.`);
     }
-    return outcome.map(line => `<p>${escape(line)}</p>`).join("") + thresholdNotice;
+    return `<p>${totalWP} WP in ${escape(location)}: <strong>${previous ? "second impairment" : "impaired"}</strong>.</p>`
+      + outcome.map(line => `<p>${escape(line)}</p>`).join("") + thresholdNotice;
   });
   if (Object.keys(updates).length) await actor.update(updates);
 }
@@ -83,5 +84,11 @@ export async function rollInfectionDie(actor, { mode, index = -1 } = {}) {
     const effect = mode === "sepsis" ? (worsened ? `Infection worsens: mark the highest infected wound Septic. Death within 48 hours unless treated or amputated; −30 to all skills.` : "Infection holds steady.") : (worsened ? `Infection: mark ${locationOf(target.w) || "the selected wound"} (${target.w.points} WP) Infected.` : "No new infection.");
     return `<p>Against ${escape(label)} ${difficulty}: <strong>${escape(effect)}</strong></p>${mode === "journey" ? "<p>If any lethal wounds are infected after this check, make one Sepsis check.</p>" : ""}`;
   });
-  if (worsened && target) await actor.update({ [`system.wounds.${target.i}.${mode === "sepsis" ? "septic" : "infection"}`]: true });
+  if (worsened && target) {
+    // Foundry array fields can replace the whole row for an indexed update.
+    // Submit the complete wound list so location, WP and other flags survive.
+    const updatedWounds = actor.system.wounds.map(w => w.toObject?.() ?? foundry.utils.deepClone(w));
+    updatedWounds[target.i][mode === "sepsis" ? "septic" : "infection"] = true;
+    await actor.update({ "system.wounds": updatedWounds });
+  }
 }

@@ -1,3 +1,4 @@
+import { currentPiety, recordPiety } from "./piety.mjs";
 const escape = value => foundry.utils.escapeHTML(String(value ?? ""));
 const SYMBOL_DICE = ["d12", "d10", "d8", "d6", "depleted"];
 const RESISTANCE = {
@@ -8,10 +9,9 @@ const RESISTANCE = {
   "Profane defiance": 5
 };
 
-export async function requestMiracle(actor, { skillTotals, attackOutcome }) {
+export async function requestMiracle(actor, { attackOutcome }) {
   if (!actor.isOwner) return;
-  const data = actor.system.skills.magic.piety;
-  const current = skillTotals(actor, "Piety", data).total;
+  const current = currentPiety(actor);
   if (current <= 0) { ui.notifications.warn("Current Piety is zero; the Godbound is Cast Out until atonement."); return; }
   const die = SYMBOL_DICE.includes(actor.system.holySymbolDie) ? actor.system.holySymbolDie : "d12";
   const details = await foundry.applications.api.DialogV2.input({
@@ -36,7 +36,7 @@ export async function requestMiracle(actor, { skillTotals, attackOutcome }) {
   }
   const target = current + modifier;
   const roll = await new Roll("1d100").evaluate();
-  const outcome = attackOutcome(roll.total, target, Number(data.expertise) || 0);
+  const outcome = attackOutcome(roll.total, target, 0);
   const success = outcome.success;
   let symbolMessage = "";
   let symbolSL = 0;
@@ -54,7 +54,7 @@ export async function requestMiracle(actor, { skillTotals, attackOutcome }) {
     const depletion = await new Roll("1d10").evaluate();
     cost = depletion.total + (success ? sl : outcome.criticalFailure ? 10 : 0);
     costRoll = `${depletion.total}${success ? ` + ${sl} SL` : outcome.criticalFailure ? " + 10 critical failure" : ""}`;
-    await actor.update({ "system.pietySpent": Math.max(0, Number(actor.system.pietySpent) || 0) + cost });
+    await recordPiety(actor, -cost, `Miracle: ${String(details.domain).trim()} — ${String(details.request).trim()}`);
   }
   const remaining = Math.max(0, current - cost);
   const note = remaining === 0 ? "Piety has reached zero: Cast Out; resolve the miracle first if it succeeded." : "";

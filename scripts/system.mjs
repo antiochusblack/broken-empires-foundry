@@ -1,5 +1,6 @@
 import { castSpell } from "./spell-casting.mjs";
 import { requestMiracle } from "./divine-casting.mjs";
+import { currentPiety, pietyBaseline } from "./piety.mjs";
 import { rollWoundDie, rollInfectionDie } from "./wound-rolls.mjs";
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
@@ -93,7 +94,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       description: string(), notes: string(), race: string(), sex: string(), size: string(), age: string(),
       sectionOrder: new ArrayField(string(), { initial: DEFAULT_SECTION_TABS.map(tab => tab.id) }),
       equipmentAreaOrder: new ArrayField(string(), { initial: [] }),
-      culture: string(), career: string(), status: number(), silver: number(), xp: number(), xpEntries: new ArrayField(entry({ date: string(), description: string(), amount: number() }), { initial: [] }), pietySpent: number(), holySymbolDie: new StringField({ required: true, initial: "d12" }),
+      culture: string(), career: string(), status: number(), silver: number(), xp: number(), xpEntries: new ArrayField(entry({ date: string(), description: string(), amount: number() }), { initial: [] }), pietySpent: number(), pietyBase: number(-1), pietyEntries: new ArrayField(entry({ date: string(), description: string(), amount: number() }), { initial: [] }), holySymbolDie: new StringField({ required: true, initial: "d12" }),
       abilityScores: new ArrayField(entry({ name: string(), descriptor: string() }), { initial: [{ name: "", descriptor: "" }, { name: "", descriptor: "" }] }),
       racialTraits: list({ name: string(), effect: string(), source: string() }, { name: "", effect: "", source: "" }),
       personalityTraits: list({ name: string(), description: string() }, { name: "", description: "" }),
@@ -104,7 +105,7 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       resolve: entry({ value: number(10), max: number(10), fatigue: number(), permanentFatigue: number() }),
       attributes: entry({ initiative: number(10), initiativePenalty: number(), toughness: number(), deathThreshold: number(), lethalityLevel: number() }),
       sepsisDeadline: string(),
-      conditions: entry(Object.fromEntries(["shock", "unconscious", "stunned", "prone", "dying", "dead", "armUseless", "noRunCharge", "impairedHead", "impairedBody", "impairedRightArm", "impairedLeftArm", "impairedRightLeg", "impairedLeftLeg"].map(name => [name, new BooleanField({ initial: false })]))),
+      conditions: entry(Object.fromEntries(["shock", "unconscious", "stunned", "prone", "dying", "dead", "armUseless", "noRunCharge", "rightArmUseless", "leftArmUseless", "rightLegNoRunCharge", "leftLegNoRunCharge", "impairedHead", "impairedBody", "impairedRightArm", "impairedLeftArm", "impairedRightLeg", "impairedLeftLeg"].map(name => [name, new BooleanField({ initial: false })]))),
       wounds: list({ generalLocation: string(), location: string(), detail: string(), points: number(), lethal: new BooleanField({ initial: true }), ritual: new BooleanField({ initial: false }), infection: new BooleanField({ initial: false }), septic: new BooleanField({ initial: false }) }, { generalLocation: "", location: "", detail: "", points: 0, lethal: true, ritual: false, infection: false, septic: false }),
       skills: new SchemaField(skills),
       customSkills: list({ name: string(), category: string(), description: string(), value: number(), race: number(), culture: number(), lifeEvents: number(), career: number(), rounding: number(), xp: number(), other: number(), expertise: number(), savvy: new BooleanField({ initial: false }) }, { name: "", category: "Other", description: "", value: 0, race: 0, culture: 0, lifeEvents: 0, career: 0, rounding: 0, xp: 0, other: 0, expertise: 0, savvy: false }),
@@ -422,6 +423,55 @@ async function openXpLedger(actor) {
   });
   await saved;
 }
+async function openPietyLedger(actor) {
+  if (!actor.isOwner) return;
+  const escape = foundry.utils.escapeHTML;
+  const base = pietyBaseline(actor);
+  const entries = (actor.system.pietyEntries ?? []).map(row => ({ date: row.date || "", description: row.description || "", amount: Number(row.amount) || 0 }));
+  const rowHtml = (row, index) => `<div class="tbe-xp-entry" data-piety-index="${index}"><input type="date" data-piety-field="date" value="${escape(row.date)}" aria-label="Piety date"><input type="text" data-piety-field="description" value="${escape(row.description)}" placeholder="Pious act, miracle, or correction" aria-label="Piety reason"><input type="number" data-piety-field="amount" step="1" value="${row.amount}" aria-label="Piety gained or lost"><button type="button" data-piety-delete="${index}" aria-label="Delete Piety entry" title="Delete Piety entry">×</button></div>`;
+  let saved = Promise.resolve();
+  const persist = () => { saved = saved.then(() => actor.update({ "system.pietyBase": base, "system.pietyEntries": entries.map(row => ({ ...row })) })); return saved; };
+  await foundry.applications.api.DialogV2.input({
+    window: { title: `${actor.name} — Piety log`, resizable: true }, position: { width: 720 },
+    content: `<div class="tbe-xp-ledger tbe-piety-ledger"><p>Starting Piety: ${base}. Enter gains as positive amounts and miracle costs or losses as negative amounts. Piety cannot exceed 90. Changes save automatically.</p><div data-piety-summary></div><div class="tbe-xp-entry tbe-xp-head"><b>Date</b><b>Reason</b><b>Piety (+/−)</b><span></span></div><div data-piety-entries>${entries.map(rowHtml).join("")}</div><button type="button" data-piety-add>+ Add entry</button></div>`,
+    ok: { label: "Close" },
+    render: (_event, dialog) => {
+      const root = dialog.element.querySelector(".tbe-piety-ledger");
+      if (!root) return;
+      const refresh = () => { root.querySelector("[data-piety-summary]").textContent = `Current Piety: ${Math.max(0, Math.min(90, base + entries.reduce((sum, row) => sum + row.amount, 0)))}`; };
+      refresh();
+      root.addEventListener("change", event => {
+        const field = event.target.dataset.pietyField;
+        const index = Number(event.target.closest("[data-piety-index]")?.dataset.pietyIndex);
+        if (!field || !entries[index]) return;
+        if (field === "amount") {
+          const amount = Number(event.target.value);
+          if (!Number.isInteger(amount)) { event.target.value = entries[index].amount; return; }
+          entries[index].amount = amount;
+        } else entries[index][field] = event.target.value;
+        refresh(); void persist();
+      });
+      root.querySelector("[data-piety-add]").addEventListener("click", () => {
+        const row = { date: new Date().toLocaleDateString("en-CA"), description: "", amount: 0 };
+        entries.push(row);
+        root.querySelector("[data-piety-entries]").insertAdjacentHTML("beforeend", rowHtml(row, entries.length - 1));
+        void persist();
+      });
+      root.addEventListener("click", async event => {
+        const button = event.target.closest("[data-piety-delete]");
+        if (!button) return;
+        const index = Number(button.dataset.pietyDelete);
+        if (!Number.isInteger(index) || !entries[index]) return;
+        const confirmed = await foundry.applications.api.DialogV2.confirm({ window: { title: "Delete Piety log entry?" }, content: "Delete this Piety change from the log?", yes: { label: "Delete" }, no: { label: "Cancel" } });
+        if (!confirmed) return;
+        entries.splice(index, 1);
+        root.querySelector("[data-piety-entries]").innerHTML = entries.map(rowHtml).join("");
+        refresh(); void persist();
+      });
+    }
+  });
+  await saved;
+}
 async function editChatRoll(message) {
   const data = message.getFlag("broken-empires-foundry", "editableRoll");
   if (!data || (!game.user.isGM && message.author?.id !== game.user.id)) return;
@@ -556,6 +606,12 @@ class CharacterSheet extends HandlebarsSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     context.system = this.actor.system;
+    const impairmentHelp = {
+      Head: "First impairment: odd Wound Die = stunned and lose the next action (you can still defend and move); even = unconscious and in Shock for die-face minutes. Second impairment = Shock and unconscious for die-face minutes.",
+      Body: "First impairment: make an Endurance roll or fall in Shock for die-face minutes; odd and even work the same. Second impairment = Shock without an Endurance roll.",
+      Arm: "First impairment: odd Wound Die = drop anything held in this hand; even = drop it and this arm becomes unusable until impairment is removed. Second impairment = Shock for die-face minutes.",
+      Leg: "First impairment: odd Wound Die = fall Prone; even = cannot Run or Charge until impairment is removed. Second impairment = Shock for die-face minutes."
+    };
     const conditionHelp = [
       ["shock", "Shock", "Prone and unable to act meaningfully; 3 Resolve can avoid dropping into Shock. Remove impairment and Shock through treatment."],
       ["unconscious", "Unconscious", "Unaware and unable to act. Even Head impairment causes unconsciousness and Shock."],
@@ -563,10 +619,14 @@ class CharacterSheet extends HandlebarsSheet {
       ["prone", "Prone", "Lying on the ground; use Rise from Prone to stand under the appropriate circumstances."],
       ["dying", "Dying", "In Shock with lethal WP over Lethality Level. Make a Dying Wound Die check at the end of each round."],
       ["dead", "Dead", "Lethal WP over Death Threshold kills immediately under the standard rule; optional critical injury rules may change this."],
-      ["armUseless", "Arm unusable", "An even first Arm impairment makes that arm unusable until impairment is removed."],
-      ["noRunCharge", "Cannot Run/Charge", "An even first Leg impairment prevents Run and Charge until impairment is removed."],
-      ...BODY_LOCATIONS.map(location => [`impaired${location.replace(/\s/g, "")}`, `${location} impaired`, "The location has failed a Wound Die check; a second impairment here causes Shock (and unconsciousness for Head)."])
+      ["rightArmUseless", "Right Arm unusable", "Even first Right Arm impairment: that arm cannot hold weapons or shields or perform skills requiring it until impairment is removed."],
+      ["leftArmUseless", "Left Arm unusable", "Even first Left Arm impairment: that arm cannot hold weapons or shields or perform skills requiring it until impairment is removed."],
+      ["rightLegNoRunCharge", "Right Leg: no Run/Charge", "Even first Right Leg impairment: you cannot Run or Charge until this impairment is removed."],
+      ["leftLegNoRunCharge", "Left Leg: no Run/Charge", "Even first Left Leg impairment: you cannot Run or Charge until this impairment is removed."],
+      ...BODY_LOCATIONS.map(location => [`impaired${location.replace(/\s/g, "")}`, `${location} impaired`, impairmentHelp[location.endsWith("Arm") ? "Arm" : location.endsWith("Leg") ? "Leg" : location]])
     ];
+    if (this.actor.system.conditions?.armUseless) conditionHelp.push(["armUseless", "Arm unusable (old marker)", "Existing marker from the previous version: tick the affected Right or Left Arm above, then untick this old marker."]);
+    if (this.actor.system.conditions?.noRunCharge) conditionHelp.push(["noRunCharge", "No Run/Charge (old marker)", "Existing marker from the previous version: tick the affected Right or Left Leg above, then untick this old marker."]);
     context.conditionOptions = conditionHelp.map(([key, label, help]) => ({ key, label, help, active: Boolean(this.actor.system.conditions?.[key]) }));
     context.xp = xpTotals(this.actor);
     context.sectionTabs = orderedSectionTabs(this.actor.system.sectionOrder);
@@ -582,7 +642,7 @@ class CharacterSheet extends HandlebarsSheet {
     context.customSkillGroups = Object.fromEntries(Object.keys(SKILLS).map(category => [category, customSkills.filter(row => row.category === category)]));
     context.otherCustomSkills = customSkills.filter(row => !Object.keys(SKILLS).includes(row.category));
     context.talents = this.actor.items.filter(i => i.type === "talent");
-    context.currentPiety = skillTotals(this.actor, "Piety", this.actor.system.skills.magic.piety).total;
+    context.currentPiety = currentPiety(this.actor);
     context.threads = this.actor.items.filter(i => i.type === "thread");
     context.weapons = this.actor.items.filter(i => i.type === "weapon");
     context.weaponUses = Object.fromEntries(context.weapons.map(item => [item.id, weaponUse(item)]));
@@ -683,9 +743,47 @@ class CharacterSheet extends HandlebarsSheet {
   _onRender(context, options) {
     super._onRender(context, options);
     const scroller = this.element.querySelector(".tbe-sheet-body");
-    this.element.querySelectorAll("[data-wound-roll]").forEach(button => button.addEventListener("click", () => void rollWoundDie(this.actor, Number(button.dataset.woundRoll))));
-    this.element.querySelectorAll("[data-infection-roll]").forEach(button => button.addEventListener("click", () => void rollInfectionDie(this.actor, { mode: button.dataset.infectionRoll, index: Number(button.dataset.woundIndex ?? -1) })));
+    // Persist manual wound flags as a complete array. Indexed writes to a
+    // Foundry ArrayField may replace an entire wound and clear its other data.
+    this.element.querySelectorAll('.tbe-wound-card input[type="checkbox"][name^="system.wounds."]').forEach(input => {
+      input.addEventListener("change", async event => {
+        event.stopPropagation();
+        if (!this.actor.isOwner) return;
+        const cards = [...this.element.querySelectorAll(".tbe-wound-card")];
+        const wounds = this.actor.system.wounds.map((wound, index) => {
+          const copy = wound.toObject?.() ?? foundry.utils.deepClone(wound);
+          for (const field of cards[index]?.querySelectorAll(`[name^="system.wounds.${index}."]`) ?? []) {
+            const key = field.name.slice(`system.wounds.${index}.`.length);
+            if (!Object.hasOwn(copy, key)) continue;
+            copy[key] = field.type === "checkbox" ? field.checked : field.type === "number" ? Number(field.value) : field.value;
+          }
+          return copy;
+        });
+        await this.actor.update({ "system.wounds": wounds });
+      });
+    });
+    this.element.querySelectorAll("[data-wound-roll]").forEach(button => button.addEventListener("click", async event => {
+      event.preventDefault();
+      const index = Number(button.dataset.woundRoll);
+      await this.submit();
+      await rollWoundDie(this.actor, index);
+    }));
+    this.element.querySelectorAll("[data-infection-roll]").forEach(button => button.addEventListener("click", async event => {
+      event.preventDefault();
+      const mode = button.dataset.infectionRoll, index = Number(button.dataset.woundIndex ?? -1);
+      await this.submit();
+      await rollInfectionDie(this.actor, { mode, index });
+    }));
     this.element.querySelector("[data-xp-ledger]")?.addEventListener("click", () => void openXpLedger(this.actor));
+    this.element.querySelector("[data-piety-ledger]")?.addEventListener("click", () => void openPietyLedger(this.actor));
+    this.element.querySelector("[data-piety-current]")?.addEventListener("change", async event => {
+      const desired = Number(event.target.value);
+      if (!this.actor.isOwner || !Number.isInteger(desired) || desired < 0 || desired > 90) { event.target.value = currentPiety(this.actor); return; }
+      const changes = (this.actor.system.pietyEntries ?? []).reduce((sum, row) => sum + (Number(row.amount) || 0), 0);
+      const base = pietyBaseline(this.actor);
+      if (desired === currentPiety(this.actor)) return;
+      await this.actor.update({ "system.pietyBase": base, "system.pietyEntries": [...(this.actor.system.pietyEntries ?? []).map(row => ({ date: row.date, description: row.description, amount: Number(row.amount) || 0 })), { date: new Date().toLocaleDateString("en-CA"), description: "Manual Piety adjustment", amount: desired - base - changes }] });
+    });
     this.element.querySelector("[data-xp-total]")?.addEventListener("change", async event => {
       const amount = Number(event.target.value);
       if (!this.actor.isOwner || !Number.isInteger(amount)) { event.target.value = xpTotals(this.actor).total; return; }
