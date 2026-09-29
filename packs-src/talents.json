@@ -1520,6 +1520,16 @@
     }
   },
   {
+    "name": "EXPERIENCED",
+    "type": "talent",
+    "system": {
+      "category": "Previous Career",
+      "reference": "Chapter 7, Civilian",
+      "effect": "During Rounding Out, gain 30 extra points for Adventuring, Social, or Lore skills.",
+      "requirements": "Previous Career: Civilian"
+    }
+  },
+  {
     "name": "Shield Wall (House Rule Variant)",
     "type": "talent",
     "system": {

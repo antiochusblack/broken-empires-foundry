@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.23.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.24.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.23.0` and attach `broken-empires-foundry-v0.23.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.24.0` and attach `broken-empires-foundry-v0.24.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
@@ -27,6 +27,13 @@ The sheet shows lethal WP, nonlethal WP and their combined total at each body lo
 ## Attack and combat reference
 
 Weapons in Held and Ready or At Hand have an Attack button. Select a Combat skill, tick common modifiers and enter any other situational modifier. An At Hand weapon defaults to Draw and Attack (−20), which can be unchecked if already drawn; throwing knives and unarmed attacks are exempt. The chat message shows the d100 result, rolled SLs, critical state, general hit location, and an optional detailed-location lookup for the defender's ones die. No target token is required. The Reference section lists manoeuvres, common modifiers and turn reminders.
+
+## Changes in 0.24.0
+
+- Thread Items collapse like equipment while keeping their die roll button visible.
+- The **Pregens** Actor compendium creates four original example characters with embedded gear, armour, weapons, talents and, where relevant, a Thread.
+- A 12-step **Character creator** on the character sheet keeps choices while navigating between stages and discards the draft when closed. It uses the privately imported Life Event tables for choose/roll results; players enter each result's applicable benefit. Finish checks starting allocations and adds actual Item documents.
+- Spell casting shows all owned Threads in the post-success selector, marking depleted or inapplicable choices. Closing a post-roll Thread or Resolve window no longer cancels the spell: zero support is used and any remaining Weave Reaction proceeds.
 
 ## Changes in 0.23.0
 
@@ -94,6 +101,8 @@ The full rulebook text is **not** bundled in this public system or its ZIP. The 
 ## RollTables (private import)
 
 The rulebook tables are supplied as a **separate private JSON file**, not in the public system repository or release ZIP. In Foundry, a GM opens the **Tables** sidebar, clicks **Import TBE RollTables**, and selects `tbe-rolltables-private.json`. The importer creates named world RollTables in Character Creation, Travel, Combat, Magic, Solo Play, Names, Treasure, and Naval Combat folders; the Enemy Subtable stays at the top level. Running the import again updates the tables it created without duplicating them. Keep the JSON private, as it contains book text.
+
+On a new character sheet, **Character creator** opens a 12-step draft. Choose or roll race, abilities, culture, Life Events, career and starting resources. Back and Next preserve the draft while the window stays open; closing it discards the draft. **Finish character** checks point pools and starting caps, then fills the sheet and adds the selected Items. The Life Event choose/roll buttons use the privately imported world RollTables above. Read each rolled event and select its applicable mechanical benefit in the wizard; unusual results can be refined on the finished sheet. Starting equipment and talents come from the system's world compendiums.
 
 The Treasure Item Table rolls Type C (1d100) by default. Type A and B have dedicated tables with their +20 and +10 dice formulas, including entries above 100. The book also specifies −10/−20/−30 for Types D/E/F but gives no result for totals below 1; use the Type C table with the appropriate modifier and GM judgement on an out-of-range roll. Journey and HexMarch Fatigue tables roll their unmodified dice; apply the travel modifiers according to the book.
 

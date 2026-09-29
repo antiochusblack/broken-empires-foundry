@@ -1,0 +1,3250 @@
+[
+  {
+    "name": "Brunna Copperwake",
+    "type": "character",
+    "system": {
+      "description": "Dwarven shield-bearing siege veteran searching for a missing masterwork.",
+      "notes": "Original pregen; chapter 7 creation choices (curated Life Event results).\nStarting skills: {'Combat': 'Melee: Medium', 'Adventuring': 'Endurance', 'Social': 'Intimidate', 'Lore': 'Craft: Practical'}. Ability Expertise/Talents and career choices: see item cards.\nAttribute points: {'Resolve': 0, 'Initiative': 1, 'Toughness': 2, 'Death Threshold': 2}; age Adult. Culture coin 30 sp; career coin 20 sp; equipment coin 300 sp; purchases 175 sp.\nCareer point pool [80, 50, 40, 30, 0]; age Rounding Out 100 points (Strand levels cost 5 each). Young Endurance +20 is separate.\nLife Events: Legacy of Invention, Young Recruit, Improvised Repair. Starting armour: Leather Cap, Leather Jerkin, Quilt Sleeve (Right Arm).\n\nBrunna's family made ingenious locks. Her old militia officer disappeared after a siege, leaving an unfinished mechanism marked with her family's maker's stamp. She repairs weapons while searching for him.",
+      "race": "Dwarf",
+      "sex": "Female",
+      "size": "Medium",
+      "age": "Adult",
+      "culture": "Civilized, Rural (Westlands)",
+      "career": "Warrior",
+      "status": 0,
+      "silver": 175,
+      "xp": 0,
+      "abilityScores": [
+        {
+          "name": "Strength",
+          "descriptor": "Strong"
+        },
+        {
+          "name": "Constitution",
+          "descriptor": "Hardy"
+        }
+      ],
+      "racialTraits": [
+        {
+          "name": "Dwarven craft",
+          "effect": "Locks & Traps is a bonus Savvy skill. Reduce the SL requirement of extended Craft: Practical and Craft: Artistic rolls by 2."
+        },
+        {
+          "name": "Hardy, dour",
+          "effect": "Endurance +10; Lethality Level +1; Inspire −10."
+        },
+        {
+          "name": "Exclusive Talent",
+          "effect": "May acquire Dwarven Swordsinger."
+        },
+        {
+          "name": "Languages",
+          "effect": "Kharzhad 70; Low Vestrian 20."
+        }
+      ],
+      "personalityTraits": [
+        {
+          "name": "Loyal",
+          "description": ""
+        },
+        {
+          "name": "Suspicious",
+          "description": ""
+        },
+        {
+          "name": "Proud",
+          "description": ""
+        }
+      ],
+      "goals": [
+        {
+          "text": "Find the vanished militia officer and finish the siege mechanism.",
+          "shared": false
+        },
+        {
+          "text": "Keep the four travelers alive until their common debt is paid.",
+          "shared": true
+        }
+      ],
+      "events": {
+        "origin": {
+          "name": "Legacy of Invention",
+          "benefit": "Commerce +10",
+          "story": "Family locksmiths left behind a dangerous unfinished mechanism."
+        },
+        "youth": {
+          "name": "Young Recruit",
+          "benefit": "Melee: Medium +10",
+          "story": "Her militia officer vanished during a border siege."
+        },
+        "recent": {
+          "name": "Improvised Repair",
+          "benefit": "Craft: Practical +10",
+          "story": "She repaired a broken shield hinge under fire."
+        }
+      },
+      "relationships": [
+        {
+          "name": "Orvek Brasspin",
+          "type": "Patron",
+          "notes": "Former officer, now missing after the siege."
+        }
+      ],
+      "sharedHistories": [],
+      "resolve": {
+        "max": 10,
+        "value": 10,
+        "fatigue": 0,
+        "permanentFatigue": 0
+      },
+      "attributes": {
+        "initiative": 12,
+        "toughness": 1,
+        "deathThreshold": 26,
+        "lethalityLevel": 10
+      },
+      "skills": {
+        "combat": {
+          "dodge": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 20,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_light": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_medium": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 10,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": true
+          },
+          "melee_heavy": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": false
+          },
+          "might": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "missile": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 20,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "thrown_weapons": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "adventuring": {
+          "athletics": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "endurance": {
+            "value": 30,
+            "race": 10,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": true
+          },
+          "locks_traps": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": true
+          },
+          "perception": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 20,
+            "expertise": 1,
+            "savvy": false
+          },
+          "ride": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sail_boat": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sleight_of_hand": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "stealth": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "survival": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "track": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "willpower": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "social": {
+          "deceive": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "insight": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "inspire": {
+            "value": 20,
+            "race": -10,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "intimidate": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "perform": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "persuade": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": false
+          },
+          "protocol": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "seduce": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "wit": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "lore": {
+          "ancient_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "arcana": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "commerce": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 10,
+            "career": 0,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": false
+          },
+          "common_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "craft_practical": {
+            "value": 30,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 10,
+            "career": 5,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": true
+          },
+          "craft_artistic": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "divinity": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "heal": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "naturewise": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": false
+          },
+          "streetwise": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "binds": {
+          "change": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "conjure": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "control": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "destroy": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "witness": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "magic": {
+          "piety": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "strands": {
+          "air": {
+            "level": 0,
+            "thin": false
+          },
+          "beasts": {
+            "level": 0,
+            "thin": false
+          },
+          "body": {
+            "level": 0,
+            "thin": false
+          },
+          "earth": {
+            "level": 0,
+            "thin": false
+          },
+          "fire": {
+            "level": 0,
+            "thin": false
+          },
+          "plants": {
+            "level": 0,
+            "thin": false
+          },
+          "spheres": {
+            "level": 0,
+            "thin": false
+          },
+          "spirit": {
+            "level": 0,
+            "thin": false
+          },
+          "thought": {
+            "level": 0,
+            "thin": false
+          },
+          "water": {
+            "level": 0,
+            "thin": false
+          }
+        }
+      },
+      "customSkills": [
+        {
+          "name": "Kharzhad",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 70
+        },
+        {
+          "name": "Low Vestrian",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 20
+        },
+        {
+          "name": "Siege-wise",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Previous Career knowledge",
+          "value": 20
+        }
+      ],
+      "supply": {
+        "gear": "d12",
+        "ammo": "d12",
+        "rations": "d12",
+        "medical": "d12"
+      },
+      "pietyBase": 0,
+      "trueName": "",
+      "encumbranceMax": 6,
+      "weaponEncumbranceMax": 6
+    },
+    "items": [
+      {
+        "name": "Dagger",
+        "type": "weapon",
+        "system": {
+          "category": "Light Weapons",
+          "attackSkill": "Melee: Light",
+          "price": 20,
+          "reach": "0",
+          "damage": "1",
+          "chooseLocation": "2",
+          "circumventShield": "2",
+          "disarm": "5",
+          "trip": "6",
+          "encumbrance": 1,
+          "range": "0",
+          "notes": "Thrown; one dagger At Hand is free of ENC. Piercing 5 against Prone/Grappled foe.",
+          "freeAtHand": true,
+          "thrown": {
+            "attackSkill": "Thrown Weapons",
+            "reach": "-",
+            "damage": "1",
+            "chooseLocation": "5",
+            "circumventShield": "5",
+            "disarm": "5",
+            "trip": "6",
+            "range": "0",
+            "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled."
+          },
+          "placement": "atHand",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Cap",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Head",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Jerkin",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Body",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Quilt Sleeve (Right Arm)",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 40,
+          "protection": 2,
+          "bulk": 1,
+          "training": false,
+          "canSunder": false,
+          "location": "Right Arm",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Broadsword",
+        "type": "weapon",
+        "system": {
+          "category": "Medium Weapons",
+          "attackSkill": "Melee: Medium",
+          "price": 100,
+          "reach": "0",
+          "damage": "4",
+          "chooseLocation": "3",
+          "circumventShield": "3",
+          "disarm": "4",
+          "trip": "5",
+          "encumbrance": 2,
+          "range": "-",
+          "notes": "",
+          "placement": "ready",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Medium Shield",
+        "type": "shield",
+        "system": {
+          "price": 75,
+          "size": "Medium",
+          "protection": 4,
+          "shieldBash": "6",
+          "encumbrance": 2,
+          "notes": "",
+          "placement": "atHand",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "POWERFUL BLOW",
+        "type": "talent",
+        "system": {
+          "category": "Combat Talents",
+          "reference": "Core Rulebook, p. 42",
+          "effect": "Pick one specific weapon type (shortsword, mace, 2H sword, longbow, fists, etc.). Do +1 base damage when using a weapon of this type. Can be purchased once per weapon type. Chosen weapon type: broadsword.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "METTLE",
+        "type": "talent",
+        "system": {
+          "category": "Adventuring Talents",
+          "reference": "Core Rulebook, p. 45",
+          "effect": "Gain +20 on Endurance rolls to resist Body Impairment from the Wound Die.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "ARMOR TRAINING III",
+        "type": "talent",
+        "system": {
+          "category": "Combat Talents",
+          "reference": "Core Rulebook, p. 40",
+          "effect": "Armor Training III: trained to use Combat Maneuvers in up to Scale body or arm armour. Earlier training levels are included.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "COMBAT AWARENESS",
+        "type": "talent",
+        "system": {
+          "category": "Combat Talents",
+          "reference": "Core Rulebook, p. 41",
+          "effect": "Add +1 to your Initiative modifier. Can be purchased up to five times.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "NOT TODAY, DEATH",
+        "type": "talent",
+        "system": {
+          "category": "Miscellaneous Talents",
+          "reference": "Core Rulebook, p. 51",
+          "effect": "Increase your Death Threshold by 2; recalculate Lethality Level. Can be purchased up to five times.",
+          "requirements": ""
+        }
+      }
+    ],
+    "flags": {
+      "broken-empires-foundry": {
+        "pregenerated": true,
+        "startingItemsAdded": true,
+        "skillBreakdownMigrated": true,
+        "threadsMigrated": true,
+        "equipmentItemsMigrated": true,
+        "itemZonesMigrated": true
+      }
+    }
+  },
+  {
+    "name": "Eira Fenpath",
+    "type": "character",
+    "system": {
+      "description": "Young Westlands ranger who knows the old trails and distrusts their new owners.",
+      "notes": "Original pregen; chapter 7 creation choices (curated Life Event results).\nStarting skills: {'Combat': 'Missile', 'Adventuring': 'Track', 'Social': 'Insight', 'Lore': 'Naturewise'}. Ability Expertise/Talents and career choices: see item cards.\nAttribute points: {'Resolve': 1, 'Initiative': 2, 'Toughness': 0, 'Death Threshold': 2}; age Young. Culture coin 15 sp; career coin 20 sp; equipment coin 200 sp; purchases 120 sp.\nCareer point pool [50, 80, 30, 40, 0]; age Rounding Out 70 points (Strand levels cost 5 each). Young Endurance +20 is separate.\nLife Events: Faithful Companion, Thrilling Pursuit, Trial of the Wild. Starting armour: Leather Cap, Leather Jerkin.\n\nEira's family's hounds were sold to a distant lord. A hunt and a season of famine taught her the trails. She wants the hounds returned and knows which ruined path the buyer took.",
+      "race": "Human",
+      "sex": "Female",
+      "size": "Medium",
+      "age": "Young",
+      "culture": "Wanderer (Westlands)",
+      "career": "Ranger",
+      "status": 0,
+      "silver": 115,
+      "xp": 0,
+      "abilityScores": [
+        {
+          "name": "Dexterity",
+          "descriptor": "Nimble"
+        },
+        {
+          "name": "Wisdom",
+          "descriptor": "Perceptive"
+        }
+      ],
+      "racialTraits": [
+        {
+          "name": "Human versatility",
+          "effect": "Choose one bonus Savvy skill, one extra level of Expertise in a skill, and one additional Talent whose requirements you meet."
+        },
+        {
+          "name": "Languages",
+          "effect": "Regional cultural language 70 and Low Vestrian 20. Old Vestrians may instead choose Low Vestrian 70 and High Vestrian 20."
+        }
+      ],
+      "personalityTraits": [
+        {
+          "name": "Cautious",
+          "description": ""
+        },
+        {
+          "name": "Hopeful",
+          "description": ""
+        },
+        {
+          "name": "Defiant",
+          "description": ""
+        }
+      ],
+      "goals": [
+        {
+          "text": "Recover the family's sold hunting hounds.",
+          "shared": false
+        },
+        {
+          "text": "Guide the travelers to the lost officer's last camp.",
+          "shared": true
+        }
+      ],
+      "events": {
+        "origin": {
+          "name": "Faithful Companion",
+          "benefit": "Track +10",
+          "story": "A beloved hound was sold to a marcher lord."
+        },
+        "youth": {
+          "name": "Thrilling Pursuit",
+          "benefit": "Missile +10",
+          "story": "She took the winning shot in a winter stag hunt."
+        },
+        "recent": {
+          "name": "Trial of the Wild",
+          "benefit": "Survival +10",
+          "story": "She found clean water during a winter famine."
+        }
+      },
+      "relationships": [
+        {
+          "name": "Lord Halven",
+          "type": "Rival",
+          "notes": "Bought the family's hounds; insists they were legally sold."
+        }
+      ],
+      "sharedHistories": [],
+      "resolve": {
+        "max": 12,
+        "value": 12,
+        "fatigue": 0,
+        "permanentFatigue": 0
+      },
+      "attributes": {
+        "initiative": 13,
+        "toughness": 0,
+        "deathThreshold": 25,
+        "lethalityLevel": 9
+      },
+      "skills": {
+        "combat": {
+          "dodge": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 20,
+            "expertise": 1,
+            "savvy": false
+          },
+          "melee_light": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_medium": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_heavy": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "might": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "missile": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 10,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": true
+          },
+          "thrown_weapons": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "adventuring": {
+          "athletics": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "endurance": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": false
+          },
+          "locks_traps": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "perception": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": false
+          },
+          "ride": {
+            "value": 20,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 10,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sail_boat": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sleight_of_hand": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "stealth": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": true
+          },
+          "survival": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 10,
+            "career": 20,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": false
+          },
+          "track": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 10,
+            "career": 20,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": true
+          },
+          "willpower": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "social": {
+          "deceive": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "insight": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": true
+          },
+          "inspire": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "intimidate": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "perform": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "persuade": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": false
+          },
+          "protocol": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "seduce": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "wit": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "lore": {
+          "ancient_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "arcana": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "commerce": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "common_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": false
+          },
+          "craft_practical": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "craft_artistic": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "divinity": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "heal": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "naturewise": {
+            "value": 30,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "streetwise": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "binds": {
+          "change": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "conjure": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "control": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "destroy": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "witness": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "magic": {
+          "piety": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "strands": {
+          "air": {
+            "level": 0,
+            "thin": false
+          },
+          "beasts": {
+            "level": 0,
+            "thin": false
+          },
+          "body": {
+            "level": 0,
+            "thin": false
+          },
+          "earth": {
+            "level": 0,
+            "thin": false
+          },
+          "fire": {
+            "level": 0,
+            "thin": false
+          },
+          "plants": {
+            "level": 0,
+            "thin": false
+          },
+          "spheres": {
+            "level": 0,
+            "thin": false
+          },
+          "spirit": {
+            "level": 0,
+            "thin": false
+          },
+          "thought": {
+            "level": 0,
+            "thin": false
+          },
+          "water": {
+            "level": 0,
+            "thin": false
+          }
+        }
+      },
+      "customSkills": [
+        {
+          "name": "Westronne",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 70
+        },
+        {
+          "name": "Low Vestrian",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 20
+        },
+        {
+          "name": "Angevarran",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 40
+        },
+        {
+          "name": "Hound-wise",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Previous Career knowledge",
+          "value": 20
+        }
+      ],
+      "supply": {
+        "gear": "d12",
+        "ammo": "d12",
+        "rations": "d12",
+        "medical": "d12"
+      },
+      "pietyBase": 0,
+      "trueName": "",
+      "encumbranceMax": 6,
+      "weaponEncumbranceMax": 6
+    },
+    "items": [
+      {
+        "name": "Dagger",
+        "type": "weapon",
+        "system": {
+          "category": "Light Weapons",
+          "attackSkill": "Melee: Light",
+          "price": 20,
+          "reach": "0",
+          "damage": "1",
+          "chooseLocation": "2",
+          "circumventShield": "2",
+          "disarm": "5",
+          "trip": "6",
+          "encumbrance": 1,
+          "range": "0",
+          "notes": "Thrown; one dagger At Hand is free of ENC. Piercing 5 against Prone/Grappled foe.",
+          "freeAtHand": true,
+          "thrown": {
+            "attackSkill": "Thrown Weapons",
+            "reach": "-",
+            "damage": "1",
+            "chooseLocation": "5",
+            "circumventShield": "5",
+            "disarm": "5",
+            "trip": "6",
+            "range": "0",
+            "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled."
+          },
+          "placement": "atHand",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Cap",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Head",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Jerkin",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Body",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Shortbow",
+        "type": "weapon",
+        "system": {
+          "category": "Missile Weapons",
+          "attackSkill": "Missile",
+          "price": 50,
+          "reach": "-",
+          "damage": "2",
+          "chooseLocation": "6",
+          "circumventShield": "5",
+          "disarm": "5",
+          "trip": "5",
+          "encumbrance": 2,
+          "range": "3",
+          "notes": "2H.",
+          "placement": "ready",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Javelin",
+        "type": "weapon",
+        "system": {
+          "category": "Light Weapons",
+          "attackSkill": "Melee: Light",
+          "price": 70,
+          "reach": "0",
+          "damage": "2",
+          "chooseLocation": "2",
+          "circumventShield": "2",
+          "disarm": "5",
+          "trip": "6",
+          "encumbrance": 2,
+          "range": "2",
+          "notes": "Piercing 1; Thrown; Pierce Through 4 SL (thrown only).",
+          "thrown": {
+            "attackSkill": "Thrown Weapons",
+            "reach": "-",
+            "damage": "2",
+            "chooseLocation": "5",
+            "circumventShield": "5",
+            "disarm": "5",
+            "trip": "5",
+            "range": "2",
+            "notes": "Piercing 1; Pierce Through 4 SL (thrown only)."
+          },
+          "placement": "ready",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "COMBAT AWARENESS",
+        "type": "talent",
+        "system": {
+          "category": "Combat Talents",
+          "reference": "Core Rulebook, p. 41",
+          "effect": "Add +1 to your Initiative modifier. Can be purchased up to five times.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "FEARLESS",
+        "type": "talent",
+        "system": {
+          "category": "Adventuring Talents",
+          "reference": "Core Rulebook, p. 45",
+          "effect": "Gain +20 on Willpower rolls against fear.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "ON THROUGH THE NIGHT",
+        "type": "talent",
+        "system": {
+          "category": "Adventuring Talents",
+          "reference": "Core Rulebook, p. 45",
+          "effect": "Once per session, if you’re the Guide, you can do a forced march and not suffer the -5 to the next Fatigue roll. Can be purchased up to three times, each giving an additional use per session.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "QUICK AND QUIET",
+        "type": "talent",
+        "system": {
+          "category": "Adventuring Talents",
+          "reference": "Core Rulebook, p. 45",
+          "effect": "You can use the Run action even while using Stealth.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "FORCEFUL SHOT",
+        "type": "talent",
+        "system": {
+          "category": "Combat Talents",
+          "reference": "Core Rulebook, p. 42",
+          "effect": "For 4 SLs, you may use the Drive Back Maneuver with a Missile weapon. This can knock a combatant out of an Engaged melee and into a neighboring zone.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "TRAVEL PLANNER",
+        "type": "talent",
+        "system": {
+          "category": "Lore Talents",
+          "reference": "Core Rulebook, p. 48",
+          "effect": "If you participate in the Travel Lore roll and gain any number of SLs, the party earns 2 additional points of Favor.",
+          "requirements": ""
+        }
+      }
+    ],
+    "flags": {
+      "broken-empires-foundry": {
+        "pregenerated": true,
+        "startingItemsAdded": true,
+        "skillBreakdownMigrated": true,
+        "threadsMigrated": true,
+        "equipmentItemsMigrated": true,
+        "itemZonesMigrated": true
+      }
+    }
+  },
+  {
+    "name": "Sera of the Furrow",
+    "type": "character",
+    "system": {
+      "description": "Itinerant Godbound of Morrudann who tends to the exhausted and dispossessed.",
+      "notes": "Original pregen; chapter 7 creation choices (curated Life Event results).\nStarting skills: {'Combat': 'Dodge', 'Adventuring': 'Willpower', 'Social': 'Inspire', 'Lore': 'Divinity'}. Ability Expertise/Talents and career choices: see item cards.\nAttribute points: {'Resolve': 2, 'Initiative': 0, 'Toughness': 2, 'Death Threshold': 1}; age Adult. Culture coin 20 sp; career coin 40 sp; equipment coin 250 sp; purchases 50 sp.\nCareer point pool [30, 40, 50, 60, 20]; age Rounding Out 100 points (Strand levels cost 5 each). Young Endurance +20 is separate.\nLife Events: Raised by a Sect, Sacred Grove, Evangelist. Starting armour: Leather Cap, Leather Jerkin, Quilt Sleeve (Left Arm).\n\nRaised in a secluded order, Sera tended a sacred grove and preached among hungry farmsteads. Her reading of an old parable angered a senior priest, but the workers she helped still welcome her.",
+      "race": "Human",
+      "sex": "Female",
+      "size": "Medium",
+      "age": "Adult",
+      "culture": "Civilized, Rural (Old Vestria)",
+      "career": "Godbound",
+      "status": 0,
+      "silver": 260,
+      "xp": 0,
+      "abilityScores": [
+        {
+          "name": "Wisdom",
+          "descriptor": "Discerning"
+        },
+        {
+          "name": "Charisma",
+          "descriptor": "Affable"
+        }
+      ],
+      "racialTraits": [
+        {
+          "name": "Human versatility",
+          "effect": "Choose one bonus Savvy skill, one extra level of Expertise in a skill, and one additional Talent whose requirements you meet."
+        },
+        {
+          "name": "Languages",
+          "effect": "Regional cultural language 70 and Low Vestrian 20. Old Vestrians may instead choose Low Vestrian 70 and High Vestrian 20."
+        }
+      ],
+      "personalityTraits": [
+        {
+          "name": "Altruistic",
+          "description": ""
+        },
+        {
+          "name": "Humble",
+          "description": ""
+        },
+        {
+          "name": "Stubborn",
+          "description": ""
+        }
+      ],
+      "goals": [
+        {
+          "text": "Reconcile the heretical parable with the order's teaching.",
+          "shared": false
+        },
+        {
+          "text": "Bring the lost officer's laborers safely home.",
+          "shared": true
+        }
+      ],
+      "events": {
+        "origin": {
+          "name": "Raised by a Sect",
+          "benefit": "Divinity +10",
+          "story": "The order entrusted her with a shrine's harvest ledger."
+        },
+        "youth": {
+          "name": "Sacred Grove",
+          "benefit": "Piety +10",
+          "story": "She replanted a desecrated grove after a hungry winter."
+        },
+        "recent": {
+          "name": "Evangelist",
+          "benefit": "Piety +10",
+          "story": "She brought food and Morrudann's teaching to a fever-struck hamlet."
+        }
+      },
+      "relationships": [
+        {
+          "name": "Elder Caren",
+          "type": "Adversary",
+          "notes": "An elder of her old order who condemned her interpretation."
+        }
+      ],
+      "sharedHistories": [],
+      "resolve": {
+        "max": 15,
+        "value": 15,
+        "fatigue": 0,
+        "permanentFatigue": 0
+      },
+      "attributes": {
+        "initiative": 10,
+        "toughness": 1,
+        "deathThreshold": 22,
+        "lethalityLevel": 8
+      },
+      "skills": {
+        "combat": {
+          "dodge": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 15,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_light": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_medium": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_heavy": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "might": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "missile": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "thrown_weapons": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "adventuring": {
+          "athletics": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "endurance": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "locks_traps": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "perception": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": false
+          },
+          "ride": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sail_boat": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sleight_of_hand": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "stealth": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "survival": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "track": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "willpower": {
+            "value": 30,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 20,
+            "rounding": 15,
+            "expertise": 1,
+            "savvy": true
+          }
+        },
+        "social": {
+          "deceive": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "insight": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": false
+          },
+          "inspire": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 20,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": true
+          },
+          "intimidate": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "perform": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "persuade": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 20,
+            "rounding": 15,
+            "expertise": 1,
+            "savvy": false
+          },
+          "protocol": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "seduce": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "wit": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "lore": {
+          "ancient_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "arcana": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "commerce": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "common_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "craft_practical": {
+            "value": 20,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "craft_artistic": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "divinity": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 10,
+            "career": 15,
+            "rounding": 0,
+            "expertise": 1,
+            "savvy": true
+          },
+          "heal": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 20,
+            "expertise": 0,
+            "savvy": true
+          },
+          "naturewise": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 15,
+            "expertise": 1,
+            "savvy": false
+          },
+          "streetwise": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "binds": {
+          "change": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "conjure": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "control": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "destroy": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "witness": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "magic": {
+          "piety": {
+            "value": 30,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 20,
+            "career": 20,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "strands": {
+          "air": {
+            "level": 0,
+            "thin": false
+          },
+          "beasts": {
+            "level": 0,
+            "thin": false
+          },
+          "body": {
+            "level": 0,
+            "thin": false
+          },
+          "earth": {
+            "level": 0,
+            "thin": false
+          },
+          "fire": {
+            "level": 0,
+            "thin": false
+          },
+          "plants": {
+            "level": 0,
+            "thin": false
+          },
+          "spheres": {
+            "level": 0,
+            "thin": false
+          },
+          "spirit": {
+            "level": 0,
+            "thin": false
+          },
+          "thought": {
+            "level": 0,
+            "thin": false
+          },
+          "water": {
+            "level": 0,
+            "thin": false
+          }
+        }
+      },
+      "customSkills": [
+        {
+          "name": "Low Vestrian",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 70
+        },
+        {
+          "name": "High Vestrian",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 20
+        },
+        {
+          "name": "Morrudann-wise",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Previous Career knowledge",
+          "value": 30
+        }
+      ],
+      "supply": {
+        "gear": "d12",
+        "ammo": "d12",
+        "rations": "d12",
+        "medical": "d12"
+      },
+      "pietyBase": 70,
+      "trueName": "",
+      "encumbranceMax": 6,
+      "weaponEncumbranceMax": 6
+    },
+    "items": [
+      {
+        "name": "Dagger",
+        "type": "weapon",
+        "system": {
+          "category": "Light Weapons",
+          "attackSkill": "Melee: Light",
+          "price": 20,
+          "reach": "0",
+          "damage": "1",
+          "chooseLocation": "2",
+          "circumventShield": "2",
+          "disarm": "5",
+          "trip": "6",
+          "encumbrance": 1,
+          "range": "0",
+          "notes": "Thrown; one dagger At Hand is free of ENC. Piercing 5 against Prone/Grappled foe.",
+          "freeAtHand": true,
+          "thrown": {
+            "attackSkill": "Thrown Weapons",
+            "reach": "-",
+            "damage": "1",
+            "chooseLocation": "5",
+            "circumventShield": "5",
+            "disarm": "5",
+            "trip": "6",
+            "range": "0",
+            "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled."
+          },
+          "placement": "atHand",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Cap",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Head",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Jerkin",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Body",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Quilt Sleeve (Left Arm)",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 40,
+          "protection": 2,
+          "bulk": 1,
+          "training": false,
+          "canSunder": false,
+          "location": "Left Arm",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Staff",
+        "type": "weapon",
+        "system": {
+          "category": "Medium Weapons",
+          "attackSkill": "Melee: Medium",
+          "price": 50,
+          "reach": "1",
+          "damage": "4 NL",
+          "chooseLocation": "3",
+          "circumventShield": "3",
+          "disarm": "4",
+          "trip": "4",
+          "encumbrance": 2,
+          "range": "-",
+          "notes": "2H; Defensive.",
+          "placement": "ready",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "FEARLESS",
+        "type": "talent",
+        "system": {
+          "category": "Adventuring Talents",
+          "reference": "Core Rulebook, p. 45",
+          "effect": "Gain +20 on Willpower rolls against fear.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "PRESS THE POINT",
+        "type": "talent",
+        "system": {
+          "category": "Social Talents",
+          "reference": "Core Rulebook, p. 47",
+          "effect": "Once per Social Encounter, you can use a skill for a third time in a row, or you can use a Social skill with an NPC even if that same skill just failed.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "GODBOUND",
+        "type": "talent",
+        "system": {
+          "category": "Magic Talents",
+          "reference": "Core Rulebook, p. 50",
+          "effect": "This Talent allows the character to select a chosen patron deity and acquire the Piety skill at a starting value of 30 (or to add 30 during character creation). The Piety value can never be more than 90 (although it can be temporarily raised through modifiers). At character creation, only Previous Career: Godbound may select this Talent. Purchasing this Talent after character creation costs 10 XP.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "LITERATE",
+        "type": "talent",
+        "system": {
+          "category": "Lore Talents",
+          "reference": "Core Rulebook, p. 48",
+          "effect": "You can read and write any language you can speak.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "TRUE FAITH",
+        "type": "talent",
+        "system": {
+          "category": "Magic Talents",
+          "reference": "Core Rulebook, p. 50",
+          "effect": "Once per session, increase the quality of a granted divine miracle by one step (Lesser to Middle or Middle to Greater). Can be purchased up to three times, each giving an additional use per session.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "INNER STRENGTH",
+        "type": "talent",
+        "system": {
+          "category": "Miscellaneous Talents",
+          "reference": "Core Rulebook, p. 51",
+          "effect": "Increase your Max Resolve by 1. Can be purchased multiple times to a maximum Resolve of 30.",
+          "requirements": ""
+        }
+      }
+    ],
+    "flags": {
+      "broken-empires-foundry": {
+        "pregenerated": true,
+        "startingItemsAdded": true,
+        "skillBreakdownMigrated": true,
+        "threadsMigrated": true,
+        "equipmentItemsMigrated": true,
+        "itemZonesMigrated": true
+      }
+    }
+  },
+  {
+    "name": "Lucan Ashveil",
+    "type": "character",
+    "system": {
+      "description": "Old Vestrian fire-and-air Spellweaver whose birthmark answers to forbidden words.",
+      "notes": "Original pregen; chapter 7 creation choices (curated Life Event results).\nStarting skills: {'Combat': 'Dodge', 'Adventuring': 'Willpower', 'Social': 'Deceive', 'Lore': 'Arcana'}. Ability Expertise/Talents and career choices: see item cards.\nAttribute points: {'Resolve': 3, 'Initiative': 1, 'Toughness': 0, 'Death Threshold': 1}; age Adult. Culture coin 40 sp; career coin 20 sp; equipment coin 250 sp; purchases 90 sp.\nCareer point pool [20, 20, 20, 40, 100]; age Rounding Out 100 points (Strand levels cost 5 each). Young Endurance +20 is separate.\nLife Events: Marked by the Weave, Forbidden Lesson, Forbidden Knowledge. Starting armour: Leather Cap, Leather Jerkin. Focus Binds ['Conjure', 'Control']; four Strands ['Air', 'Earth', 'Fire', 'Thought']; Thin ['Beasts', 'Spirit'].\n\nLucan was born with an ember-shaped mark. A reclusive mentor taught him to keep an entity within its circle, then vanished. A recently found forbidden scroll names the same entity and hints at the mentor's fate.",
+      "race": "Human",
+      "sex": "Male",
+      "size": "Medium",
+      "age": "Adult",
+      "culture": "Civilized, Urban (Old Vestria)",
+      "career": "Spellweaver",
+      "status": 0,
+      "silver": 220,
+      "xp": 0,
+      "abilityScores": [
+        {
+          "name": "Intelligence",
+          "descriptor": "Studied"
+        },
+        {
+          "name": "Wisdom",
+          "descriptor": "Prudent"
+        }
+      ],
+      "racialTraits": [
+        {
+          "name": "Human versatility",
+          "effect": "Choose one bonus Savvy skill, one extra level of Expertise in a skill, and one additional Talent whose requirements you meet."
+        },
+        {
+          "name": "Languages",
+          "effect": "Regional cultural language 70 and Low Vestrian 20. Old Vestrians may instead choose Low Vestrian 70 and High Vestrian 20."
+        }
+      ],
+      "personalityTraits": [
+        {
+          "name": "Obsessive",
+          "description": ""
+        },
+        {
+          "name": "Cautious",
+          "description": ""
+        },
+        {
+          "name": "Trusting",
+          "description": ""
+        }
+      ],
+      "goals": [
+        {
+          "text": "Find the vanished mentor before the named entity does.",
+          "shared": false
+        },
+        {
+          "text": "Learn why the same mark appears on the lost officer's mechanism.",
+          "shared": true
+        }
+      ],
+      "events": {
+        "origin": {
+          "name": "Marked by the Weave",
+          "benefit": "Bind: Conjure +10",
+          "story": "An ember-shaped birthmark flares beneath certain stars."
+        },
+        "youth": {
+          "name": "Forbidden Lesson",
+          "benefit": "Bind: Control +10",
+          "story": "He kept his mentor's summoned entity inside its circle."
+        },
+        "recent": {
+          "name": "Forbidden Knowledge",
+          "benefit": "Bind: Control +10",
+          "story": "A scroll named that entity and the missing mentor."
+        }
+      },
+      "relationships": [
+        {
+          "name": "Master Pell",
+          "type": "Patron",
+          "notes": "The missing mentor who first taught Lucan Control."
+        }
+      ],
+      "sharedHistories": [],
+      "resolve": {
+        "max": 22,
+        "value": 22,
+        "fatigue": 0,
+        "permanentFatigue": 0
+      },
+      "attributes": {
+        "initiative": 11,
+        "toughness": 0,
+        "deathThreshold": 22,
+        "lethalityLevel": 8
+      },
+      "skills": {
+        "combat": {
+          "dodge": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 15,
+            "rounding": 15,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_light": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_medium": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "melee_heavy": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "might": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "missile": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 5,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "thrown_weapons": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "adventuring": {
+          "athletics": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "endurance": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "locks_traps": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "perception": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 20,
+            "expertise": 1,
+            "savvy": true
+          },
+          "ride": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sail_boat": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "sleight_of_hand": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "stealth": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "survival": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "track": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "willpower": {
+            "value": 30,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 20,
+            "expertise": 1,
+            "savvy": false
+          }
+        },
+        "social": {
+          "deceive": {
+            "value": 30,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "insight": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": true
+          },
+          "inspire": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "intimidate": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "perform": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "persuade": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "protocol": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "seduce": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "wit": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "lore": {
+          "ancient_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "arcana": {
+            "value": 30,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 20,
+            "rounding": 5,
+            "expertise": 1,
+            "savvy": true
+          },
+          "commerce": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "common_lore": {
+            "value": 20,
+            "race": 0,
+            "culture": 20,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "craft_practical": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "craft_artistic": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "divinity": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "heal": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "naturewise": {
+            "value": 20,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "streetwise": {
+            "value": 20,
+            "race": 0,
+            "culture": 10,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "binds": {
+          "change": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 20,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "conjure": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 10,
+            "career": 50,
+            "rounding": 10,
+            "expertise": 1,
+            "savvy": true
+          },
+          "control": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 20,
+            "career": 40,
+            "rounding": 10,
+            "expertise": 1,
+            "savvy": false
+          },
+          "destroy": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          },
+          "witness": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 10,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "magic": {
+          "piety": {
+            "value": 0,
+            "race": 0,
+            "culture": 0,
+            "lifeEvents": 0,
+            "career": 0,
+            "rounding": 0,
+            "expertise": 0,
+            "savvy": false
+          }
+        },
+        "strands": {
+          "air": {
+            "level": 3,
+            "thin": false
+          },
+          "beasts": {
+            "level": 0,
+            "thin": true
+          },
+          "body": {
+            "level": 2,
+            "thin": false
+          },
+          "earth": {
+            "level": 4,
+            "thin": false
+          },
+          "fire": {
+            "level": 5,
+            "thin": false
+          },
+          "plants": {
+            "level": 0,
+            "thin": false
+          },
+          "spheres": {
+            "level": 0,
+            "thin": false
+          },
+          "spirit": {
+            "level": 0,
+            "thin": true
+          },
+          "thought": {
+            "level": 4,
+            "thin": false
+          },
+          "water": {
+            "level": 1,
+            "thin": false
+          }
+        }
+      },
+      "customSkills": [
+        {
+          "name": "Low Vestrian",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 70
+        },
+        {
+          "name": "High Vestrian",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Starting language or career knowledge",
+          "value": 20
+        },
+        {
+          "name": "Entity-wise",
+          "category": "Languages, custom -wise and other skills",
+          "description": "Previous Career knowledge",
+          "value": 20
+        }
+      ],
+      "supply": {
+        "gear": "d12",
+        "ammo": "d12",
+        "rations": "d12",
+        "medical": "d12"
+      },
+      "pietyBase": 0,
+      "trueName": "Sovar En Leth",
+      "encumbranceMax": 6,
+      "weaponEncumbranceMax": 6
+    },
+    "items": [
+      {
+        "name": "Dagger",
+        "type": "weapon",
+        "system": {
+          "category": "Light Weapons",
+          "attackSkill": "Melee: Light",
+          "price": 20,
+          "reach": "0",
+          "damage": "1",
+          "chooseLocation": "2",
+          "circumventShield": "2",
+          "disarm": "5",
+          "trip": "6",
+          "encumbrance": 1,
+          "range": "0",
+          "notes": "Thrown; one dagger At Hand is free of ENC. Piercing 5 against Prone/Grappled foe.",
+          "freeAtHand": true,
+          "thrown": {
+            "attackSkill": "Thrown Weapons",
+            "reach": "-",
+            "damage": "1",
+            "chooseLocation": "5",
+            "circumventShield": "5",
+            "disarm": "5",
+            "trip": "6",
+            "range": "0",
+            "notes": "One dagger At Hand is free of ENC; Piercing 5 against Prone/Grappled."
+          },
+          "placement": "atHand",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Cap",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Head",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Leather Jerkin",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 60,
+          "protection": 3,
+          "bulk": 2,
+          "training": false,
+          "canSunder": true,
+          "location": "Body",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "worn",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Staff",
+        "type": "weapon",
+        "system": {
+          "category": "Medium Weapons",
+          "attackSkill": "Melee: Medium",
+          "price": 50,
+          "reach": "1",
+          "damage": "4 NL",
+          "chooseLocation": "3",
+          "circumventShield": "3",
+          "disarm": "4",
+          "trip": "4",
+          "encumbrance": 2,
+          "range": "-",
+          "notes": "2H; Defensive.",
+          "placement": "ready",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "Quilt Sleeve (Right Arm)",
+        "type": "armor",
+        "system": {
+          "category": "Armour",
+          "price": 40,
+          "protection": 2,
+          "bulk": 1,
+          "training": false,
+          "canSunder": false,
+          "location": "Right Arm",
+          "penalties": "",
+          "stealthPenalty": 0,
+          "dodgePenalty": 0,
+          "riseFromPronePenalty": 0,
+          "athleticsPenalty": 0,
+          "perceptionPenalty": 0,
+          "placement": "atHand",
+          "quantity": 1
+        }
+      },
+      {
+        "name": "INNER STRENGTH",
+        "type": "talent",
+        "system": {
+          "category": "Miscellaneous Talents",
+          "reference": "Core Rulebook, p. 51",
+          "effect": "Increase your Max Resolve by 1. Can be purchased multiple times to a maximum Resolve of 30.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "FEARLESS",
+        "type": "talent",
+        "system": {
+          "category": "Adventuring Talents",
+          "reference": "Core Rulebook, p. 45",
+          "effect": "Gain +20 on Willpower rolls against fear.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "PATTERNED IN THE WEAVE",
+        "type": "talent",
+        "system": {
+          "category": "Magic Talents",
+          "reference": "Core Rulebook, p. 50",
+          "effect": "This Talent can only be chosen if your Previous Career is Spellweaver. True Spellweavers are born to the Pattern. One must possess this Talent to be a fully-fledged Spellweaver. Choose a True Name imprinted upon you by the Weave: this name must be in the language of your people, and can be used to magically target you using the Arcane Tether Range (see Chapter 14 - Weave Magic). Gain +5 to Max Resolve.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "LITERATE",
+        "type": "talent",
+        "system": {
+          "category": "Lore Talents",
+          "reference": "Core Rulebook, p. 48",
+          "effect": "You can read and write any language you can speak.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "WEAVE SHADOW",
+        "type": "talent",
+        "system": {
+          "category": "Magic Talents",
+          "reference": "Core Rulebook, p. 50",
+          "effect": "Make all rolls on the Weave Reaction Table at -1. Can be purchased up to five times, for up to -5 on the table.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "FORCEFUL STRAND (STRAND)",
+        "type": "talent",
+        "system": {
+          "category": "Magic Talents",
+          "reference": "Core Rulebook, p. 50",
+          "effect": "Pick one Strand. For any spell you cast using this Strand, the target resists at -10. Can be purchased up to three times per Strand. Chosen Strand: Fire.",
+          "requirements": ""
+        }
+      },
+      {
+        "name": "Hollow Bell",
+        "type": "thread",
+        "system": {
+          "description": "A palm-sized bell that makes no audible sound until a new thing answers it. Ring once at the start of a Conjure binding.",
+          "useMode": "die",
+          "die": "d8",
+          "points": 0,
+          "bindsAndStrands": "Bind: Conjure. Use only while physically touching the Thread; one Bind Thread per casting."
+        },
+        "flags": {
+          "broken-empires-foundry": {
+            "exampleThread": true
+          }
+        }
+      }
+    ],
+    "flags": {
+      "broken-empires-foundry": {
+        "pregenerated": true,
+        "startingItemsAdded": true,
+        "skillBreakdownMigrated": true,
+        "threadsMigrated": true,
+        "equipmentItemsMigrated": true,
+        "itemZonesMigrated": true
+      }
+    }
+  }
+]

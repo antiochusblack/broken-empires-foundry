@@ -41,12 +41,28 @@ function totalCost(values) {
   return Math.max(0, base.reduce((sum, value) => sum + value, 0) + (values.Target === "Individual" ? 2 * (count - 1) + (values.chooseLocation ? 2 : 0) : 0) + effect + trigger + adjustment + armour);
 }
 const listChecks = (names, prefix, data) => `<fieldset><legend>${prefix === "bind" ? "Binds" : "Strands"} (tick all requisites)</legend><div class="tbe-casting-checks">${names.map(name => `<label><input type="checkbox" name="${prefix}_${name}" ${data(name) > 0 ? "" : "disabled"}> <span class="tbe-cast-tip" tabindex="0" data-tbe-tip="${escape((prefix === "bind" ? BIND_TOOLTIPS : STRAND_TOOLTIPS)[name])}">${escape(name)}</span> <small>${data(name)}</small></label>`).join("")}</div></fieldset>`;
-const threadApplies = (item, label, selected) => {
-  const attunement = String(item.system.bindsAndStrands || "").match(/^(Bind|Strand):\s*([^.;\n]+)/i);
-  // Custom Threads without this prefix remain available for GM adjudication.
-  return !attunement || (attunement[1].toLowerCase() === label.toLowerCase() && selected.some(name => attunement[2].split(/,|\bor\b/i).some(part => part.trim().toLowerCase() === name.toLowerCase())));
-};
-const threadOptions = (threads, label, selected) => `<label>${label} Thread <select name="${label.toLowerCase()}Thread"><option value="">None</option>${threads.filter(item => threadApplies(item, label, selected)).map(item => `<option value="${item.id}">${escape(item.name)} — ${escape(item.system.bindsAndStrands || "applicability unspecified")}${item.system.useMode === "points" ? ` (${item.system.points} points)` : ` (${item.system.die})`}</option>`).join("")}</select></label>`;
+export function threadState(item, label, selected) {
+  const mode = item.system.useMode === "points" ? "points" : "die";
+  const die = String(item.system.die || "d6").toLowerCase();
+  const points = Number(item.system.points) || 0;
+  const available = mode === "points" ? points > 0 : THREAD_DICE.includes(die) && die !== "depleted";
+  const text = String(item.system.bindsAndStrands || "").trim();
+  // A leading Bind:/Strand: is structured attunement. Other custom wording
+  // stays eligible for GM adjudication instead of vanishing from the list.
+  const attunements = [...text.matchAll(/\b(Bind|Strand)\s*:\s*([^.;\n]+)/gi)];
+  const applies = !attunements.length || attunements.some(match => {
+    if (match[1].toLowerCase() !== label.toLowerCase()) return false;
+    const names = match[2].split(/,|\bor\b|\band\b|&|\//i).map(part => part.trim().toLowerCase());
+    return selected.some(name => names.includes(name.toLowerCase()));
+  });
+  return { mode, die, points, available, applies, eligible: available && applies };
+}
+export const threadOptions = (threads, label, selected) => `<label>${label} Thread <select name="${label.toLowerCase()}Thread"><option value="">None</option>${threads.map(item => {
+  const state = threadState(item, label, selected);
+  const reason = !state.available ? " — depleted" : !state.applies ? ` — not applicable to selected ${label}s` : "";
+  const resource = state.mode === "points" ? `${state.points} points` : state.die;
+  return `<option value="${escape(item.id)}" ${state.eligible ? "" : "disabled"}>${escape(item.name)} — ${escape(resource)}${escape(reason)}</option>`;
+}).join("")}</select></label>`;
 
 /** One sheet action; staged prompts preserve the rulebook's post-roll decisions. */
 export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPenalty = 0 }) {
@@ -178,27 +194,34 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
     return;
   }
 
-  const threads = actor.items.filter(item => item.type === "thread" && (item.system.useMode === "points" ? Number(item.system.points) > 0 : THREAD_DICE.includes(item.system.die) && item.system.die !== "depleted"));
+  const threads = actor.items.filter(item => item.type === "thread");
+  const eligibleBinds = threads.filter(item => threadState(item, "Bind", binds).eligible).length;
+  const eligibleStrands = threads.filter(item => threadState(item, "Strand", strands).eligible).length;
   const available = Math.max(0, Number(actor.system.resolve.value) || 0);
   const support = await foundry.applications.api.DialogV2.input({
     window: { title: "Cast a spell — choose Threads", resizable: true }, position: { width: 600 },
     content: `<div class="tbe-casting-dialog"><p>Bind succeeded: ${roll.total}, ${result.sl} SL. Base Mastery: ones die ${ones} + adjusted Strand ${effectiveStrand} = <b>${ones + effectiveStrand}</b>. Spell TC: <b>${tc}</b>. Available Resolve: ${available}.</p>
-      <p>Select at most one Bind Thread and one Strand Thread. Check their description and applicable Binds/Strands on the Item sheet; you must be in physical contact with them.</p>
+      <p>Select at most one Bind Thread and one Strand Thread. You must be in physical contact with them. ${threads.length} Thread Item${threads.length === 1 ? "" : "s"} on this sheet; ${eligibleBinds} available for the selected Binds and ${eligibleStrands} for the selected Strands. Unavailable Threads are shown but cannot be selected.</p>
       <div class="tbe-casting-grid">${threadOptions(threads, "Bind", binds)}${threadOptions(threads, "Strand", strands)}
       <label>Bind consumable points to spend <input name="bindPoints" type="number" min="0" step="1" value="0"></label>
       <label>Strand consumable points to spend <input name="strandPoints" type="number" min="0" step="1" value="0"></label></div>
       <p>Thread dice are rolled now; a result of 1 or 2 steps the die down. If this casting remains uncontrolled, the remaining gap modifies a Weave Reaction roll.</p></div>`,
     ok: { label: "Use Threads" }
   });
-  if (!support) { await ChatMessage.create({ speaker, content: spellCard("Casting incomplete — finish manually", "warning", "<p>Threads and mitigation were not resolved. Do not reroll the Bind.</p>") }); return; }
-  const bindThread = threads.find(item => item.id === support.bindThread), strandThread = threads.find(item => item.id === support.strandThread);
-  const bp = integer(support.bindPoints), sp = integer(support.strandPoints);
+  let bindThread = support ? threads.find(item => item.id === support.bindThread) : null;
+  let strandThread = support ? threads.find(item => item.id === support.strandThread) : null;
+  let bp = integer(support?.bindPoints ?? 0), sp = integer(support?.strandPoints ?? 0);
+  let threadNotice = support ? "" : "<p>Thread window closed: no Threads used. The successful spell still takes effect.</p>";
   if ((bindThread && strandThread && bindThread.id === strandThread.id) || [bp, sp].includes(null)
       || (!bindThread && bp) || (!strandThread && sp)
+      || (bindThread && !threadState(bindThread, "Bind", binds).eligible)
+      || (strandThread && !threadState(strandThread, "Strand", strands).eligible)
       || (bindThread && bindThread.system.useMode === "points" && bp > Number(bindThread.system.points))
       || (strandThread && strandThread.system.useMode === "points" && sp > Number(strandThread.system.points))) {
-    ui.notifications.warn("Choose two different applicable Threads and valid amounts. The Bind roll has already happened; resolve the casting manually.");
-    await ChatMessage.create({ speaker, content: spellCard("Casting incomplete — finish manually", "warning", "<p>Resolve Threads and mitigation manually (invalid input).</p>") }); return;
+    ui.notifications.warn("Invalid Thread selection. No Threads are used; the successful spell continues to mitigation.");
+    bindThread = strandThread = null;
+    bp = sp = 0;
+    threadNotice = "<p>Invalid Thread selection: no Threads used.</p>";
   }
   let threadMastery = 0;
   const threadDetails = [];
@@ -220,6 +243,7 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
   const beforeMitigation = ones + effectiveStrand + threadMastery;
   const shortfall = Math.max(0, tc - beforeMitigation);
   let mitigation = 0;
+  let mitigationNotice = "";
   if (shortfall) {
     const decision = await foundry.applications.api.DialogV2.input({
       window: { title: "Cast a spell — mitigate the Weave" },
@@ -227,11 +251,9 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
         <label>Resolve to spend (0–${available}) <input type="number" name="mitigate" min="0" max="${available}" step="1" value="${Math.min(shortfall, available)}"></label><p>Any remaining shortfall adds to the Weave Reaction roll.</p></div>`,
       ok: { label: "Commit casting and post to chat" }
     });
-    if (!decision) {
-      await ChatMessage.create({ speaker, content: spellCard("Casting incomplete — finish manually", "warning", `<p>Thread Mastery ${threadMastery}; mitigation and Weave Reaction unresolved. Finish manually without rerolling the Bind.</p>`) }); return;
-    }
-    mitigation = integer(decision.mitigate, 0, available);
-    if (mitigation === null) { ui.notifications.warn("Resolve amount invalid; finish this casting manually."); return; }
+    mitigation = decision ? integer(decision.mitigate, 0, available) : 0;
+    if (!decision) mitigationNotice = "<p>Mitigation window closed: 0 Resolve spent.</p>";
+    if (mitigation === null) { ui.notifications.warn("Invalid Resolve amount; 0 Resolve spent and any Weave Reaction proceeds."); mitigation = 0; }
     if (mitigation) await actor.update({ "system.resolve.value": Math.max(0, Number(actor.system.resolve.value) - mitigation) });
   }
   const mastery = ones + effectiveStrand + threadMastery + mitigation;
@@ -247,5 +269,5 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
     const reactionRoll = await new Roll(`1d20 + ${gap}`).evaluate();
     reaction = `<p><b>Uncontrolled:</b> Weave Reaction Modifier +${gap}; 1d20 + ${gap} = <b>${reactionRoll.total}</b>. Consult the Weave Reaction Table.</p>`;
   }
-  await ChatMessage.create({ speaker, content: spellCard(gap ? `Uncontrolled spell · Weave Reaction +${gap}` : `Controlled spell · Mastery ${mastery} meets TC ${tc}`, gap ? "warning" : "success", `<div class="tbe-card-breakdown"><b>Mastery</b>${[["Ones die", ones], ["Adjusted Strand", effectiveStrand], ["Threads", threadMastery], ["Resolve spent", mitigation]].map(([label, value]) => `<div class="tbe-card-row"><span>${label}</span><strong>+${value}</strong></div>`).join("")}</div>${threadDetails.length ? `<p>${threadDetails.join("; ")}</p>` : ""}${reaction}${durationFraying}<p>Targets resist with an opposed roll against this Bind result. Apply the spell and any reaction together.</p>`, mastery) });
+  await ChatMessage.create({ speaker, content: spellCard(gap ? `Uncontrolled spell · Weave Reaction +${gap}` : `Controlled spell · Mastery ${mastery} meets TC ${tc}`, gap ? "warning" : "success", `<div class="tbe-card-breakdown"><b>Mastery</b>${[["Ones die", ones], ["Adjusted Strand", effectiveStrand], ["Threads", threadMastery], ["Resolve spent", mitigation]].map(([label, value]) => `<div class="tbe-card-row"><span>${label}</span><strong>+${value}</strong></div>`).join("")}</div>${threadDetails.length ? `<p>${threadDetails.join("; ")}</p>` : ""}${threadNotice}${mitigationNotice}${reaction}${durationFraying}<p>Targets resist with an opposed roll against this Bind result. Apply the spell and any reaction together.</p>`, mastery) });
 }

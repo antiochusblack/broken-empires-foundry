@@ -4,6 +4,7 @@ import { currentPiety, pietyBaseline } from "./piety.mjs";
 import { rollCard, escapeCard, copyRollText } from "./roll-card.mjs";
 import { enableHotbarDrags, installHotbarActions } from "./hotbar-actions.mjs";
 import { rollWoundDie, rollInfectionDie } from "./wound-rolls.mjs";
+import { openCharacterCreator } from "./character-creator.mjs";
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
 const number = (initial = 0) => new NumberField({ required: true, integer: true, initial });
@@ -792,6 +793,7 @@ class CharacterSheet extends HandlebarsSheet {
   }
   _onRender(context, options) {
     super._onRender(context, options);
+    this.element.querySelector("[data-character-creator]")?.addEventListener("click", () => openCharacterCreator(this.actor));
     enableHotbarDrags(this);
     const scroller = this.element.querySelector(".tbe-sheet-body");
     // Persist manual wound flags as a complete array. Indexed writes to a
@@ -1681,6 +1683,16 @@ Hooks.once("ready", async () => {
         })), { pack: pack.collection });
       }
     } catch (error) { console.error("TBE: failed to initialise the example Threads compendium", error); }
+    try {
+      let pack = game.packs.get("world.tbe-pregens");
+      if (!pack) pack = await foundry.documents.collections.CompendiumCollection.createCompendium({ name: "tbe-pregens", label: "Pregens", type: "Actor" });
+      const response = await fetch("systems/broken-empires-foundry/packs-src/pregens.json");
+      if (!response.ok) throw new Error(`Pregens HTTP ${response.status}`);
+      const pregens = await response.json();
+      const index = await pack.getIndex({ fields: ["type"] });
+      const missing = pregens.filter(actor => !index.some(entry => entry.name === actor.name && entry.type === "character"));
+      if (missing.length) await Actor.implementation.createDocuments(missing, { pack: pack.collection });
+    } catch (error) { console.error("TBE: failed to initialise the Pregens compendium", error); }
   }
   for (const actor of game.actors.filter(a => a.type === "character")) {
     if (!actor.getFlag("broken-empires-foundry", "threadsMigrated")) {
@@ -1784,7 +1796,7 @@ const STARTING_ITEMS = [
 
 // Only the client creating a new character adds these embedded Items.
 Hooks.on("createActor", async (actor, options, userId) => {
-  if (actor.type !== "character" || userId !== game.user.id) return;
+  if (actor.type !== "character" || userId !== game.user.id || actor.getFlag("broken-empires-foundry", "pregenerated")) return;
   try {
     await actor.createEmbeddedDocuments("Item", STARTING_ITEMS);
     await actor.setFlag("broken-empires-foundry", "startingItemsAdded", true);
