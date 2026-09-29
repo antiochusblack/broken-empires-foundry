@@ -1,4 +1,5 @@
 // An in-memory draft: changing steps keeps choices, closing the window discards them.
+import { SKILL_DESCRIPTIONS } from "./skill-descriptions.mjs";
 const SYSTEM = "broken-empires-foundry";
 const html = value => foundry.utils.escapeHTML(String(value ?? ""));
 const slug = name => String(name).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/_$/, "");
@@ -29,7 +30,18 @@ const CAREERS = {
 const STEPS = ["Concept & starting skills", "Race", "Ability scores", "Attributes", "Culture", "Life events", "Previous career", "Rounding out", "Equipment", "Personality", "Goals", "Status & review"];
 const CATEGORIES = ["Combat", "Adventuring", "Social", "Lore", "Binds"];
 const choices = (names, selected, blank = "Choose…") => `<option value="">${html(blank)}</option>${names.map(name => `<option value="${html(name)}" ${name === selected ? "selected" : ""}>${html(name)}</option>`).join("")}`;
-const select = (path, names, value, blank) => `<select data-field="${html(path)}">${choices(names, value, blank)}</select>`;
+const talentDescription = name => {
+  const entry = game.packs.get("world.tbe-talents")?.index?.contents?.find(item => item.name === name);
+  return [entry?.system?.effect, entry?.system?.requirements && `Requirements: ${entry.system.requirements}`].filter(Boolean).join("\n") || "No description available.";
+};
+const choiceType = path => /(?:talent|Talents)/i.test(path) ? "talent" : /^(?:starting|raceSavvy|raceExpertise|bolgSavvy|abilities\.\d+\.expertise|cultureExpertise|cultureSelections|events\.\d+\.skill|sharedHistories\.\d+\.skill|savvy|oldExpertise|focusBinds|focusStrands|thin|bindExpertise|bolgBind)/.test(path) ? "skill" : "";
+const choiceDescription = (name, type) => type === "talent" ? talentDescription(name) : SKILL_DESCRIPTIONS[name] || "No description available.";
+const info = description => `<span class="tbe-creator-info" role="img" aria-label="${html(description)}" title="${html(description)}">i</span>`;
+const select = (path, names, value, blank) => {
+  const type = choiceType(path);
+  const description = type ? value ? choiceDescription(value, type) : "Choose an option to see its description." : "";
+  return `<select data-field="${html(path)}" ${type ? `data-choice-type="${type}" title="${html(description)}"` : ""}>${choices(names, value, blank)}</select>${type ? info(description) : ""}`;
+};
 const input = (path, value, type = "text", extra = "") => `<input data-field="${html(path)}" type="${type}" value="${html(value)}" ${extra}>`;
 const area = (path, value, rows = 3) => `<textarea data-field="${html(path)}" rows="${rows}">${html(value)}</textarea>`;
 const label = (name, content) => `<label>${html(name)} ${content}</label>`;
@@ -41,7 +53,7 @@ function fresh() {
   return {
     name: "", concept: "", starting: {}, race: "", region: "", language: "", sex: "", size: "Medium", raceSavvy: "", raceExpertise: "", raceTalent: "", bolgSavvy: "", bolgBind: "",
     abilities: [{ name: "", descriptor: "", expertise: "", talent: "" }, { name: "", descriptor: "", expertise: "", talent: "" }],
-    attributes: { Resolve: 0, Initiative: 0, Toughness: 0, "Death Threshold": 0 }, initiativeBase: 10, dtBase: 20,
+    attributes: { Resolve: 0, Initiative: 0, Toughness: 0, "Death Threshold": 0 }, initiativeBase: 10, dtBase: 20, randomizedAttributes: { initiative: false, dt: false },
     culture: "", cultureSelections: [], cultureExpertise: ["", ""], cultureCoin: 0, wandererLanguage: "", rolled: { cultureCoin: false, careerCoin: false, equipmentCoin: false, freeArmor: false },
     events: Array.from({ length: 3 }, () => ({ table: "", name: "", text: "", skill: "", points: 0, strand: "", strandLevels: 0, customName: "", customPoints: 0, status: 0, story: "" })),
     sharedHistories: [{ character: "", event: "", skill: "", story: "" }, { character: "", event: "", skill: "", story: "" }],
@@ -110,8 +122,8 @@ export class CharacterCreator extends App {
   static PARTS = { main: { template: `systems/${SYSTEM}/templates/character-creator.hbs` } };
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
-    await Promise.all(["tbe-talents", "tbe-threads", "tbe-equipment"].map(name => game.packs.get(`world.${name}`)?.getIndex({ fields: ["type", "system.price", "system.category"] })));
-    return { ...context, title: STEPS[this.step], step: this.step + 1, count: STEPS.length, body: this._body(), first: this.step === 0, last: this.step === STEPS.length - 1 };
+    await Promise.all(["tbe-talents", "tbe-threads", "tbe-equipment"].map(name => game.packs.get(`world.${name}`)?.getIndex({ fields: ["type", "system.price", "system.category", "system.effect", "system.requirements"] })));
+    return { ...context, title: STEPS[this.step], step: this.step + 1, count: STEPS.length, body: this._body(), guidance: this._guidance(), first: this.step === 0, last: this.step === STEPS.length - 1 };
   }
   _onRender(context, options) {
     super._onRender(context, options);
@@ -119,6 +131,12 @@ export class CharacterCreator extends App {
       const value = field.type === "number" ? (Number(field.value) || 0) : field.type === "checkbox" ? field.checked : field.value;
       const previousCareer = this.draft.career;
       setPath(this.draft, field.dataset.field, value);
+      if (field.dataset.choiceType) {
+        const description = value ? choiceDescription(value, field.dataset.choiceType) : "Choose an option to see its description.";
+        field.title = description;
+        const icon = field.nextElementSibling;
+        if (icon?.classList.contains("tbe-creator-info")) { icon.title = description; icon.setAttribute("aria-label", description); }
+      }
       if (field.dataset.field === "career" && previousCareer !== value && careerRequirements[value]) { this.draft.careerSkills = {}; this.draft.strandCareer = {}; this.draft.strandExtra = {}; this.draft.careerTalents = careerRequirements[value].map(names => names.length === 1 ? names[0] : ""); this.draft.rolled.careerCoin = false; }
       if (field.dataset.field === "culture") { this.draft.cultureSelections = []; this.draft.cultureExpertise = [fixedCultureExpertise[value] || "", ""]; this.draft.rolled.cultureCoin = false; }
       if (["race", "culture", "career", "age"].includes(field.dataset.field) || field.dataset.field.startsWith("abilities.") && field.dataset.field.endsWith(".name")) void this.render();
@@ -133,11 +151,7 @@ export class CharacterCreator extends App {
     });
     this.element.querySelector("[data-finish]")?.addEventListener("click", () => void this._finish());
     this.element.querySelectorAll("[data-roll-choice]").forEach(button => button.addEventListener("click", () => void this._rollChoice(button.dataset.rollChoice)));
-    this.element.querySelectorAll("[data-standard]").forEach(button => button.addEventListener("click", () => {
-      if (button.dataset.standard === "initiative") this.draft.initiativeBase = 10;
-      if (button.dataset.standard === "dt") this.draft.dtBase = 20;
-      void this.render();
-    }));
+    this.element.querySelectorAll("[data-attribute]").forEach(button => button.addEventListener("click", () => this._adjustAttribute(button.dataset.attribute, Number(button.dataset.direction))));
     this.element.querySelectorAll("[data-roll-event]").forEach(button => button.addEventListener("click", () => void this._rollEvent(Number(button.dataset.rollEvent))));
     this.element.querySelectorAll("[data-pick-event]").forEach(button => button.addEventListener("click", () => void this._pickEvent(Number(button.dataset.pickEvent))));
     this.element.querySelectorAll("[data-gear]").forEach(input => input.addEventListener("change", () => {
@@ -146,7 +160,25 @@ export class CharacterCreator extends App {
       void this.render();
     }));
   }
+  _adjustAttribute(name, direction) {
+    if (!["Resolve", "Initiative", "Toughness", "Death Threshold"].includes(name) || ![-1, 1].includes(direction)) return;
+    if (name === "Initiative" && this.draft.randomizedAttributes.initiative || name === "Death Threshold" && this.draft.randomizedAttributes.dt) return;
+    const cost = name === "Toughness" ? 2 : 1;
+    const spent = Object.values(this.draft.attributes).reduce((sum, n) => sum + n, 0);
+    if (direction > 0 && spent + cost > 5 || direction < 0 && this.draft.attributes[name] < cost) return;
+    this.draft.attributes[name] += direction * cost;
+    void this.render();
+  }
   async _rollChoice(key) {
+    if (["initiative", "dt"].includes(key)) {
+      if (this.draft.randomizedAttributes[key]) return;
+      const accepted = await foundry.applications.api.DialogV2.confirm({
+        window: { title: `Commit to random ${key === "dt" ? "DT" : "Initiative"}?` },
+        content: `<p>This roll is final for this character. If you do not accept the result, you must abandon this character draft and start again.</p><p>Any points already spent on ${key === "dt" ? "DT" : "Initiative"} will return to the five-point pool, and its +/− buttons will be locked.</p>`,
+        yes: { label: "Roll and commit" }, no: { label: "Keep standard value" }
+      });
+      if (!accepted) return;
+    }
     const formula = {
       race: "1d100", culture: "1d10", career: "1d10", abilities: "2d6", initiative: "1d6+6", dt: "2d4+15",
       cultureCoin: this.draft.culture ? `${cultureCoinFormula[this.draft.culture][0]}d${cultureCoinFormula[this.draft.culture][1]}*${cultureCoinFormula[this.draft.culture][2]}` : null,
@@ -162,8 +194,8 @@ export class CharacterCreator extends App {
       if (key === "culture") { d.culture = cultureForRoll(n); d.cultureSelections = []; d.cultureExpertise = [fixedCultureExpertise[d.culture] || "", ""]; d.rolled.cultureCoin = false; }
       if (key === "career") { const next = careerForRoll(n); if (d.career !== next) { d.careerSkills = {}; d.strandCareer = {}; d.strandExtra = {}; d.careerTalents = careerRequirements[next].map(names => names.length === 1 ? names[0] : ""); d.rolled.careerCoin = false; } d.career = next; }
       if (key === "abilities") roll.dice[0].results.forEach((result, i) => { d.abilities[i].name = Object.keys(ABILITIES)[result.result - 1]; });
-      if (key === "initiative") d.initiativeBase = n;
-      if (key === "dt") { d.dtBase = n; d.attributes["Death Threshold"] = 0; }
+      if (key === "initiative") { d.initiativeBase = n; d.attributes.Initiative = 0; d.randomizedAttributes.initiative = true; }
+      if (key === "dt") { d.dtBase = n; d.attributes["Death Threshold"] = 0; d.randomizedAttributes.dt = true; }
       if (key === "cultureCoin") d.cultureCoin = n;
       if (key === "careerCoin") d.careerCoin = n;
       if (key === "equipmentCoin") d.equipmentCoin = n;
@@ -175,18 +207,55 @@ export class CharacterCreator extends App {
   _rowFields(group, bucket, budget = null, strand = false) {
     const rows = GROUPS[group].map(name => {
       const value = this.draft[bucket]?.[name] || 0;
-      return `<label class="tbe-creator-skill">${html(name)} <input type="number" min="0" max="${strand ? 5 : 100}" value="${value}" data-bucket="${html(bucket)}" data-skill="${html(name)}"></label>`;
+      return `<label class="tbe-creator-skill"><span>${html(name)} ${info(SKILL_DESCRIPTIONS[name] || "No description available.")}</span><input type="number" min="0" max="${strand ? 5 : 100}" value="${value}" data-bucket="${html(bucket)}" data-skill="${html(name)}"></label>`;
     }).join("");
     const spent = GROUPS[group].reduce((n, name) => n + (Number(this.draft[bucket]?.[name]) || 0), 0);
     return `<fieldset><legend>${html(group)}${budget === null ? "" : ` — ${html(budget)}; spent ${spent}`}</legend><div class="tbe-creator-skills">${rows}</div></fieldset>`;
   }
+  _guidance() {
+    const d = this.draft;
+    const notes = [
+      ["Pick the skills that best express your concept. The four starting choices each begin at 30%; other ordinary skills begin at 20%.", "Hover over the information icons to see what a skill covers."],
+      ["Race adds traits and bonuses when you finish. Human and Replaced characters have additional choices in this step.", "Your region and language give the character a place in the world; you can add more detail to the story later."],
+      ["Each of your two abilities adds +5 to its linked skills, even if both abilities affect the same skill.", "Expertise and Talent are separate picks for each ability. A descriptor is a short personality phrase you can use during play."],
+      ["The pool must reach zero before you continue. Toughness takes two points to gain +1; the other attributes take one point per increase.", "Lethality Level comes from your final DT, rounded up after dividing by three. Random Initiative or DT locks that attribute for this draft."],
+      ["Cultural skill bonuses add to those from earlier steps. You can pick the same skill at different stages, but each separate cultural choice must be distinct.", "Expertise increases the chosen skill's Expertise level; choosing an existing Expertise skill improves it further. Roll cultural silver before continuing."],
+      ["Resolve Origin, Youth and Recent separately. The event text goes into your history; record any skill, Strand or status benefit in the matching fields.", "Shared histories are optional. If you add them, use different characters and different skills for the two connections."],
+      ["Spend each career category's points in that category; the fieldset headings show its budget and how much you have spent.", "Pick both career Talents and roll career silver. Your career may also grant custom skills, magic choices or other benefits."],
+      ["Rounding Out lets you shape the character beyond their career. Young characters spend 70 points; Adults and Old characters spend 100.", "Strand levels cost five rounding points each. Pick three different Savvy skills and your bonus choice before continuing."],
+      ["Roll starting silver and the number of free armour pieces, then select exactly that many free pieces.", "A dagger is included automatically. Purchased gear is added at Finish; you can edit quantities and locations on the sheet afterward."],
+      ["Choose personality phrases you would enjoy bringing into scenes. Ability descriptors from the earlier step are included too.", "These are prompts for roleplaying; you can refine the wording on the finished sheet."],
+      ["Give the character goals that can lead to adventures or difficult choices.", "Short, concrete aims are enough. You can change them as the story develops."],
+      ["Check the character's name, background and choices before finishing. The wizard validates the complete draft.", "Finish fills the sheet and adds the chosen Items. Closing the wizard before Finish discards this draft."]
+    ][this.step];
+    if (this.step === 4 && d.race === "Ogre") notes[1] = "Ogres cannot select either Civilized culture.";
+    if (this.step === 4 && d.race === "Bolg Fiir") notes[1] = "Bolg Fiir cannot select Civilized, Urban.";
+    if (this.step === 6 && d.career === "Spellweaver") notes[1] = "Spellweavers choose two focus Binds, four focus Strands and two distinct Thin Strands. Thin Strands cannot be developed during creation.";
+    if (this.step === 6 && d.career === "Godbound") notes[1] = "Godbound spend their Magic career points on Piety. Pick both career Talents and roll career silver.";
+    return `<aside class="tbe-creator-guidance" aria-label="Guidance for this step"><strong>At this step</strong><ul>${notes.map(note => `<li>${html(note)}</li>`).join("")}</ul></aside>`;
+  }
   _body() {
     const d = this.draft, talentEntries = game.packs.get("world.tbe-talents")?.index?.contents ?? [], talentNames = talentEntries.map(e => e.name).sort();
     switch (this.step) {
-      case 0: return `<p>Choose one starting skill at 30% in each category. All other ordinary skills start at 20%.</p><div class="tbe-creator-grid">${label("Name", input("name", d.name))}${label("Concept", input("concept", d.concept))}${CATEGORIES.slice(0, 4).map(c => label(`${c} at 30%`, select(`starting.${c}`, GROUPS[c], d.starting[c]))).join("")}</div>`;
+      case 0: return `<p>Choose one starting skill at 30% in each category. All other ordinary skills start at 20%.</p><div class="tbe-creator-grid">${label("Name", input("name", d.name))}<label class="tbe-creator-concept">Concept ${area("concept", d.concept, 3)}</label>${CATEGORIES.slice(0, 4).map(c => label(`${c} at 30%`, select(`starting.${c}`, GROUPS[c], d.starting[c]))).join("")}</div>`;
       case 1: return `<p>Choose a race, or roll d100. Fixed racial traits and bonuses are applied at Finish.</p><div class="tbe-creator-grid">${label("Race", select("race", RACES, d.race))}<button type="button" data-roll-choice="race">Roll race (d100)</button>${label("Region / homeland", input("region", d.region))}${label("Regional language", input("language", d.language))}${label("Sex / gender", input("sex", d.sex))}${["Human", "The Replaced"].includes(d.race) ? `${label("Racial Savvy skill", select("raceSavvy", allSkills.filter(n => n !== "Piety"), d.raceSavvy))}${label("Racial Expertise skill", select("raceExpertise", allSkills.filter(n => n !== "Piety"), d.raceExpertise))}${label("Racial Talent", select("raceTalent", talentNames, d.raceTalent))}` : ""}${d.race === "Bolg Fiir" ? label("Bolg bonus Savvy", select("bolgSavvy", ["Melee: Light", "Missile", "Ancient Lore", "Arcana", "Naturewise"], d.bolgSavvy)) : ""}</div>`;
       case 2: return `<p>Choose two abilities (or roll 1d6 twice). Each adds +5 to its linked skills; select an Expertise skill, a Talent, and a descriptor for each.</p><button type="button" data-roll-choice="abilities">Roll both abilities</button>${d.abilities.map((a, i) => `<fieldset><legend>Ability ${i + 1}</legend><div class="tbe-creator-grid">${label("Ability", select(`abilities.${i}.name`, Object.keys(ABILITIES), a.name))}${label("Descriptor", input(`abilities.${i}.descriptor`, a.descriptor))}${label("Expertise", select(`abilities.${i}.expertise`, ABILITIES[a.name]?.skills ?? [], a.expertise))}${label("Talent", select(`abilities.${i}.talent`, ABILITIES[a.name]?.talents ?? [], a.talent))}</div></fieldset>`).join("")}`;
-      case 3: return `<p>Allocate five points. Toughness costs two points per +1. Optional random base Initiative and Death Threshold follow the book; random DT cannot receive points.</p><div class="tbe-creator-grid">${Object.entries(d.attributes).map(([name, v]) => label(`${name} points`, num(`attributes.${name}`, v, 5))).join("")}${label("Base Initiative", input("initiativeBase", d.initiativeBase, "number", 'readonly'))}<button type="button" data-roll-choice="initiative">Roll Initiative (6 + d6)</button><button type="button" data-standard="initiative">Use standard Initiative 10</button>${label("Base DT", input("dtBase", d.dtBase, "number", 'readonly'))}<button type="button" data-roll-choice="dt">Roll DT (15 + 2d4)</button><button type="button" data-standard="dt">Use standard DT 20</button></div><p>Points allocated: ${Object.values(d.attributes).reduce((a, b) => a + (+b || 0), 0)} / 5.</p>`;
+      case 3: {
+        const remaining = 5 - Object.values(d.attributes).reduce((sum, points) => sum + points, 0);
+        const rows = [
+          ["Resolve", 10 + 2 * d.attributes.Resolve, "+2 maximum Resolve per point"],
+          ["Toughness", d.attributes.Toughness / 2, "+1 Toughness per two points"],
+          ["Initiative", d.initiativeBase + d.attributes.Initiative, "+1 Initiative per point"],
+          ["Death Threshold", d.dtBase + 2 * d.attributes["Death Threshold"], "+2 DT per point"]
+        ];
+        return `<p>Spend five Attribute points. Toughness costs two points per increase.</p><p class="tbe-creator-pool" aria-live="polite">Points remaining: <strong>${remaining} / 5</strong></p><div class="tbe-creator-attributes">${rows.map(([name, total, hint]) => {
+          const locked = name === "Initiative" && d.randomizedAttributes.initiative || name === "Death Threshold" && d.randomizedAttributes.dt;
+          const cost = name === "Toughness" ? 2 : 1;
+          const spent = d.attributes[name];
+          const roll = name === "Initiative" ? `<button type="button" data-roll-choice="initiative" ${locked ? "disabled" : ""}>${locked ? "Random Initiative rolled (locked)" : "Roll random Initiative (6 + d6)"}</button>` : name === "Death Threshold" ? `<button type="button" data-roll-choice="dt" ${locked ? "disabled" : ""}>${locked ? "Random DT rolled (locked)" : "Roll random DT (15 + 2d4)"}</button>` : "";
+          return `<div class="tbe-creator-attribute"><div class="tbe-creator-attribute-row"><label for="attribute-${slug(name)}">${html(name)}</label><button type="button" data-attribute="${html(name)}" data-direction="-1" aria-label="Remove ${html(name)} points" ${locked || spent < cost ? "disabled" : ""}>−</button><span class="tbe-creator-attribute-spent" title="Attribute points spent">${spent} pt${spent === 1 ? "" : "s"}</span><button type="button" data-attribute="${html(name)}" data-direction="1" aria-label="Add ${html(name)} points" ${locked || remaining < cost ? "disabled" : ""}>+</button><input id="attribute-${slug(name)}" type="number" aria-label="${html(name)} total" value="${total}" readonly></div><small>${hint}</small>${roll}</div>`;
+        }).join("")}</div><p class="tbe-creator-roll-warning">Random Initiative and DT rolls are final for this draft. If you do not accept a result, you must abandon the character and start again.</p>`;
+      }
       case 4: {
         const plan = culturePlan[d.culture];
         return `<p>Choose or roll your culture, then make its skill selections. Fixed bonuses are applied automatically.</p><div class="tbe-creator-grid">${label("Culture", select("culture", CULTURES, d.culture))}<button type="button" data-roll-choice="culture">Roll culture (d10)</button>${label("Culture silver (sp)", input("cultureCoin", d.cultureCoin, "number", "readonly"))}<button type="button" data-roll-choice="cultureCoin">Roll culture coin</button>${[0, 1].map(i => label(`Culture Expertise ${i + 1}`, select(`cultureExpertise.${i}`, fixedCultureExpertise[d.culture] && i === 0 ? [fixedCultureExpertise[d.culture]] : d.culture === "Civilized, Urban" ? (i === 0 ? GROUPS.Adventuring : GROUPS.Lore) : [...GROUPS.Adventuring, ...GROUPS.Lore], d.cultureExpertise[i]))).join("")}${d.culture === "Wanderer" ? label("Additional Language at 40", input("wandererLanguage", d.wandererLanguage)) : ""}</div>${plan ? `<p>Fixed bonuses: ${Object.entries(plan.fixed).map(([n, v]) => `${html(n)} +${v}`).join(", ")}.</p><div class="tbe-creator-grid">${plan.choices.map(([amount, names], i) => label(`+${amount} choice ${i + 1}`, select(`cultureSelections.${i}`, names, d.cultureSelections[i]))).join("")}</div>` : ""}`;
@@ -247,7 +316,7 @@ export class CharacterCreator extends App {
     if (this.step === 0) { required(d.name.trim(), "Give the character a name."); for (const c of CATEGORIES.slice(0, 4)) required(GROUPS[c].includes(d.starting[c]), `Choose a starting ${c} skill.`); }
     if (this.step === 1) { required(RACES.includes(d.race), "Choose or roll a race."); if (["Human", "The Replaced"].includes(d.race)) required(d.raceSavvy && d.raceExpertise && d.raceTalent && d.language.trim(), "Choose Human benefits and a regional language."); if (d.race === "Bolg Fiir") required(d.bolgSavvy, "Choose a Bolg Savvy skill."); }
     if (this.step === 2) for (const [i, a] of d.abilities.entries()) { required(ABILITIES[a.name], `Choose ability ${i + 1}.`); required(ABILITIES[a.name].skills.includes(a.expertise), `Choose ability ${i + 1}'s Expertise.`); required(ABILITIES[a.name].talents.includes(a.talent), `Choose ability ${i + 1}'s Talent.`); }
-    if (this.step === 3) { required(Object.values(d.attributes).every(n => Number.isInteger(n) && n >= 0), "Attribute points must be whole and nonnegative."); required(Object.values(d.attributes).reduce((a, b) => a + b, 0) === 5, "Allocate exactly five Attribute points."); required(d.attributes.Toughness % 2 === 0, "Toughness costs two points per +1."); required(d.dtBase === 20 || d.attributes["Death Threshold"] === 0, "Random base DT cannot receive Attribute points."); }
+    if (this.step === 3) { required(Object.values(d.attributes).every(n => Number.isInteger(n) && n >= 0), "Attribute points must be whole and nonnegative."); required(Object.values(d.attributes).reduce((a, b) => a + b, 0) === 5, "Allocate exactly five Attribute points."); required(d.attributes.Toughness % 2 === 0, "Toughness costs two points per +1."); required(!d.randomizedAttributes.initiative || d.attributes.Initiative === 0, "Random Initiative cannot receive Attribute points."); required(!d.randomizedAttributes.dt || d.attributes["Death Threshold"] === 0, "Random DT cannot receive Attribute points."); }
     if (this.step === 4) { required(CULTURES.includes(d.culture) && !(d.race === "Ogre" && d.culture.startsWith("Civilized")) && !(d.race === "Bolg Fiir" && d.culture === "Civilized, Urban"), "Choose a culture permitted for this race."); const plan = culturePlan[d.culture]; required(plan.choices.every(([, names], i) => names.includes(d.cultureSelections[i])), "Make every cultural skill choice."); required(new Set(d.cultureSelections).size === d.cultureSelections.length, "Choose distinct skills for each cultural bonus."); required(d.cultureExpertise.every(Boolean), "Choose both cultural Expertise bonuses."); required(d.rolled.cultureCoin, "Roll cultural starting silver."); if (d.culture === "Wanderer") required(d.wandererLanguage.trim(), "Enter the additional Wanderer Language."); }
     if (this.step === 5) { required(d.events.every(e => e.name.trim()), "Choose or roll each of the three Life Events."); required(d.events.every(e => !e.points || e.skill), "Choose a skill for each Life Event skill bonus."); required(d.events.every(e => !e.strandLevels || e.strand), "Choose a Strand for each Life Event Strand bonus."); const histories = d.sharedHistories.filter(h => h.character.trim()); required(histories.every(h => h.skill), "Choose a skill for each shared history."); required(new Set(histories.map(h => h.character)).size === histories.length && new Set(histories.map(h => h.skill)).size === histories.length, "Shared histories must involve different characters and different skills."); }
     if (this.step === 6) { required(CAREERS[d.career] && !(d.career === "Spellweaver" && ["Ogre", "The Replaced"].includes(d.race)), "Choose a permitted career.");

@@ -1,6 +1,6 @@
 # The Broken Empires Foundry system
 
-An unofficial, lightweight Foundry VTT v14 system. Version 0.24.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
+An unofficial, lightweight Foundry VTT v14 system. Version 0.25.0 has an editable character sheet, owned Item sheets, equipment and Talent compendiums, and a manual-target attack roll. Defence, opposed outcome, damage and wounds remain table decisions.
 
 ## Install or update on Forge
 
@@ -8,7 +8,7 @@ Install or update the **Game System** using:
 
 `https://raw.githubusercontent.com/antiochusblack/broken-empires-foundry/main/system.json`
 
-Commit these files to `main`, then create a GitHub release tagged `v0.24.0` and attach `broken-empires-foundry-v0.24.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
+Commit these files to `main`, then create a GitHub release tagged `v0.25.0` and attach `broken-empires-foundry-v0.25.0.zip`. The ZIP contains a top-level `broken-empires-foundry/` folder. Restart the world after updating.
 
 When the first GM opens a world, the system creates a separate **TBE Equipment** world compendium with 121 entries and folders based on the book categories. Existing starter equipment and any edited compendiums are preserved. The new pack adds missing entries on startup without overwriting existing entries. Armour examples have their body location defined before they are dragged onto a sheet; placement belongs to the owned copy. To reuse a character's Item as a world Item, drag it to the Items sidebar. The compendium is stored with that world.
 
@@ -27,6 +27,13 @@ The sheet shows lethal WP, nonlethal WP and their combined total at each body lo
 ## Attack and combat reference
 
 Weapons in Held and Ready or At Hand have an Attack button. Select a Combat skill, tick common modifiers and enter any other situational modifier. An At Hand weapon defaults to Draw and Attack (−20), which can be unchecked if already drawn; throwing knives and unarmed attacks are exempt. The chat message shows the d100 result, rolled SLs, critical state, general hit location, and an optional detailed-location lookup for the defender's ones die. No target token is required. The Reference section lists manoeuvres, common modifiers and turn reminders.
+
+## Changes in 0.25.0
+
+- The character creator's Attributes step shows five points to spend, +/− controls and calculated totals. Random Initiative and DT are one-time choices that lock their allocations, with a warning before rolling.
+- Skill choices and allocations have description tooltips. Talent choices show effects and requirements from the Talent compendium.
+- Every character creation step offers short guidance, including context for race and magic career choices.
+- Concept is a full-width, resizable multiline field.
 
 ## Changes in 0.24.0
 
