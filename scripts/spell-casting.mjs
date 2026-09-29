@@ -1,3 +1,4 @@
+import { rollCard } from "./roll-card.mjs";
 const BINDS = ["Change", "Conjure", "Control", "Destroy", "Witness"];
 const STRANDS = ["Air", "Beasts", "Body", "Earth", "Fire", "Plants", "Spheres", "Spirit", "Thought", "Water"];
 const BIND_TOOLTIPS = {
@@ -150,9 +151,20 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
   await actor.unsetFlag("broken-empires-foundry", "spellDraft");
   const result = attackOutcome(roll.total, target, Number(data.expertise) || 0);
   const ones = roll.total % 10 || 10;
-  const header = `<h3>${escape(actor.name)} casts: ${escape(initial.intent)}</h3><p><b>${escape(binds.join(" + "))}</b> (roll with ${escape(bind)}) / <b>${escape(strands.join(" + "))}</b> (Mastery uses ${escape(strand)} ${strandScore(strand)} ${strandModifier >= 0 ? "+" : "−"} ${Math.abs(strandModifier)} modifier = ${effectiveStrand}).</p>
-    <p>Magnitude ${escape(initial.Magnitude)} ${magnitude}; Target ${escape(initial.Target)} ${targetCost}${initial.Target === "Individual" ? ` (+${2 * (individuals - 1)} more targets${initial.chooseLocation ? ", +2 Choose Location" : ""})` : ""}; Range ${escape(initial.Range)} ${rangeCost}; Duration ${escape(initial.Duration)} ${durationCost}; Effect ${effect}; Trigger ${triggered}; other ${otherCost}; armour ${armour}. <b>Total Cost ${tc}.</b> Casting time ${castingTime}.</p>
-    <p>Bind ${escape(bind)} target ${target} (Favor ${favor}, modifier ${modifier}); d100 <b>${roll.total}</b> — ${result.criticalFailure ? "critical failure" : result.critical ? "critical success" : result.success ? "success" : "failure"}${result.success ? `, ${result.sl} SL to oppose` : ""}.</p>`;
+  const spellCard = (status, tone, extra = "", mastery = null) => rollCard({
+    kind: "Spell", title: `${actor.name} casts: ${initial.intent}`,
+    subtitle: `${binds.join(" + ")} / ${strands.join(" + ")}`,
+    dieLabel: "Bind d100", die: roll.total, resultLabel: "Bind target", result: target,
+    rows: [["Bind used", bind], ["Bind Favor", `+${favor * 10}`], ["Other Bind modifier", modifier >= 0 ? `+${modifier}` : String(modifier)],
+      ["Bind result", `${result.criticalFailure ? "Critical failure" : result.critical ? "Critical success" : result.success ? "Success" : "Failure"}${result.success ? ` · ${result.sl} SL` : ""}`]],
+    status, tone,
+    details: `<div class="tbe-card-spell-totals"><div><small>Total Cost (TC)</small><strong>${tc}</strong></div><div><small>Final Mastery</small><strong>${mastery === null ? "—" : mastery}</strong></div></div>
+      <div class="tbe-card-breakdown"><b>Spell construction</b>
+      ${[["Magnitude", `${initial.Magnitude} +${magnitude}`], ["Target", `${initial.Target} +${targetCost}${initial.Target === "Individual" ? `; extra targets +${2 * (individuals - 1)}${initial.chooseLocation ? "; Choose Location +2" : ""}` : ""}`],
+      ["Range", `${initial.Range} +${rangeCost}`], ["Duration", `${initial.Duration} +${durationCost}`], ["Effect / Trigger / Other / Armour", `${effect} / ${triggered} / ${otherCost} / ${armour}`],
+      ["Adjusted Strand", `${strand} ${strandScore(strand)} ${strandModifier >= 0 ? "+" : "−"} ${Math.abs(strandModifier)} = ${effectiveStrand}`], ["Casting time", castingTime]]
+      .map(([label, value]) => `<div class="tbe-card-row"><span>${escape(label)}</span><strong>${escape(value)}</strong></div>`).join("")}</div>${extra}`
+  });
   const speaker = ChatMessage.getSpeaker({ actor });
   if (!result.success) {
     const available = Math.max(0, Number(actor.system.resolve.value) || 0);
@@ -162,7 +174,7 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
       const reaction = await new Roll(`1d20 + ${magnitude}`).evaluate();
       extra += `<p><b>Critical failure:</b> Weave Reaction roll ${reaction.total} (including Magnitude +${magnitude}). Consult the Weave Reaction Table. If the caster is a Fade, gain 1 Fraying.</p>`;
     }
-    await ChatMessage.create({ speaker, content: `<div class="tbe-casting-card">${header}${extra}</div>` });
+    await ChatMessage.create({ speaker, content: spellCard("Spell fails", "failure", extra) });
     return;
   }
 
@@ -178,7 +190,7 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
       <p>Thread dice are rolled now; a result of 1 or 2 steps the die down. If this casting remains uncontrolled, the remaining gap modifies a Weave Reaction roll.</p></div>`,
     ok: { label: "Use Threads" }
   });
-  if (!support) { await ChatMessage.create({ speaker, content: `<div class="tbe-casting-card">${header}<p>Success; Threads and mitigation were not resolved. Do not reroll the Bind; finish this casting manually.</p></div>` }); return; }
+  if (!support) { await ChatMessage.create({ speaker, content: spellCard("Casting incomplete — finish manually", "warning", "<p>Threads and mitigation were not resolved. Do not reroll the Bind.</p>") }); return; }
   const bindThread = threads.find(item => item.id === support.bindThread), strandThread = threads.find(item => item.id === support.strandThread);
   const bp = integer(support.bindPoints), sp = integer(support.strandPoints);
   if ((bindThread && strandThread && bindThread.id === strandThread.id) || [bp, sp].includes(null)
@@ -186,7 +198,7 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
       || (bindThread && bindThread.system.useMode === "points" && bp > Number(bindThread.system.points))
       || (strandThread && strandThread.system.useMode === "points" && sp > Number(strandThread.system.points))) {
     ui.notifications.warn("Choose two different applicable Threads and valid amounts. The Bind roll has already happened; resolve the casting manually.");
-    await ChatMessage.create({ speaker, content: `<div class="tbe-casting-card">${header}<p>Resolve Threads and mitigation manually (invalid input).</p></div>` }); return;
+    await ChatMessage.create({ speaker, content: spellCard("Casting incomplete — finish manually", "warning", "<p>Resolve Threads and mitigation manually (invalid input).</p>") }); return;
   }
   let threadMastery = 0;
   const threadDetails = [];
@@ -216,7 +228,7 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
       ok: { label: "Commit casting and post to chat" }
     });
     if (!decision) {
-      await ChatMessage.create({ speaker, content: `<div class="tbe-casting-card">${header}<p>Thread Mastery ${threadMastery}; mitigation and Weave Reaction unresolved. Finish manually without rerolling the Bind.</p></div>` }); return;
+      await ChatMessage.create({ speaker, content: spellCard("Casting incomplete — finish manually", "warning", `<p>Thread Mastery ${threadMastery}; mitigation and Weave Reaction unresolved. Finish manually without rerolling the Bind.</p>`) }); return;
     }
     mitigation = integer(decision.mitigate, 0, available);
     if (mitigation === null) { ui.notifications.warn("Resolve amount invalid; finish this casting manually."); return; }
@@ -235,5 +247,5 @@ export async function castSpell(actor, { skillTotals, attackOutcome, wornArmorPe
     const reactionRoll = await new Roll(`1d20 + ${gap}`).evaluate();
     reaction = `<p><b>Uncontrolled:</b> Weave Reaction Modifier +${gap}; 1d20 + ${gap} = <b>${reactionRoll.total}</b>. Consult the Weave Reaction Table.</p>`;
   }
-  await ChatMessage.create({ speaker, content: `<div class="tbe-casting-card">${header}<p>Mastery: ones die ${ones} + adjusted Strand ${effectiveStrand} + Threads ${threadMastery} + mitigation Resolve ${mitigation} = <b>${mastery}</b> against TC ${tc}. ${gap ? "Uncontrolled." : "Controlled."}</p>${threadDetails.length ? `<p>${threadDetails.join("; ")}</p>` : ""}${reaction}${durationFraying}<p>Targets resist with an opposed roll against this Bind result. Apply the spell and any reaction together.</p></div>` });
+  await ChatMessage.create({ speaker, content: spellCard(gap ? `Uncontrolled spell · Weave Reaction +${gap}` : `Controlled spell · Mastery ${mastery} meets TC ${tc}`, gap ? "warning" : "success", `<div class="tbe-card-breakdown"><b>Mastery</b>${[["Ones die", ones], ["Adjusted Strand", effectiveStrand], ["Threads", threadMastery], ["Resolve spent", mitigation]].map(([label, value]) => `<div class="tbe-card-row"><span>${label}</span><strong>+${value}</strong></div>`).join("")}</div>${threadDetails.length ? `<p>${threadDetails.join("; ")}</p>` : ""}${reaction}${durationFraying}<p>Targets resist with an opposed roll against this Bind result. Apply the spell and any reaction together.</p>`, mastery) });
 }

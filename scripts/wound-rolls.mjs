@@ -1,3 +1,4 @@
+import { rollCard } from "./roll-card.mjs";
 const LOCATIONS = ["Head", "Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg"];
 const escape = value => foundry.utils.escapeHTML(String(value ?? ""));
 const face = total => total === 10 ? 10 : total;
@@ -7,7 +8,13 @@ const woundTotal = (actor, location) => actor.system.wounds.filter(w => location
 const rollDie = async (actor, sides, title, lines) => {
   const roll = await new Roll(`1d${sides}`).evaluate();
   const die = face(roll.total), toughness = Number(actor.system.attributes.toughness) || 0;
-  const content = `<div class="tbe-wound-roll-card"><h3>${escape(actor.name)} — ${escape(title)}</h3><p>Die ${die} + Toughness ${toughness} = <strong>${die + toughness}</strong>.</p>${lines(die, die + toughness)}</div>`;
+  const effect = lines(die, die + toughness);
+  const match = effect.match(/<strong>([^<]+)<\/strong>/);
+  const status = effect.includes("Infection worsens:") ? "Sepsis worsens" : effect.includes("Infection holds steady") ? "Infection holds steady"
+    : effect.includes("No new infection") ? "No new infection" : effect.includes("Infection: mark") ? "Wound infected" : match?.[1] ?? "Check the result below";
+  const content = rollCard({ kind: title.toLowerCase().includes("infection") || title === "Sepsis check" ? "Infection" : "Wound Die",
+    title: `${actor.name} — ${title}`, dieLabel: `d${sides} roll`, die, resultLabel: "Die + Toughness", result: die + toughness,
+    rows: [["Toughness", toughness]], status, tone: /not impaired|No new infection|holds steady/i.test(status) ? "success" : "warning", details: effect });
   await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor }), flavor: content });
   return { die, total: die + toughness };
 };

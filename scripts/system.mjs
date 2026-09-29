@@ -1,6 +1,8 @@
 import { castSpell } from "./spell-casting.mjs";
 import { requestMiracle } from "./divine-casting.mjs";
 import { currentPiety, pietyBaseline } from "./piety.mjs";
+import { rollCard, escapeCard, copyRollText } from "./roll-card.mjs";
+import { enableHotbarDrags, installHotbarActions } from "./hotbar-actions.mjs";
 import { rollWoundDie, rollInfectionDie } from "./wound-rolls.mjs";
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
@@ -488,6 +490,13 @@ async function editChatRoll(message) {
     return;
   }
   const outcome = attackOutcome(value, target, data.expertise || 0);
+  if (data.cardVersion === 2) {
+    const content = renderEditableRollCard(data, target, value, outcome);
+    const correctedRoll = await new Roll(String(value)).evaluate();
+    await message.update({ content: await correctedRoll.render({ flavor: content }), flavor: content, rolls: [correctedRoll],
+      "flags.broken-empires-foundry.editableRoll": { ...data, target, value } });
+    return;
+  }
   const result = outcome.critical ? "Critical success" : outcome.criticalFailure ? "Critical failure" : outcome.success ? "Success" : "Failure";
   const card = document.createElement("div");
   card.innerHTML = data.originalContent;
@@ -527,6 +536,29 @@ async function editChatRoll(message) {
     "flags.broken-empires-foundry.editableRoll": { ...data, target, value } });
 }
 
+function renderEditableRollCard(data, target, value, outcome = attackOutcome(value, target, data.expertise || 0)) {
+  const result = outcome.criticalFailure ? "Critical failure" : outcome.critical ? "Critical success" : outcome.success ? "Success" : "Failure";
+  const flourish = rollFlourish(outcome);
+  if (data.kind === "attack") {
+    const stats = data.stats ?? {};
+    const location = outcome.success ? generalHitLocation(value) : "";
+    const details = `${location ? `<div class="tbe-hit-location"><b>General hit location</b><strong>${escapeCard(location)}</strong><small>Attacker’s ones die: ${value % 10}. Choose Location can override this; the defender’s ones die supplies the detailed location.</small></div>${detailedHitLocationHtml(location)}` : ""}
+      <div class="tbe-attack-stats">${[["RCH",stats.reach],["DMG",stats.damage],["CL",stats.chooseLocation],["CS",stats.circumventShield],["DIS",stats.disarm],["T",stats.trip],["ENC",stats.encumbrance],["RNG",stats.range]].map(([label, stat]) => `<span><b>${label}</b> ${escapeCard(stat)}</span>`).join("")}</div>
+      ${stats.notes ? `<p><b>Notes:</b> ${escapeCard(stats.notes)}</p>` : ""}`;
+    return rollCard({ kind: "Attack", title: data.title, dieLabel: "d100 roll", die: value === 100 ? "00" : value,
+      resultLabel: "Target", result: target, rows: [[data.skill, data.base], ["Inventory overflow", data.overflow],
+        ...(data.presets ?? []).map(([label, amount]) => [label, amount >= 0 ? `+${amount}` : amount]),
+        ...(data.draw ? [["Draw and attack", "−20"]] : []), ["Other modifier", data.other ?? data.otherModifiers],
+        ...(target !== data.originalTarget ? [["Edited target correction", target - data.originalTarget]] : []), ["Rolled success levels", outcome.sl]],
+      status: `${flourish ? flourish + " " : ""}${result} • ${outcome.sl} SL`, tone: outcome.success ? "success" : "failure", details });
+  }
+  const riseResult = data.rise ? data.engaged ? outcome.success ? outcome.sl >= 5 ? "Rise without spending your action." : "You are no longer Prone." : "You remain Prone." : outcome.success ? "Rise and move normally." : "Rise, but you cannot move this turn." : "";
+  return rollCard({ kind: data.rise ? "Rise from Prone" : "Skill", title: data.title, dieLabel: "d100 roll", die: value === 100 ? "00" : value,
+    resultLabel: "Target", result: target, rows: [["Base skill", data.base], ["Inventory overflow", data.overflow], ["Worn armour", data.armour], ["Swimming", data.swimming], ["Additional foes", data.foes], ["Other modifier", data.other],
+      ...(target !== data.originalTarget ? [["Edited target correction", target - data.originalTarget]] : []), ["Rolled success levels", outcome.sl]],
+    status: `${flourish ? flourish + " " : ""}${result} • ${outcome.sl} SL${riseResult ? " • " + riseResult : ""}`, tone: outcome.success ? "success" : "failure" });
+}
+
 Hooks.on("getChatMessageContextOptions", (_html, options) => {
   const selectedMessage = element => {
     const node = element instanceof HTMLElement ? element : element?.[0];
@@ -539,6 +571,19 @@ Hooks.on("getChatMessageContextOptions", (_html, options) => {
     const message = selectedMessage(element);
     if (message) void editChatRoll(message);
   } });
+});
+document.addEventListener("click", async event => {
+  const button = event.target.closest?.(".tbe-roll-card .tbe-copy-roll");
+  if (!button) return;
+  event.preventDefault();
+  event.stopPropagation();
+  const card = button.closest(".tbe-roll-card");
+  try {
+    await navigator.clipboard.writeText(copyRollText(card));
+    ui.notifications.info("Roll copied. Paste it into the chat with me.");
+  } catch (_error) {
+    ui.notifications.warn("Could not copy the roll. Select the card text and copy it manually.");
+  }
 });
 async function importRulebookJournals() {
       if (!game.user.isGM) return;
@@ -747,6 +792,7 @@ class CharacterSheet extends HandlebarsSheet {
   }
   _onRender(context, options) {
     super._onRender(context, options);
+    enableHotbarDrags(this);
     const scroller = this.element.querySelector(".tbe-sheet-body");
     // Persist manual wound flags as a complete array. Indexed writes to a
     // Foundry ArrayField may replace an entire wound and clear its other data.
@@ -1012,7 +1058,8 @@ class CharacterSheet extends HandlebarsSheet {
       const next = depleted ? steps[steps.indexOf(die) + 1] : die;
       if (depleted) await this.actor.update({ [`system.supply.${category}`]: next });
       const name = category[0].toUpperCase() + category.slice(1);
-      const flavor = depleted ? `Oh shit, ${name} decreased! ${die} → ${next}.` : `${name} Supply holds at ${die}.`;
+      const flavor = rollCard({ kind: "Supply", title: `${name} Supply`, dieLabel: `${die} roll`, die: roll.total, resultLabel: "Die now", result: next,
+        rows: [["Previous die", die], ["Depletion on", "1–2"]], status: depleted ? `Oh shit, ${name} decreased!` : `${name} Supply holds.`, tone: depleted ? "warning" : "success" });
       await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor });
     }));
     this.element.querySelectorAll("[data-roll-thread]").forEach(button => button.addEventListener("click", async event => {
@@ -1026,7 +1073,9 @@ class CharacterSheet extends HandlebarsSheet {
       const roll = await new Roll(`1${die}`).evaluate();
       const next = roll.total <= 2 ? steps[steps.indexOf(die) + 1] : die;
       if (next !== die) await item.update({ "system.die": next });
-      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: `${foundry.utils.escapeHTML(item.name)} — Thread die (${die}), ${roll.total} Mastery${next !== die ? `; now ${next}` : ""}` });
+      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: rollCard({ kind: "Thread", title: item.name,
+        dieLabel: `${die} roll`, die: roll.total, resultLabel: "Mastery", result: roll.total, rows: [["Previous die", die], ["Die now", next]],
+        status: next !== die ? `Thread die decreased to ${next}.` : `Thread die holds at ${die}.`, tone: next !== die ? "warning" : "success" }) });
     }));
     this.element.querySelector("[data-cast-spell]")?.addEventListener("click", async event => {
       event.preventDefault();
@@ -1072,20 +1121,11 @@ class CharacterSheet extends HandlebarsSheet {
       const roll = await new Roll("1d100").evaluate();
       const value = roll.total;
       const outcome = attackOutcome(value, target, Number(data.expertise) || 0);
-      const result = outcome.critical ? "Critical success" : outcome.criticalFailure ? "Critical failure" : outcome.success ? "Success" : "Failure";
-      const escape = foundry.utils.escapeHTML;
-      const flourish = rollFlourish(outcome);
-      const riseResult = rise ? (details.engaged ? (outcome.success ? (outcome.sl >= 5 ? "Rise without spending your action." : "You are no longer Prone.") : "You remain Prone.") : (outcome.success ? "Rise and move normally." : "Rise, but you cannot move this turn.")) : "";
-      const content = '<div class="tbe-attack-card"><h3>' + escape(this.actor.name) + ' — ' + (rise ? 'Rise from Prone (' : '') + escape(name) + (rise ? ')' : '') + '</h3>' +
-        (flourish ? '<p class="tbe-roll-flourish">' + flourish + '</p>' : '') +
-        '<p>Base ' + base + '; Inventory overflow ' + overflow + '; Armour ' + appliedArmour + '; Swimming ' + appliedSwim +
-        '; Additional foes ' + foePenalty + '; Other ' + other + '; target <strong>' + target + '</strong>.</p>' +
-        '<p>Roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
-        '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p>' +
-        (rise ? '<p>' + riseResult + '</p>' : '') + '</div>';
+      const cardData = { cardVersion: 2, kind: "skill", title: rise ? `${this.actor.name} — Rise from Prone (${name})` : `${this.actor.name} — ${name}`,
+        target, originalTarget: target, value, expertise: Number(data.expertise) || 0, base, overflow, armour: appliedArmour, swimming: appliedSwim, foes: foePenalty, other, rise, engaged: Boolean(details.engaged) };
+      const content = renderEditableRollCard(cardData, target, value, outcome);
       const message = await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
-      await message.setFlag("broken-empires-foundry", "editableRoll", { kind: "skill", target, value, expertise: Number(data.expertise) || 0,
-        originalContent: content, base, overflow, armour: appliedArmour, swimming: appliedSwim, foes: foePenalty, other, rise, engaged: Boolean(details.engaged) });
+      await message.setFlag("broken-empires-foundry", "editableRoll", cardData);
     };
     this.element.querySelectorAll("[data-roll-skill]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
@@ -1119,8 +1159,9 @@ class CharacterSheet extends HandlebarsSheet {
       if (!Number.isInteger(modifier)) { ui.notifications.warn("Enter a whole number for the Other Modifier."); return; }
       const roll = await new Roll("1d10").evaluate();
       const total = roll.total + base - armorPenalty - persistentPenalty + modifier;
-      const sign = value => value < 0 ? `− ${Math.abs(value)}` : `+ ${value}`;
-      const flavor = `<div class="tbe-initiative-card"><h3>${foundry.utils.escapeHTML(this.actor.name)} — Initiative</h3><p>d10 ${roll.total} + Initiative ${base} − worn armour ${armorPenalty} − other Initiative penalty ${persistentPenalty} ${sign(modifier)} Other Modifier = <strong>${total}</strong></p></div>`;
+      const flavor = rollCard({ kind: "Initiative", title: this.actor.name, dieLabel: "d10 roll", die: roll.total, resultLabel: "Final total", result: total,
+        rows: [["Initiative value", `+${base}`], ["Worn armour", `−${armorPenalty}`], ["Other Initiative penalty", `−${persistentPenalty}`], ["Other Modifier", modifier >= 0 ? `+${modifier}` : String(modifier)]],
+        status: `Acts on Initiative ${total} this round.` });
       await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor });
     });
     this.element.querySelector("[data-rise-from-prone]")?.addEventListener("click", async event => {
@@ -1300,27 +1341,14 @@ class CharacterSheet extends HandlebarsSheet {
       const roll = await new Roll("1d100").evaluate();
       const value = roll.total;
       const outcome = attackOutcome(value, target, Number(skillData?.expertise) || 0);
-      const result = outcome.critical ? "Critical success" : outcome.criticalFailure ? "Critical failure" : outcome.success ? "Success" : "Failure";
-      const escape = foundry.utils.escapeHTML;
-      const flourish = rollFlourish(outcome);
-      const content = '<div class="tbe-attack-card"><h3>' + escape(this.actor.name) + ' — ' + escape(weapon.name) + (use.isThrown ? ' (thrown)' : '') +
-        '</h3>' + (flourish ? '<p class="tbe-roll-flourish">' + flourish + '</p>' : '') +
-        '<p>' + escape(details.skill) + ' ' + base + '; Inventory overflow ' + overflow + '; other modifiers ' + (modifier - overflow) +
-        ' = <strong>' + target + '</strong></p><p>Roll <strong>' + (value === 100 ? '00' : String(value).padStart(2, '0')) +
-        '</strong> — <strong>' + result + '</strong>; ' + outcome.sl + ' rolled SLs.</p>' +
-        (outcome.success ? '<div class="tbe-hit-location"><b>General hit location</b><strong>' + generalHitLocation(value) +
-          '</strong><small>Attacker’s ones die: ' + (value % 10) + '. Choose Location can override this; the defender’s ones die supplies the detailed location.</small></div>' +
-          detailedHitLocationHtml(generalHitLocation(value)) : '') +
-        '<div class="tbe-attack-stats">' + [
-          ["RCH", stats.reach], ["DMG", stats.damage], ["CL", stats.chooseLocation],
-          ["CS", stats.circumventShield], ["DIS", stats.disarm], ["T", stats.trip],
-          ["ENC", stats.encumbrance], ["RNG", stats.range]
-        ].map(([label, stat]) => `<span><b>${label}</b> ${escape(String(stat ?? ""))}</span>`).join("") + '</div>' +
-        (stats.notes ? '<p><b>Notes:</b> ' + escape(stats.notes) + '</p>' : '') + '</div>';
+      const cardData = { cardVersion: 2, kind: "attack", title: `${this.actor.name} — ${weapon.name}${use.isThrown ? " (thrown)" : ""}`,
+        target, originalTarget: target, value, expertise: Number(skillData?.expertise) || 0, skill: details.skill, base, overflow, other,
+        presets: presets.filter(([name]) => details["mod_" + name]).map(([, amount, label]) => [label.replace(/\s[+−-]\d+$/, ""), amount]), draw,
+        stats: Object.fromEntries(["reach", "damage", "chooseLocation", "circumventShield", "disarm", "trip", "encumbrance", "range", "notes"].map(key => [key, stats[key] ?? ""])) };
+      const content = renderEditableRollCard(cardData, target, value, outcome);
       if (draw) await weapon.update({ "system.placement": "ready" });
       const message = await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: content });
-      await message.setFlag("broken-empires-foundry", "editableRoll", { kind: "attack", target, value, expertise: Number(skillData?.expertise) || 0,
-        originalContent: content, skill: details.skill, base, overflow, otherModifiers: modifier - overflow });
+      await message.setFlag("broken-empires-foundry", "editableRoll", cardData);
     }));
     this.element.querySelectorAll("[data-add]").forEach(button => button.addEventListener("click", async event => {
       event.preventDefault();
@@ -1546,6 +1574,7 @@ Hooks.on("renderApplicationV2", (application, element) => {
   if (application instanceof foundry.applications.sidebar.tabs.RollTableDirectory) addTableImportButton(application, element);
 });
 Hooks.once("init", () => {
+  installHotbarActions();
   CONFIG.Actor.dataModels.character = CharacterData;
   CONFIG.Item.dataModels.talent = TalentData;
   CONFIG.Item.dataModels.race = RaceData;

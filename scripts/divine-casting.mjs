@@ -1,4 +1,5 @@
 import { currentPiety, recordPiety } from "./piety.mjs";
+import { rollCard } from "./roll-card.mjs";
 const escape = value => foundry.utils.escapeHTML(String(value ?? ""));
 const SYMBOL_DICE = ["d12", "d10", "d8", "d6", "depleted"];
 const RESISTANCE = {
@@ -59,10 +60,10 @@ export async function requestMiracle(actor, { attackOutcome }) {
   const remaining = Math.max(0, current - cost);
   const note = remaining === 0 ? "Piety has reached zero: Cast Out; resolve the miracle first if it succeeded." : "";
   const resistance = details.resistance ? `Hostile target: GM chooses an appropriate resistance skill; fixed number ${escape(details.resistance)}. Divinity may be used instead. ` : "";
-  await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor }), content: `<div class="tbe-casting-card"><h3>${escape(actor.name)} asks ${escape(details.deity || "their deity")} for a miracle</h3>
-    <p><b>${escape(details.domain)}:</b> ${escape(details.request)}</p>
-    <p>Current Piety ${current} ${modifier >= 0 ? "+" : "−"} ${Math.abs(modifier)} modifier = target ${target}; d100 <b>${roll.total}</b> — ${outcome.criticalFailure ? "critical failure" : outcome.critical ? "critical success" : success ? "success" : "failure"}.</p>
-    <p>${escape(miracle)}${success ? `: ${outcome.sl} roll SL + ${prayer} prayer SL + ${symbolSL} holy symbol SL = <b>${sl} SL</b>.` : "."}${symbolMessage}</p>
-    <p>Piety cost ${costRoll} = <b>${cost}</b>; current Piety now <b>${remaining}</b>. ${note}</p>
-    <p>${resistance}The GM decides the miracle’s actual effect within the Domain. Resolve cannot modify a Piety roll; miracles cause no Weave Reaction.</p></div>` });
+  await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor }), content: rollCard({ kind: "Miracle", title: `${actor.name} asks ${details.deity || "their deity"}`,
+    subtitle: `${details.domain}: ${details.request}`, dieLabel: "Piety d100", die: roll.total, resultLabel: "Target", result: target,
+    rows: [["Piety before", current], ["GM modifier", modifier >= 0 ? `+${modifier}` : modifier], ["Roll / prayer / symbol SL", `${outcome.sl} / ${prayer} / ${symbolSL}`],
+      ["Total SL", sl], ["Piety cost", `${costRoll} = ${cost}`], ["Piety remaining", remaining]],
+    status: `${outcome.criticalFailure ? "Critical failure" : outcome.critical ? "Critical success" : success ? "Success" : "Failure"} · ${miracle}${remaining === 0 ? " · Cast Out" : ""}`,
+    tone: success ? "success" : "failure", details: `<p>${symbolMessage ? escape(symbolMessage) : ""}</p><p>${note ? escape(note) : ""}</p><p>${resistance}The GM decides the miracle’s actual effect within the Domain. Resolve cannot modify a Piety roll; miracles cause no Weave Reaction.</p>` }) });
 }
