@@ -4,7 +4,7 @@ const Sheet = foundry.applications.api.HandlebarsApplicationMixin(foundry.applic
 const asObject = value => value?.toObject?.() ?? foundry.utils.deepClone(value);
 const locations = ["Body", "Right Arm", "Left Arm", "Right Leg", "Left Leg", "Head"];
 export class NPCSheet extends Sheet {
-  static DEFAULT_OPTIONS = { classes: ["tbe", "npc-sheet"], tag: "form", position: { width: 760, height: 740 }, window: { resizable: true }, form: { submitOnChange: true, closeOnSubmit: false } };
+  static DEFAULT_OPTIONS = { classes: ["tbe", "npc-sheet"], tag: "form", position: { width: 760, height: 740 }, window: { resizable: true }, form: { submitOnChange: true, closeOnSubmit: false }, dragDrop: [{ dragSelector: "[data-item-id]", dropSelector: ".tbe-npc-body" }] };
   static PARTS = { main: { template: `systems/${SYSTEM}/templates/npc.hbs` } };
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
@@ -13,12 +13,26 @@ export class NPCSheet extends Sheet {
       const wounds = system.wounds.filter(w => w.location === location);
       return { location, lethal: wounds.filter(w => w.lethal).reduce((n,w) => n + w.points, 0), nonlethal: wounds.filter(w => !w.lethal).reduce((n,w) => n + w.points, 0), ap: system.protection.find(row => row.location === location)?.ap ?? "—" };
     });
-    return { ...context, actor: this.actor, system, summary, locations,
+    return { ...context, actor: this.actor, system, summary, locations, loot: this.actor.items.filter(item => ["gear", "weapon", "armor", "shield"].includes(item.type)),
       totalLethal: system.wounds.filter(w => w.lethal).reduce((n,w) => n + w.points, 0),
       totalNonlethal: system.wounds.filter(w => !w.lethal).reduce((n,w) => n + w.points, 0) };
   }
   _onRender(context, options) {
     super._onRender(context, options);
+    this.element.querySelectorAll("[data-npc-new-item]").forEach(button => button.addEventListener("click", async () => {
+      if (!this.actor.isOwner) return;
+      const type = button.dataset.npcNewItem;
+      if (!["gear", "weapon", "armor", "shield"].includes(type)) return;
+      const [item] = await this.actor.createEmbeddedDocuments("Item", [{ name: `New ${type}`, type, system: { quantity: 1, placement: type === "armor" ? "worn" : "inventory" } }]);
+      item?.sheet.render(true);
+    }));
+    this.element.querySelectorAll("[data-npc-open-item]").forEach(button => button.addEventListener("click", () => this.actor.items.get(button.dataset.npcOpenItem)?.sheet.render(true)));
+    this.element.querySelectorAll("[data-npc-delete-item]").forEach(button => button.addEventListener("click", async () => {
+      const item = this.actor.items.get(button.dataset.npcDeleteItem);
+      if (!item) return;
+      const confirmed = await foundry.applications.api.DialogV2.confirm({ window: { title: "Delete NPC gear?" }, content: `Delete ${foundry.utils.escapeHTML(item.name)}?`, yes: { label: "Delete" }, no: { label: "Cancel" } });
+      if (confirmed) await this.actor.deleteEmbeddedDocuments("Item", [item.id]);
+    }));
     this.element.querySelector("[data-portrait]")?.addEventListener("click", event => {
       event.preventDefault();
       if (this.actor.isOwner) new foundry.applications.apps.FilePicker({ type: "image", current: this.actor.img, callback: path => this.actor.update({ img: path }) }).browse();
@@ -51,8 +65,20 @@ export class NPCSheet extends Sheet {
       const sl = success ? Math.max(rolledSL, Number(entry.expertise) || 0) : rolledSL;
       const details = field === "attacks" ? `<div class="tbe-attack-stats">${[["DMG",entry.damage],["Reach",entry.reach],["Range",entry.range]].filter(([,v])=>v).map(([k,v])=>`<span><b>${k}</b> ${escapeCard(v)}</span>`).join("")}</div><p>${escapeCard(entry.notes)}</p>` : "";
       const html = rollCard({ kind: field === "attacks" ? "NPC Attack" : "NPC Skill", title: `${this.actor.name} — ${entry.name}`, dieLabel: "d100 roll", die: value === 100 ? "00" : value, resultLabel: "Target", result: target, rows: [["Base",entry.value],["Other",other],["Expertise",entry.expertise || 0],["Rolled SL",rolledSL],["Effective SL",sl]], status: `${success ? "Success" : "Failure"} • ${sl} SL`, tone: success ? "success" : "failure", details });
-      await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), content: await roll.render({ flavor: html }), rolls: [roll] });
+      await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), flavor: html });
     }));
+  }
+  async _onDrop(event) {
+    if (!this.actor.isOwner) return;
+    const data = foundry.applications.ux.TextEditor.getDragEventData(event);
+    if (data.type !== "Item") return;
+    const item = await Item.implementation.fromDropData(data);
+    if (!item || !["gear", "weapon", "armor", "shield"].includes(item.type)) return;
+    if (item.parent?.documentName === "Actor" && item.parent.id === this.actor.id) return;
+    const copy = item.toObject();
+    delete copy._id;
+    copy.system.quantity = 1;
+    await this.actor.createEmbeddedDocuments("Item", [copy]);
   }
 }
 
