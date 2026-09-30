@@ -70,7 +70,7 @@ const choiceBonus = path => {
   if (eventIndex) return `+${d?.events[+eventIndex[1]]?.points || 0}`;
   return "";
 };
-const choiceHelp = path => path === "region" ? "Choose where the character comes from. The homeland determines a Human or Replaced character’s starting languages." : path === "language" ? "Choose the native language where the region allows more than one. The native language starts at 70%." : /expertise/i.test(path) ? "Expertise sets a minimum number of success levels on a successful skill roll. Each choice raises its Expertise level by one." : /savvy/i.test(path) ? "Savvy is a special benefit for this skill, separate from its percentage." : /talent/i.test(path) ? "Choose a Talent whose requirements your character meets. Hover over entries to read their effects." : /strand/i.test(path) ? "A Strand describes the subject of Weave magic; focus and Thin choices affect how you develop it." : /bind/i.test(path) ? "A Bind describes what the spell does. Focus Binds gain the indicated bonus." : "Choose a skill for this benefit. Hover over entries to read what each skill covers.";
+const choiceHelp = path => path === "region" ? "Choose where the character comes from. The homeland determines a Human or Replaced character’s starting languages." : path === "language" ? "Choose the native language where the region allows more than one. The native language starts at 70%." : /expertise/i.test(path) ? "Expertise sets a minimum number of success levels on a successful skill roll. Each choice raises its Expertise level by one." : /savvy/i.test(path) ? "Savvy helps this skill improve faster with XP: add +1 to the points gained whenever you improve it. It does not raise the skill during creation. Piety and Strands cannot be Savvy." : /talent/i.test(path) ? "Choose a Talent whose requirements your character meets. Hover over entries to read their effects." : /strand/i.test(path) ? "A Strand describes the subject of Weave magic; focus and Thin choices affect how you develop it." : /bind/i.test(path) ? "A Bind describes what the spell does. Focus Binds gain the indicated bonus." : "Choose a skill for this benefit. Hover over entries to read what each skill covers.";
 const select = (path, names, value, blank) => {
   const type = choiceType(path);
   if (!type) return `<select data-field="${html(path)}">${choices(names, value, blank)}</select>`;
@@ -85,7 +85,7 @@ const select = (path, names, value, blank) => {
     const total = preview(name);
     return `${name}${bonus ? ` (${bonus}${total === undefined || total === null ? "" : ` → ${total}%`})` : ""}`;
   };
-  return `<select data-field="${html(path)}" data-choice-type="${type}" hidden>${choices(names, value, blank)}</select><details class="tbe-creator-choice-menu"><summary>${html(value ? display(value) : blank || "Choose…")}</summary><div class="tbe-creator-choice-list">${names.map(name => { const total = preview(name), over = total > 70; return `<button type="button" data-choice-option="${html(name)}" data-choice-label="${html(display(name))}" ${over ? `data-over-cap="${total}"` : ""} title="${html(choiceDescription(name, type))}${over ? ` — Would reach ${total}%; creation cap is 70%.` : ""}" class="${over ? "tbe-creator-over-cap" : ""}"><span>${html(display(name))}</span><small>${html(choiceDescription(name, type))}${over ? `<br>Would reach ${total}%; starting cap is 70%.` : ""}</small></button>`; }).join("")}</div></details>${info(choiceHelp(path))}`;
+  return `<select data-field="${html(path)}" data-choice-type="${type}" hidden>${choices(names, value, blank)}</select><details class="tbe-creator-choice-menu"><summary${value ? ` title="${html(choiceDescription(value, type))}"` : ""}>${html(value ? display(value) : blank || "Choose…")}</summary><div class="tbe-creator-choice-list">${names.map(name => { const total = preview(name), over = total > 70; return `<button type="button" data-choice-option="${html(name)}" data-choice-label="${html(display(name))}" ${over ? `data-over-cap="${total}"` : ""} title="${html(choiceDescription(name, type))}${over ? ` — Would reach ${total}%; creation cap is 70%.` : ""}" class="${over ? "tbe-creator-over-cap" : ""}"><span>${html(display(name))}</span></button>`; }).join("")}</div></details>${info(choiceHelp(path))}`;
 };
 const input = (path, value, type = "text", extra = "") => `<input data-field="${html(path)}" type="${type}" value="${html(value)}" ${extra}>`;
 const area = (path, value, rows = 3, extra = "") => `<textarea data-field="${html(path)}" rows="${rows}" ${extra}>${html(value)}</textarea>`;
@@ -152,7 +152,7 @@ const CULTURE_REFERENCE = {
   "Civilized, Urban": { twenty: "Common Lore; one Social skill", ten: "Two Combat skills; four more Social skills; Perception; Arcana or Divinity; Commerce; one Craft; Heal; Streetwise", expertise: "One Adventuring and one Lore skill", coin: "1d6 × 10 sp" },
   "Civilized, Rural": { twenty: "Common Lore; Craft: Practical", ten: "Two Combat skills; Athletics; Endurance; Perception; Ride or Sail/Boat; Survival; two Social skills; Arcana or Divinity; Heal; Naturewise", expertise: "Naturewise and one Adventuring or Lore skill", coin: "1d4 × 10 sp" },
   Barbarian: { twenty: "Common Lore; Survival", ten: "Two Combat skills; Athletics; Endurance; Perception; Ride or Sail/Boat; Stealth; Track; one Social skill; Divinity; Heal; Naturewise", expertise: "Survival and one Adventuring or Lore skill", coin: "1d4 × 5 sp" },
-  Wanderer: { twenty: "Naturewise; Ride or Sail/Boat", ten: "Two Combat skills; Athletics; Endurance; Perception; Survival; Track; one Social skill; Common Lore; Craft: Practical; Divinity; Heal", expertise: "Common Lore and one Adventuring or Lore skill", coin: "1d6 × 5 sp; extra Language at 40" }
+  Wanderer: { twenty: "Naturewise; Ride or Sail/Boat", ten: "Two Combat skills; Athletics; Endurance; Perception; Survival; Track; one Social skill; Common Lore; Craft: Practical; Divinity; Heal. Additional Language starts at 40% (separate benefit).", expertise: "Common Lore and one Adventuring or Lore skill", coin: "1d6 × 5 sp" }
 };
 function cultureReference() {
   return `<div class="tbe-creator-culture-reference"><strong>Culture comparison</strong><div class="tbe-creator-culture-scroll"><table><thead><tr><th>Culture</th><th>+20</th><th>+10</th><th>Expertise</th><th>Starting coin / extra</th></tr></thead><tbody>${CULTURES.map(name => { const row = CULTURE_REFERENCE[name]; return `<tr><th scope="row">${html(name)}</th><td>${html(row.twenty)}</td><td>${html(row.ten)}</td><td>${html(row.expertise)}</td><td>${html(row.coin)}</td></tr>`; }).join("")}</tbody></table></div></div>`;
@@ -216,14 +216,33 @@ function collectCustomSkills(entries) {
 }
 
 const App = foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2);
+class CharacterCreatorSkills extends App {
+  constructor(creator, options = {}) { super(options); this.creator = creator; }
+  static DEFAULT_OPTIONS = { classes: ["tbe", "tbe-creator-skills-window"], position: { width: 220, height: 640 }, window: { resizable: true, title: "Skills so far" } };
+  static PARTS = { main: { template: `systems/${SYSTEM}/templates/character-creator-skills.hbs` } };
+  async _prepareContext(options) { return { ...await super._prepareContext(options), skillsPreview: this.creator._skillsPreview() }; }
+  refresh() {
+    const list = this.element?.querySelector(".tbe-creator-preview-list");
+    if (list) list.innerHTML = this.creator._skillsPreview();
+  }
+  async close(options) {
+    if (this.creator?._skillsWindow === this) {
+      this.creator._skillsWindow = null;
+      this.creator._previewOpen = false;
+      const button = this.creator.element?.querySelector("[data-toggle-skills]");
+      if (button) { button.textContent = "Show skills"; button.setAttribute("aria-expanded", "false"); }
+    }
+    return super.close(options);
+  }
+}
 export class CharacterCreator extends App {
-  constructor(actor, options = {}) { super(options); this.actor = actor; this.draft = fresh(); this.step = 0; this._busy = false; this._previewOpen = true; }
+  constructor(actor, options = {}) { super(options); this.actor = actor; this.draft = fresh(); this.step = 0; this._busy = false; this._previewOpen = false; this._skillsWindow = null; }
   static DEFAULT_OPTIONS = { classes: ["tbe", "tbe-creator"], position: { width: 890, height: 740 }, window: { resizable: true, title: "Create a character" } };
   static PARTS = { main: { template: `systems/${SYSTEM}/templates/character-creator.hbs` } };
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     await Promise.all(["tbe-talents", "tbe-threads", "tbe-equipment"].map(name => game.packs.get(`world.${name}`)?.getIndex({ fields: ["type", "system.price", "system.category", "system.effect", "system.requirements"] })));
-    return { ...context, title: STEPS[this.step], step: this.step + 1, count: STEPS.length, body: this._body(), guidance: this._guidance(), skillsPreview: this._skillsPreview(), pointsTracker: this._pointsTracker(), previewOpen: this._previewOpen, first: this.step === 0, last: this.step === STEPS.length - 1 };
+    return { ...context, title: STEPS[this.step], step: this.step + 1, count: STEPS.length, body: this._body(), guidance: this._guidance(), pointsTracker: this._pointsTracker(), previewOpen: this._previewOpen, first: this.step === 0, last: this.step === STEPS.length - 1 };
   }
   _pointsTracker() {
     if (this.step !== 7) return "";
@@ -241,6 +260,24 @@ export class CharacterCreator extends App {
     this._contentScrollTop = this.element?.querySelector(".tbe-creator-content")?.scrollTop ?? 0;
     return this.render();
   }
+  async _toggleSkillsWindow() {
+    if (this._skillsWindow) { await this._skillsWindow.close(); return; }
+    const popup = new CharacterCreatorSkills(this);
+    this._skillsWindow = popup;
+    this._previewOpen = true;
+    try {
+      await popup.render(true);
+      const right = (this.position.left ?? 0) + (this.position.width ?? 890);
+      const left = right + 220 <= window.innerWidth ? right : Math.max(0, (this.position.left ?? 0) - 220);
+      popup.setPosition({ left, top: this.position.top ?? 80, height: this.position.height ?? 740 });
+      const button = this.element?.querySelector("[data-toggle-skills]");
+      if (button) { button.textContent = "Hide skills"; button.setAttribute("aria-expanded", "true"); }
+    } catch (error) { this._skillsWindow = null; this._previewOpen = false; throw error; }
+  }
+  async close(options) {
+    if (this._skillsWindow) await this._skillsWindow.close();
+    return super.close(options);
+  }
   async _rerenderAtEvent(index) {
     const content = this.element?.querySelector(".tbe-creator-content");
     const section = content?.querySelector(`[data-life-event="${index}"]`);
@@ -255,7 +292,8 @@ export class CharacterCreator extends App {
     super._onRender(context, options);
     const content = this.element.querySelector(".tbe-creator-content");
     if (content) content.scrollTop = this._contentScrollTop ?? 0;
-    this.element.querySelector("[data-skills-preview]")?.addEventListener("toggle", event => { this._previewOpen = event.target.open; });
+    this._skillsWindow?.refresh();
+    this.element.querySelector("[data-toggle-skills]")?.addEventListener("click", () => void this._toggleSkillsWindow());
     this.element.querySelectorAll("[data-field]").forEach(field => field.addEventListener("change", () => {
       const value = field.type === "number" ? (Number(field.value) || 0) : field.type === "checkbox" ? field.checked : field.value;
       const proposed = structuredClone(this.draft);
@@ -278,7 +316,9 @@ export class CharacterCreator extends App {
       if (button.dataset.overCap) { ui.notifications.warn(`${button.dataset.choiceOption} would reach ${button.dataset.overCap}%; starting skills cannot exceed 70%.`); return; }
       const menu = button.closest(".tbe-creator-choice-menu"), field = menu.previousElementSibling;
       field.value = button.dataset.choiceOption;
-      menu.querySelector("summary").textContent = button.dataset.choiceLabel;
+      const summary = menu.querySelector("summary");
+      summary.textContent = button.dataset.choiceLabel;
+      summary.title = choiceDescription(button.dataset.choiceOption, field.dataset.choiceType);
       menu.open = false;
       field.dispatchEvent(new Event("change", { bubbles: true }));
     }));
@@ -297,8 +337,7 @@ export class CharacterCreator extends App {
       this.draft[field.dataset.bucket][field.dataset.skill] = Number(field.value) || 0;
       const legend = field.closest("fieldset")?.querySelector("legend");
       if (legend) legend.textContent = this._bucketLegend(field.dataset.bucket, field.dataset.group, field.dataset.budget);
-      const preview = this.element.querySelector(".tbe-creator-preview-list");
-      if (preview) preview.innerHTML = this._skillsPreview();
+      this._skillsWindow?.refresh();
       const tracker = this.element.querySelector("[data-points-tracker]");
       if (tracker) tracker.textContent = this._pointsTracker();
     }));
@@ -407,12 +446,12 @@ export class CharacterCreator extends App {
       ["Pick the skills that best express your concept. The four starting choices each begin at 30%; other ordinary skills begin at 20%.", "Hover over the information icons to see what a skill covers."],
       ["Race adds traits and bonuses when you finish. Human and Replaced characters have additional choices in this step.", "Your region and language give the character a place in the world; you can add more detail to the story later."],
       ["Each of your two abilities adds +5 to its linked skills, even if both abilities affect the same skill.", "Expertise and Talent are separate picks for each ability. A descriptor is a short personality phrase you can use during play."],
-      ["The pool must reach zero before you continue. Toughness takes two points to gain +1; the other attributes take one point per increase.", "Lethality Level comes from your final DT, rounded up after dividing by three. Random Initiative or DT locks that attribute for this draft."],
+      ["Spend all five Attribute points. Each point gives +2 Max Resolve, +1 Initiative, or +2 DT. Toughness costs two points for +1.", "Lethality Level comes from your final DT, rounded up after dividing by three. Random Initiative or DT locks that attribute for this draft."],
       ["Cultural skill bonuses add to those from earlier steps. You can pick the same skill at different stages, but each separate cultural choice must be distinct.", "Expertise increases the chosen skill's Expertise level; choosing an existing Expertise skill improves it further. Roll cultural silver before continuing."],
       ["Resolve Origin, Youth and Recent separately. The event text goes into your history; record any skill, Strand or status benefit in the matching fields.", "Shared histories are optional. If you add them, use different characters and different skills for the two connections."],
       ["Spend each career category's points in that category; the fieldset headings show its budget and how much you have spent.", "Pick both career Talents and roll career silver. Your career may also grant custom skills, magic choices or other benefits."],
       ["Rounding Out lets you shape the character beyond their career. Young characters spend 70 points; Adults and Old characters spend 100.", "Strand levels cost five rounding points each. Pick three different Savvy skills and your bonus choice before continuing."],
-      ["Roll starting silver and the number of free armour pieces, then select exactly that many free pieces.", "A dagger is included automatically. Purchased gear is added at Finish; you can edit quantities and locations on the sheet afterward."],
+      ["Roll starting silver and the number of free armour pieces, then select exactly that many free pieces.", "A dagger and four d12 supply dice are included automatically. Buy additional gear manually on the finished sheet."],
       ["Choose personality phrases you would enjoy bringing into scenes. Ability descriptors from the earlier step are included too.", "These are prompts for roleplaying; you can refine the wording on the finished sheet."],
       ["Give the character goals that can lead to adventures or difficult choices.", "Short, concrete aims are enough. You can change them as the story develops."],
       ["Check the character's name, background and choices before finishing. The wizard validates the complete draft.", "Finish fills the sheet and adds the chosen Items. Closing the wizard before Finish discards this draft."]
@@ -462,7 +501,7 @@ export class CharacterCreator extends App {
         const pool = CAREERS[d.career] ?? [0, 0, 0, 0, 0];
         return `<p>Choose or roll a previous career. Spend each category's pool in that category; record career Talents and custom -wises or Languages. Spellweavers also choose magical focus and Strand levels.</p><div class="tbe-creator-grid">${label("Career", select("career", Object.keys(CAREERS), d.career))}<button type="button" data-roll-choice="career">Roll career (d10)</button>${label("Career silver (sp)", input("careerCoin", d.careerCoin, "number", "readonly"))}<button type="button" data-roll-choice="careerCoin">Roll career coin</button>${d.careerWise.slice(0, careerCustomCount(d.career)).map((v, i) => label(careerCustomLabel(d.career, i), input(`careerWise.${i}`, v))).join("")}${d.careerTalents.map((v, i) => label(`Career Talent ${i + 1}`, select(`careerTalents.${i}`, careerRequirements[d.career]?.[i]?.length ? careerRequirements[d.career][i] : careerTalentCategories(d.career, i).length ? talentEntries.filter(e => careerTalentCategories(d.career, i).includes(e.system?.category)).map(e => e.name).sort() : talentNames, v))).join("")}${label("Swap one career Talent for +2 Status", select("swapCareerTalent", ["None", "First", "Second"], d.swapCareerTalent))}</div>${CATEGORIES.map((c, i) => this._rowFields(d.career === "Godbound" && c === "Binds" ? "Piety" : c, "careerSkills", pool[i])).join("")}${d.career === "Spellweaver" ? `<fieldset><legend>Spellweaver focus</legend><div class="tbe-creator-grid">${d.focusBinds.map((v, i) => label(`Focus Bind ${i + 1} (+10)`, select(`focusBinds.${i}`, GROUPS.Binds, v))).join("")}${d.focusStrands.map((v, i) => label(`Focus Strand ${i + 1}`, select(`focusStrands.${i}`, GROUPS.Strands, v))).join("")}${d.thin.map((v, i) => label(`Thin Strand ${i + 1}`, select(`thin.${i}`, GROUPS.Strands, v))).join("")}${label("Bind Expertise", select("bindExpertise", GROUPS.Binds, d.bindExpertise))}${label("d8 Thread item", select("thread", game.packs.get("world.tbe-threads")?.index?.contents?.map(e => e.name).sort() ?? [], d.thread))}${label("True Name", input("trueName", d.trueName))}${d.race === "Bolg Fiir" ? label("Bolg Bind +10", select("bolgBind", GROUPS.Binds, d.bolgBind)) : ""}</div>${this._rowFields("Strands", "strandCareer", "10 focus levels")}${this._rowFields("Strands", "strandExtra", "3 additional levels")}</fieldset>` : ""}`;
       }
-      case 7: return `<p>Age, a bonus Talent (or +1 Status or 100 sp), and three Savvy skills. Spend the age pool on skills; Strand levels cost five points each. Young also receive +20 Endurance and +1 DT; Old receive -20 Endurance, -2 DT, and 30 Lore points.</p><div class="tbe-creator-grid">${label("Age", select("age", ["Young", "Adult", "Old"], d.age))}${label("Bonus choice", select("roundingChoice", ["Talent", "Status", "Silver"], d.roundingChoice))}${d.roundingChoice === "Talent" ? label("Bonus Talent", select("roundingTalent", talentNames, d.roundingTalent)) : ""}${d.savvy.map((v, i) => label(`Savvy ${i + 1}`, select(`savvy.${i}`, allSkills, v))).join("")}${d.age === "Old" ? label("Old age Expertise", select("oldExpertise", allSkills, d.oldExpertise)) : ""}</div>${CATEGORIES.map(c => this._rowFields(c, "roundingSkills")).join("")}${d.career === "Godbound" ? label("Piety rounding points", num("roundingSkills.Piety", d.roundingSkills.Piety, 100)) : ""}${d.career === "Spellweaver" ? this._rowFields("Strands", "roundingStrands", "5 points per level") : ""}${d.age === "Old" ? this._rowFields("Lore", "oldLore", "30 Lore points") : ""}${d.career === "Civilian" ? ["Adventuring", "Social", "Lore"].map(c => this._rowFields(c, "civilianExtra", "30 Civilian extra points total")).join("") : ""}`;
+      case 7: return `<p>Age, a bonus Talent (or +1 Status or 100 sp), and three Savvy skills. Spend the age pool on skills; Strand levels cost five points each. Young also receive +20 Endurance and +1 DT; Old receive -20 Endurance, -2 DT, and 30 Lore points.</p><div class="tbe-creator-grid">${label("Age", select("age", ["Young", "Adult", "Old"], d.age))}${label("Bonus choice", select("roundingChoice", ["Talent", "Status", "Silver"], d.roundingChoice))}${d.roundingChoice === "Talent" ? label("Bonus Talent", select("roundingTalent", talentNames, d.roundingTalent)) : ""}${d.savvy.map((v, i) => label(`Savvy ${i + 1}`, select(`savvy.${i}`, allSkills.filter(n => n !== "Piety"), v))).join("")}${d.age === "Old" ? label("Old age Expertise", select("oldExpertise", allSkills, d.oldExpertise)) : ""}</div>${CATEGORIES.map(c => this._rowFields(c, "roundingSkills")).join("")}${d.career === "Godbound" ? label("Piety rounding points", num("roundingSkills.Piety", d.roundingSkills.Piety, 100)) : ""}${d.career === "Spellweaver" ? this._rowFields("Strands", "roundingStrands", "5 points per level") : ""}${d.age === "Old" ? this._rowFields("Lore", "oldLore", "30 Lore points") : ""}${d.career === "Civilian" ? ["Adventuring", "Social", "Lore"].map(c => this._rowFields(c, "civilianExtra", "30 Civilian extra points total")).join("") : ""}`;
       case 8: {
         const armor = game.packs.get("world.tbe-equipment")?.index?.contents?.filter(i => i.type === "armor") ?? [];
         return `<p>Every character starts with a dagger, 1d3+1 armour pieces they can wear, and d12 Gear, Ammo, Rations and Medical supply dice. Roll 2d4 × 50 sp starting coin. Buy any additional equipment directly on the sheet after creation.</p><div class="tbe-creator-grid">${label("Starting coin", input("equipmentCoin", d.equipmentCoin, "number", "readonly"))}<button type="button" data-roll-choice="equipmentCoin">Roll coin</button>${label("Free armour pieces", input("freeArmorCount", d.freeArmorCount, "number", "readonly"))}<button type="button" data-roll-choice="freeArmor">Roll 1d3+1</button></div><fieldset><legend>Free armour (${d.freeArmor.length}/${d.freeArmorCount})</legend><div class="tbe-creator-skills">${armor.map(i => `<label><input type="checkbox" data-free-armor="${html(i.name)}" ${d.freeArmor.includes(i.name) ? "checked" : ""}>${html(i.name)}</label>`).join("")}</div></fieldset>`;
@@ -523,7 +562,7 @@ export class CharacterCreator extends App {
       CAREERS[d.career].forEach((budget, i) => { const names = i === 4 ? (d.career === "Godbound" ? ["Piety"] : GROUPS.Binds) : GROUPS[CATEGORIES[i]]; required(names.reduce((sum, name) => sum + (Number(d.careerSkills[name]) || 0), 0) === budget, `Spend exactly ${budget} ${i === 4 ? "Magic" : CATEGORIES[i]} career points.`); });
       if (d.career === "Spellweaver") { required(new Set(d.focusBinds).size === 2 && d.focusBinds.every(n => GROUPS.Binds.includes(n)), "Choose two distinct focus Binds."); required(new Set(d.focusStrands).size === 4 && d.focusStrands.every(n => GROUPS.Strands.includes(n)), "Choose four distinct focus Strands."); required(new Set(d.thin).size === 2 && d.thin.every(n => GROUPS.Strands.includes(n)), "Choose two distinct Thin Strands."); required(d.thin.every(n => !d.focusStrands.includes(n)), "Focus and Thin Strands must be different."); required(GROUPS.Strands.reduce((n, s) => n + (d.strandCareer[s] || 0), 0) === 10, "Allocate ten focus Strand levels."); required(GROUPS.Strands.reduce((n, s) => n + (d.strandExtra[s] || 0), 0) === 3, "Allocate three additional Strand levels."); required(Object.entries(d.strandCareer).every(([s, n]) => !n || d.focusStrands.includes(s)), "Ten career Strand levels must be in focus Strands."); required(d.thin.every(s => !(d.strandCareer[s] || d.strandExtra[s])), "Thin Strands cannot be developed in creation."); required(d.bindExpertise && d.thread && d.trueName.trim(), "Choose Bind Expertise, a Thread and a True Name."); if (d.race === "Bolg Fiir") required(GROUPS.Binds.includes(d.bolgBind), "Choose the Bolg bonus Bind."); }
     }
-    if (this.step === 7) { const budget = d.age === "Young" ? 70 : 100; const spend = Object.values(d.roundingSkills).reduce((a, b) => a + b, 0) + 5 * Object.values(d.roundingStrands).reduce((a, b) => a + b, 0); required(spend === budget, `Spend exactly ${budget} Rounding Out points.`); if (d.age === "Old") required(Object.values(d.oldLore).reduce((a, b) => a + b, 0) === 30, "Spend all 30 Old age Lore points."); if (d.career === "Civilian") required(Object.values(d.civilianExtra).reduce((a, b) => a + b, 0) === 30, "Spend 30 Civilian extra points on Adventuring, Social or Lore."); required(new Set(d.savvy).size === 3 && d.savvy.every(n => allSkills.includes(n)), "Choose three distinct Savvy skills."); if (d.roundingChoice === "Talent") required(d.roundingTalent, "Choose a bonus Talent."); required(d.career === "Spellweaver" || !Object.values(d.roundingStrands).some(Boolean), "Only Spellweavers or Fades may develop Strands."); required(d.thin.every(n => !d.roundingStrands[n]), "Thin Strands cannot be developed during creation."); required(d.career === "Spellweaver" || !GROUPS.Binds.some(n => d.roundingSkills[n]), "Only Spellweavers or Fades may raise Binds."); required(d.career === "Godbound" || !d.roundingSkills.Piety, "Only Godbound may raise Piety."); }
+    if (this.step === 7) { const budget = d.age === "Young" ? 70 : 100; const spend = Object.values(d.roundingSkills).reduce((a, b) => a + b, 0) + 5 * Object.values(d.roundingStrands).reduce((a, b) => a + b, 0); required(spend === budget, `Spend exactly ${budget} Rounding Out points.`); if (d.age === "Old") required(Object.values(d.oldLore).reduce((a, b) => a + b, 0) === 30, "Spend all 30 Old age Lore points."); if (d.career === "Civilian") required(Object.values(d.civilianExtra).reduce((a, b) => a + b, 0) === 30, "Spend 30 Civilian extra points on Adventuring, Social or Lore."); required(new Set(d.savvy).size === 3 && d.savvy.every(n => n !== "Piety" && allSkills.includes(n)), "Choose three distinct Savvy skills."); if (d.roundingChoice === "Talent") required(d.roundingTalent, "Choose a bonus Talent."); required(d.career === "Spellweaver" || !Object.values(d.roundingStrands).some(Boolean), "Only Spellweavers or Fades may develop Strands."); required(d.thin.every(n => !d.roundingStrands[n]), "Thin Strands cannot be developed during creation."); required(d.career === "Spellweaver" || !GROUPS.Binds.some(n => d.roundingSkills[n]), "Only Spellweavers or Fades may raise Binds."); required(d.career === "Godbound" || !d.roundingSkills.Piety, "Only Godbound may raise Piety."); }
     if (this.step === 8) { required(d.rolled.equipmentCoin && d.rolled.freeArmor, "Roll starting silver and the number of free armour pieces."); required(d.freeArmor.length === d.freeArmorCount, "Select the rolled number of free armour pieces."); }
     if (this.step === 11) {
       for (const name of allSkills) { const category = flattened[name]; const initial = category && CATEGORIES.indexOf(category) < 4 ? (d.starting[category] === name ? 30 : 20) : name === "Piety" && d.career === "Godbound" ? 30 : 0;

@@ -1,8 +1,7 @@
 <div class="tbe-creator-body">
-  <header><span>Step {{step}} of {{count}}</span><h2>{{title}}</h2></header>
+  <header><div><span>Step {{step}} of {{count}}</span><h2>{{title}}</h2></div><button type="button" data-toggle-skills aria-expanded="{{previewOpen}}">{{#if previewOpen}}Hide skills{{else}}Show skills{{/if}}</button></header>
   <div class="tbe-creator-main">
     <div class="tbe-creator-content">{{{guidance}}}{{{body}}}</div>
-    <details class="tbe-creator-preview" data-skills-preview {{#if previewOpen}}open{{/if}}><summary>Skills so far</summary><div class="tbe-creator-preview-list">{{{skillsPreview}}}</div></details>
   </div>
   <footer>
     {{#unless first}}<button type="button" data-back>← Back</button>{{/unless}}
