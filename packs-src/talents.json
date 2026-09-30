@@ -20,13 +20,43 @@
     }
   },
   {
-    "name": "ARMOR TRAINING (I-IV)",
+    "name": "ARMOR TRAINING I",
     "type": "talent",
     "system": {
       "category": "Combat Talents",
       "reference": "Core Rulebook, p. 40",
-      "effect": "Wearing heavier armor (Reinforced Leather, Mail, Scale, and Plate) on the Body or Arms prevents an untrained combatant from being able to use any Combat Maneuvers in a combat round. Armor Training allows regular use of Combat Maneuvers, but each new level must be acquired in order from lightest armor to heaviest:\narmor training i allows Combat Maneuvers while wearing Body or Arm armor as heavy as Reinforced Leather.\narmor training ii allows Combat Maneuvers while wearing Body or Arm armor as heavy as Mail.\narmor training iii allows Combat Maneuvers while wearing Body or Arm armor as heavy as Scale.\narmor training iv allows Combat Maneuvers while wearing Body or Arm armor as heavy as Plate.\nAn Ogre can take this Talent only once, gaining training in Bone armor only.",
+      "effect": "You can use Combat Maneuvers while wearing Body or Arm armor as heavy as Reinforced Leather. This level includes training with all lighter armor covered by earlier levels. An Ogre can take Armor Training only once, gaining training in Bone armor only.",
       "requirements": ""
+    }
+  },
+  {
+    "name": "ARMOR TRAINING II",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 40",
+      "effect": "You can use Combat Maneuvers while wearing Body or Arm armor as heavy as Mail. This level includes training with all lighter armor covered by earlier levels.",
+      "requirements": "Requires ARMOR TRAINING I."
+    }
+  },
+  {
+    "name": "ARMOR TRAINING III",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, p. 40",
+      "effect": "You can use Combat Maneuvers while wearing Body or Arm armor as heavy as Scale. This level includes training with all lighter armor covered by earlier levels.",
+      "requirements": "Requires ARMOR TRAINING II."
+    }
+  },
+  {
+    "name": "ARMOR TRAINING IV",
+    "type": "talent",
+    "system": {
+      "category": "Combat Talents",
+      "reference": "Core Rulebook, pp. 40–41",
+      "effect": "You can use Combat Maneuvers while wearing Body or Arm armor as heavy as Plate. This level includes training with all lighter armor covered by earlier levels.",
+      "requirements": "Requires ARMOR TRAINING III."
     }
   },
   {

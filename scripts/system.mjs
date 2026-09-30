@@ -6,6 +6,7 @@ import { rollCard, escapeCard, copyRollText } from "./roll-card.mjs";
 import { enableHotbarDrags, installHotbarActions } from "./hotbar-actions.mjs";
 import { rollWoundDie, rollInfectionDie } from "./wound-rolls.mjs";
 import { openCharacterCreator } from "./character-creator.mjs";
+import { NPCSheet, addNPCImportButton } from "./npc-sheet.mjs";
 const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 const string = () => new StringField({ required: true, blank: true, initial: "" });
 const number = (initial = 0) => new NumberField({ required: true, integer: true, initial });
@@ -91,6 +92,20 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       armor: list({ location: string(), name: string(), protection: number(), bulk: number(), notes: string() }),
       supply: entry({ gear: new StringField({ initial: "d12" }), ammo: new StringField({ initial: "d12" }), rations: new StringField({ initial: "d12" }), medical: new StringField({ initial: "d12" }) }),
       encumbranceMax: number(6), weaponEncumbranceMax: number(6), defensiveItemId: string(), applyDefensiveAP: new BooleanField({ initial: false }), equipmentLocations: new ArrayField(entry({ id: string(), name: string(), countsEncumbrance: new BooleanField({ initial: false }) }), { initial: [] }), droppedZone: string(), fraying: number(), trueName: string(), threads: string()
+    };
+  }
+}
+class NPCData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    return {
+      description: string(), reference: string(), difficulty: string(), size: string(), move: string(), ferocity: number(),
+      initiative: string(), toughness: string(), deathThreshold: number(), resolve: entry({ value: number(), max: number() }),
+      notes: string(), rawStatblock: string(),
+      skills: new ArrayField(entry({ name: string(), value: number(), expertise: number() }), { initial: [] }),
+      attacks: new ArrayField(entry({ name: string(), value: number(), expertise: number(), damage: string(), reach: string(), range: string(), notes: string() }), { initial: [] }),
+      protection: new ArrayField(entry({ location: string(), ap: string(), notes: string() }), { initial: [] }),
+      wounds: new ArrayField(entry({ location: string(), points: number(), lethal: new BooleanField({ initial: true }), detail: string() }), { initial: [] }),
+      abilities: new ArrayField(entry({ name: string(), effect: string() }), { initial: [] })
     };
   }
 }
@@ -1548,10 +1563,13 @@ Hooks.on("renderRollTableDirectory", addTableImportButton);
 Hooks.on("renderApplicationV2", (application, element) => {
   if (application instanceof foundry.applications.sidebar.tabs.JournalDirectory) addRulebookImportButton(application, element);
   if (application instanceof foundry.applications.sidebar.tabs.RollTableDirectory) addTableImportButton(application, element);
+  if (application instanceof foundry.applications.sidebar.tabs.ActorDirectory) addNPCImportButton(application, element);
 });
+Hooks.on("renderActorDirectory", (_application, element) => addNPCImportButton(null, element));
 Hooks.once("init", () => {
   installHotbarActions();
   CONFIG.Actor.dataModels.character = CharacterData;
+  CONFIG.Actor.dataModels.npc = NPCData;
   CONFIG.Item.dataModels.talent = TalentData;
   CONFIG.Item.dataModels.race = RaceData;
   CONFIG.Item.dataModels.thread = ThreadData;
@@ -1560,6 +1578,7 @@ Hooks.once("init", () => {
   CONFIG.Item.dataModels.shield = ShieldData;
   CONFIG.Item.dataModels.gear = GearData;
   foundry.documents.collections.Actors.registerSheet("broken-empires-foundry", CharacterSheet, { types: ["character"], makeDefault: true, label: "TBE Character" });
+  foundry.documents.collections.Actors.registerSheet("broken-empires-foundry", NPCSheet, { types: ["npc"], makeDefault: true, label: "TBE NPC / Creature" });
   foundry.documents.collections.Items.registerSheet("broken-empires-foundry", TBEItemSheet, { types: ["talent", "race", "thread", "weapon", "armor", "shield", "gear"], makeDefault: true, label: "TBE Item" });
 });
 
@@ -1626,6 +1645,13 @@ Hooks.once("ready", async () => {
         const created = absent.length ? await foundry.documents.Folder.createDocuments(absent.map(name => ({ name, type: "Item" })), { pack: pack.collection }) : [];
         const byName = new Map([...existingFolders, ...created].map(folder => [folder.name, folder.id]));
         await Item.implementation.createDocuments(missing.map(item => ({ ...item, folder: byName.get(item.system.category) ?? null })), { pack: pack.collection });
+      }
+      const legacy = index.find(entry => entry.name === "ARMOR TRAINING (I-IV)" && entry.type === "talent");
+      if (legacy) {
+        const old = await pack.getDocument(legacy._id);
+        if (old?.system.effect?.startsWith("Wearing heavier armor (Reinforced Leather, Mail, Scale, and Plate) on the Body or Arms")) {
+          await Item.implementation.deleteDocuments([legacy._id], { pack: pack.collection });
+        }
       }
     } catch (error) { console.error("TBE: failed to initialise the talents compendium", error); }
     try {

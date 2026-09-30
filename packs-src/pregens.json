@@ -776,8 +776,8 @@
         "system": {
           "category": "Combat Talents",
           "reference": "Core Rulebook, p. 40",
-          "effect": "Armor Training III: trained to use Combat Maneuvers in up to Scale body or arm armour. Earlier training levels are included.",
-          "requirements": ""
+          "effect": "You can use Combat Maneuvers while wearing Body or Arm armor as heavy as Scale. This level includes training with all lighter armor covered by earlier levels.",
+          "requirements": "Requires ARMOR TRAINING II."
         }
       },
       {

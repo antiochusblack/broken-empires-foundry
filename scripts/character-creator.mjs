@@ -126,7 +126,7 @@ const careerCustomLabel = (career, index) => career === "Godbound"
   ? "Custom -wise (your chosen deity) — starts at 30%"
   : `Custom -wise / Language ${index + 1} — starts at ${careerCustomValue(career)}%`;
 const careerRequirements = {
-  Warrior: [["ARMOR TRAINING (I-IV)"], []], Rogue: [[], []], Ranger: [["ON THROUGH THE NIGHT", "ARMOR TRAINING (I-IV)"], []],
+  Warrior: [["ARMOR TRAINING III"], []], Rogue: [[], []], Ranger: [["ON THROUGH THE NIGHT", "ARMOR TRAINING I"], []],
   Speaker: [[], []], Bard: [["ENTERTAINING"], []], Civilian: [["EXPERIENCED"], []],
   Loremaster: [["LITERATE"], ["LECTURER", "TRAVEL PLANNER"]], Merchant: [["LITERATE"], ["BARTERER", "I SEE YOUR MIND"]],
   Godbound: [["GODBOUND"], []], Spellweaver: [["PATTERNED IN THE WEAVE"], ["LITERATE"]]
@@ -220,10 +220,12 @@ class CharacterCreatorSkills extends App {
   constructor(creator, options = {}) { super(options); this.creator = creator; }
   static DEFAULT_OPTIONS = { classes: ["tbe", "tbe-creator-skills-window"], position: { width: 220, height: 640 }, window: { resizable: true, title: "Skills so far" } };
   static PARTS = { main: { template: `systems/${SYSTEM}/templates/character-creator-skills.hbs` } };
-  async _prepareContext(options) { return { ...await super._prepareContext(options), skillsPreview: this.creator._skillsPreview() }; }
+  async _prepareContext(options) { return { ...await super._prepareContext(options), skillsPreview: this.creator._skillsPreview(), skillsBenefits: this.creator._skillsBenefits() }; }
   refresh() {
     const list = this.element?.querySelector(".tbe-creator-preview-list");
     if (list) list.innerHTML = this.creator._skillsPreview();
+    const benefits = this.element?.querySelector(".tbe-creator-benefits");
+    if (benefits) benefits.innerHTML = this.creator._skillsBenefits();
   }
   async close(options) {
     if (this.creator?._skillsWindow === this) {
@@ -255,6 +257,23 @@ export class CharacterCreator extends App {
   _skillsPreview() {
     const rows = [...skillProjection(this.draft, this.step)].filter(([, row]) => row.total > (row.category === "Binds" || row.category === "Magic" ? 0 : 20));
     return rows.length ? rows.map(([name, row]) => `<div class="tbe-creator-preview-row ${row.total > 70 ? "tbe-creator-over-cap" : ""}"><strong>${html(name)}</strong><b>${row.total}%</b><small>${Object.entries(row.parts).filter(([, n]) => n).map(([source, n]) => `${html(source)} ${n > 0 && source !== "Starting" ? "+" : ""}${n}`).join(" · ")}</small></div>`).join("") : `<p>Improved skills appear here as you make choices.</p>`;
+  }
+  _skillsBenefits() {
+    const d = this.draft, step = this.step;
+    const expertise = [
+      ...(step >= 1 && ["Human", "The Replaced"].includes(d.race) ? [d.raceExpertise] : []),
+      ...(step >= 2 ? d.abilities.map(a => a.expertise) : []),
+      ...(step >= 4 ? d.cultureExpertise : []),
+      ...(step >= 6 ? [d.bindExpertise] : []),
+      ...(step >= 7 ? [d.age === "Old" ? d.oldExpertise : ""] : [])
+    ].filter(Boolean);
+    const savvy = [
+      ...(step >= 1 ? [d.raceSavvy, d.bolgSavvy, d.race === "Dwarf" ? "Locks & Traps" : "", d.race === "Half-Orc (Uthrak)" ? "Endurance" : ""] : []),
+      ...(step >= 7 ? d.savvy : [])
+    ].filter(Boolean);
+    const counts = new Map();
+    for (const name of expertise) counts.set(name, (counts.get(name) || 0) + 1);
+    return `<strong>Special skill benefits</strong><p><b>Expertise:</b> ${[...counts].map(([name, n]) => `${html(name)}${n > 1 ? ` ×${n}` : ""}`).join(", ") || "None selected"}</p><p><b>Savvy:</b> ${[...new Set(savvy)].map(html).join(", ") || "None selected"}</p>`;
   }
   _rerenderKeepingScroll() {
     this._contentScrollTop = this.element?.querySelector(".tbe-creator-content")?.scrollTop ?? 0;
@@ -504,7 +523,8 @@ export class CharacterCreator extends App {
       case 7: return `<p>Age, a bonus Talent (or +1 Status or 100 sp), and three Savvy skills. Spend the age pool on skills; Strand levels cost five points each. Young also receive +20 Endurance and +1 DT; Old receive -20 Endurance, -2 DT, and 30 Lore points.</p><div class="tbe-creator-grid">${label("Age", select("age", ["Young", "Adult", "Old"], d.age))}${label("Bonus choice", select("roundingChoice", ["Talent", "Status", "Silver"], d.roundingChoice))}${d.roundingChoice === "Talent" ? label("Bonus Talent", select("roundingTalent", talentNames, d.roundingTalent)) : ""}${d.savvy.map((v, i) => label(`Savvy ${i + 1}`, select(`savvy.${i}`, allSkills.filter(n => n !== "Piety"), v))).join("")}${d.age === "Old" ? label("Old age Expertise", select("oldExpertise", allSkills, d.oldExpertise)) : ""}</div>${CATEGORIES.map(c => this._rowFields(c, "roundingSkills")).join("")}${d.career === "Godbound" ? label("Piety rounding points", num("roundingSkills.Piety", d.roundingSkills.Piety, 100)) : ""}${d.career === "Spellweaver" ? this._rowFields("Strands", "roundingStrands", "5 points per level") : ""}${d.age === "Old" ? this._rowFields("Lore", "oldLore", "30 Lore points") : ""}${d.career === "Civilian" ? ["Adventuring", "Social", "Lore"].map(c => this._rowFields(c, "civilianExtra", "30 Civilian extra points total")).join("") : ""}`;
       case 8: {
         const armor = game.packs.get("world.tbe-equipment")?.index?.contents?.filter(i => i.type === "armor") ?? [];
-        return `<p>Every character starts with a dagger, 1d3+1 armour pieces they can wear, and d12 Gear, Ammo, Rations and Medical supply dice. Roll 2d4 × 50 sp starting coin. Buy any additional equipment directly on the sheet after creation.</p><div class="tbe-creator-grid">${label("Starting coin", input("equipmentCoin", d.equipmentCoin, "number", "readonly"))}<button type="button" data-roll-choice="equipmentCoin">Roll coin</button>${label("Free armour pieces", input("freeArmorCount", d.freeArmorCount, "number", "readonly"))}<button type="button" data-roll-choice="freeArmor">Roll 1d3+1</button></div><fieldset><legend>Free armour (${d.freeArmor.length}/${d.freeArmorCount})</legend><div class="tbe-creator-skills">${armor.map(i => `<label><input type="checkbox" data-free-armor="${html(i.name)}" ${d.freeArmor.includes(i.name) ? "checked" : ""}>${html(i.name)}</label>`).join("")}</div></fieldset>`;
+        const armorGroups = ["Padding", "Quilt", "Leather", "Reinforced Leather", "Mail", "Bone", "Scale", "Plate"].map(type => ({ type, pieces: armor.filter(i => i.name === type || i.name.startsWith(`${type} `)) }));
+        return `<p>Every character starts with a dagger, 1d3+1 armour pieces they can wear, and d12 Gear, Ammo, Rations and Medical supply dice. Roll 2d4 × 50 sp starting coin. Buy any additional equipment directly on the sheet after creation.</p><div class="tbe-creator-grid">${label("Starting coin", input("equipmentCoin", d.equipmentCoin, "number", "readonly"))}<button type="button" data-roll-choice="equipmentCoin">Roll coin</button>${label("Free armour pieces", input("freeArmorCount", d.freeArmorCount, "number", "readonly"))}<button type="button" data-roll-choice="freeArmor">Roll 1d3+1</button></div><fieldset><legend>Free armour (${d.freeArmor.length}/${d.freeArmorCount})</legend>${armorGroups.filter(group => group.pieces.length).map(group => `<h3>${html(group.type)}</h3><div class="tbe-creator-skills">${group.pieces.map(i => `<label><input type="checkbox" data-free-armor="${html(i.name)}" ${d.freeArmor.includes(i.name) ? "checked" : ""}>${html(i.name)}</label>`).join("")}</div>`).join("")}</fieldset>`;
       }
       case 9: return `<p>Choose personality traits; ability descriptors are included automatically.</p><div class="tbe-creator-grid">${d.personality.map((v, i) => label(`Trait ${i + 1}`, input(`personality.${i}`, v))).join("")}</div>`;
       case 10: return `<p>Give the character reasons to go adventuring. These can be changed during play.</p>${d.goals.map((v, i) => label(`Goal ${i + 1}`, area(`goals.${i}`, v, 2))).join("")}`;
@@ -595,9 +615,7 @@ export class CharacterCreator extends App {
       const items = [];
       for (const name of selected) { const match = catalogue.find(e => e.name === name); if (!match) throw new Error(`${name} is missing from Equipment.`); const doc = await equipmentPack.getDocument(match._id); const source = doc.toObject(); delete source._id; delete source.folder; source.system.placement = source.type === "armor" ? "worn" : "atHand"; source.system.quantity = 1; items.push(source); }
       const talentIndex = await talentPack.getIndex();
-      for (const name of [...new Set(talentNames)]) { const match = talentIndex.find(e => e.name === name || e.name.startsWith(`${name} (`)); if (!match) throw new Error(`${name} is missing from Talents.`); const source = (await talentPack.getDocument(match._id)).toObject(); delete source._id; delete source.folder;
-        if (name === "ARMOR TRAINING (I-IV)" && d.career === "Warrior") { source.name = "ARMOR TRAINING III"; source.system.effect += " Starting Warrior level: III (earlier levels included)."; }
-        if (name === "ARMOR TRAINING (I-IV)" && d.career === "Ranger") { source.name = "ARMOR TRAINING I"; source.system.effect += " Starting Ranger level: I."; }
+      for (const name of [...new Set(talentNames)]) { const match = talentIndex.find(e => e.name === name); if (!match) throw new Error(`${name} is missing from Talents.`); const source = (await talentPack.getDocument(match._id)).toObject(); delete source._id; delete source.folder;
         items.push(source); }
       if (d.thread) { const index = await threadPack.getIndex(); const match = index.find(e => e.name === d.thread); if (!match) throw new Error(`${d.thread} is missing from Threads.`); const source = (await threadPack.getDocument(match._id)).toObject(); delete source._id; delete source.folder; source.system.die = "d8"; items.push(source); }
       const raceIndex = await racePack?.getIndex(); const raceEntry = raceIndex?.find(e => e.name === d.race), raceDoc = raceEntry ? await racePack.getDocument(raceEntry._id) : null;
