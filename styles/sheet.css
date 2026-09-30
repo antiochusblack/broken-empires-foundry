@@ -497,6 +497,7 @@
 .tbe-creator .tbe-creator-attribute-row input { width:3.2rem; flex:0 0 3.2rem; text-align:center; }
 .tbe-creator .tbe-creator-attribute-spent { min-width:2.6rem; text-align:center; white-space:nowrap; }
 .tbe-creator .tbe-creator-attribute small { opacity:.8; }
+.tbe-creator .tbe-creator-career-note { display: inline; margin-left: .35em; font-size: .78em; font-weight: normal; opacity: .85; }
 .tbe-creator .tbe-creator-roll-warning { border-left:3px solid #996a3a; padding-left:.6rem; }
 .tbe-creator footer { position:relative; z-index:40; flex:none; display:flex; align-items:center; justify-content:space-between; gap:.6rem; border-top:1px solid #9b8972; padding-top:.6rem; background:var(--color-cool-4,#302b29); }
 .tbe-creator footer button { position:relative; z-index:1; flex:none; }

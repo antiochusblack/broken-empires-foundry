@@ -2,6 +2,13 @@
 import { SKILL_DESCRIPTIONS } from "./skill-descriptions.mjs";
 const SYSTEM = "broken-empires-foundry";
 const html = value => foundry.utils.escapeHTML(String(value ?? ""));
+const decodeEventText = value => String(value ?? "").replace(/&(?:amp|lt|gt|quot|apos|nbsp|#(?:\d+|x[\da-f]+));/gi, entity => {
+  const named = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
+  const key = entity.slice(1, -1).toLowerCase();
+  if (Object.hasOwn(named, key)) return named[key];
+  const code = key.startsWith("#x") ? parseInt(key.slice(2), 16) : parseInt(key.slice(1), 10);
+  return code > 0 && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff) ? String.fromCodePoint(code) : entity;
+});
 const slug = name => String(name).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/_$/, "");
 const GROUPS = {
   Combat: ["Dodge", "Melee: Light", "Melee: Medium", "Melee: Heavy", "Might", "Missile", "Thrown Weapons"],
@@ -89,7 +96,8 @@ const select = (path, names, value, blank) => {
 };
 const input = (path, value, type = "text", extra = "") => `<input data-field="${html(path)}" type="${type}" value="${html(value)}" ${extra}>`;
 const area = (path, value, rows = 3, extra = "") => `<textarea data-field="${html(path)}" rows="${rows}" ${extra}>${html(value)}</textarea>`;
-const label = (name, content) => `<label>${html(name)} ${content}</label>`;
+const wiseHelp = "A custom -wise skill is lore about a specific subject, such as Animal-wise or Ocean-wise. Name the subject that fits your character. The narrower the subject, the deeper the knowledge.";
+const label = (name, content) => `<label>${html(name)}${/\b(?:custom|new)\b.*-wise/i.test(name) ? ` ${info(wiseHelp)}` : ""} ${content}</label>`;
 const num = (path, value, max = 100) => input(path, value ?? 0, "number", `min="0" max="${max}" step="1"`);
 const flattened = Object.fromEntries(Object.entries(GROUPS).flatMap(([category, names]) => names.map(name => [name, category])));
 const allSkills = [...CATEGORIES.flatMap(c => GROUPS[c]), "Piety"];
@@ -118,6 +126,14 @@ function setPath(object, path, value) {
 function raceForRoll(n) { return n <= 70 ? RACES[0] : n <= 80 ? RACES[1] : n <= 90 ? RACES[2] : n <= 95 ? RACES[3] : n <= 99 ? RACES[4] : RACES[5]; }
 function careerForRoll(n) { return Object.keys(CAREERS)[n - 1]; }
 function cultureForRoll(n) { return n <= 3 ? CULTURES[0] : n <= 6 ? CULTURES[1] : n <= 8 ? CULTURES[2] : CULTURES[3]; }
+const randomDie = sides => 1 + Math.floor(Math.random() * sides);
+const randomOne = list => list[Math.floor(Math.random() * list.length)];
+const randomDistinct = (list, count) => {
+  const pool = [...list];
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  return pool.slice(0, count);
+};
+const randomCoin = ([count, sides, multiplier]) => Array.from({ length: count }, () => randomDie(sides)).reduce((sum, n) => sum + n, 0) * multiplier;
 const raceModifiers = { Dwarf: { Endurance: 10, Inspire: -10 }, "Half-Orc (Uthrak)": { Willpower: -10 }, Ogre: { Might: 10, Stealth: -20, Athletics: -20, "Melee: Light": -20 }, "Bolg Fiir": { Stealth: -10, Insight: -10 } };
 const descriptorSuggestions = {
   Strength: ["Strong", "Powerful", "Broad-shouldered"], Dexterity: ["Nimble", "Quick", "Light-footed"],
@@ -194,7 +210,8 @@ function skillProjection(d, throughStep) {
 }
 function skillOverflow(d, step) { return [...skillProjection(d, step)].find(([, row]) => row.total > 70); }
 export function eventBenefits(text) {
-  const tail = String(text || "").slice(String(text || "").lastIndexOf("?") + 1).replace(/Artis-\s*tic/gi, "Artistic");
+  const decoded = decodeEventText(text);
+  const tail = decoded.slice(decoded.lastIndexOf("?") + 1).replace(/Artis-\s*tic/gi, "Artistic");
   const namedWise = /(?:gain|give yourself)(?:\s+(?:a|an|the))?\s+([\w-]+-wise)/i.exec(tail)?.[1] || "";
   let skills = allSkills.filter(name => new RegExp(`(^|[^A-Za-z])${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=$|[^A-Za-z])`, "i").test(tail));
   if (/\b(?:any|one|a) Combat skill\b/i.test(tail)) skills = [...new Set([...skills, ...GROUPS.Combat])];
@@ -382,6 +399,7 @@ export class CharacterCreator extends App {
       if (tracker) tracker.textContent = this._pointsTracker();
     }));
     this.element.querySelector("[data-back]")?.addEventListener("click", () => { this.step--; void this.render(); });
+    this.element.querySelector("[data-random-character]")?.addEventListener("click", () => void this._randomCharacter());
     this.element.querySelector("[data-next]")?.addEventListener("click", async () => {
       try { this._validateStep(); this.step++; await this.render(); }
       catch (error) { ui.notifications.warn(error.message); }
@@ -463,9 +481,9 @@ export class CharacterCreator extends App {
     if (options.simultaneousWise && type === "skill") { event.customName = options.namedWise; event.customPoints = 20; }
   }
   _applyEventResult(index, text, tableName) {
-    const event = this.draft.events[index], options = eventBenefits(text);
-    event.table = tableName; event.text = text;
-    event.name = text.split(/[.:]/)[0]?.trim() || tableName;
+    const event = this.draft.events[index], decoded = decodeEventText(text), options = eventBenefits(decoded);
+    event.table = tableName; event.text = decoded;
+    event.name = decoded.split(/[.:]/)[0]?.trim() || tableName;
     this._setEventBenefit(index, options.types.length === 1 ? options.types[0] : "");
   }
   _eventBenefitFields(event, index) {
@@ -506,7 +524,7 @@ export class CharacterCreator extends App {
     const d = this.draft, talentEntries = game.packs.get("world.tbe-talents")?.index?.contents ?? [], talentNames = talentEntries.map(e => e.name).sort();
     activeDraft = d; activeStep = this.step;
     switch (this.step) {
-      case 0: return `<p>Choose one starting skill at 30% in each category. All other ordinary skills start at 20%.</p><div class="tbe-creator-grid">${label("Name", input("name", d.name))}<label class="tbe-creator-concept">Concept ${area("concept", d.concept, 3)}</label>${CATEGORIES.slice(0, 4).map(c => label(`${c} at 30%`, select(`starting.${c}`, GROUPS[c], d.starting[c]))).join("")}</div>`;
+      case 0: return `<p>Choose one starting skill at 30% in each category. All other ordinary skills start at 20%.</p><button type="button" data-random-character>Generate random character</button><p>The generator fills every step, then opens the review. You can go back and edit the choices before finishing. It needs the Life Event tables imported.</p><div class="tbe-creator-grid">${label("Name", input("name", d.name))}<label class="tbe-creator-concept">Concept ${area("concept", d.concept, 3)}</label>${CATEGORIES.slice(0, 4).map(c => label(`${c} at 30%`, select(`starting.${c}`, GROUPS[c], d.starting[c]))).join("")}</div>`;
       case 1: {
         const humanLanguages = ["Human", "The Replaced"].includes(d.race);
         const languages = humanLanguages ? HOMELANDS[d.region]?.languages ?? [] : [racialLanguage(d.race)].filter(Boolean);
@@ -539,7 +557,7 @@ export class CharacterCreator extends App {
       case 5: return `<p>Choose or roll an Origin, Youth and Recent result. Select the benefit the result offers, then add your own story. Results remain in the character history.</p>${d.events.map((e, i) => `<fieldset data-life-event="${i}"><legend>${["Origin", "Youth", "Recent"][i]}</legend><div class="tbe-creator-grid"><button type="button" data-roll-event="${i}">Roll table</button><button type="button" data-pick-event="${i}">Choose result</button></div>${e.name ? `<p class="tbe-creator-event-title">${html(e.name)}</p>` : ""}${e.text ? label("Result and choices", area(`events.${i}.text`, e.text, 3, "readonly")) : ""}${this._eventBenefitFields(e, i)}${label("Your story", area(`events.${i}.story`, e.story, 2))}</fieldset>`).join("")}<fieldset><legend>Optional shared histories (up to two)</legend>${d.sharedHistories.map((h, i) => `<div class="tbe-creator-grid">${label(`Character ${i + 1}`, input(`sharedHistories.${i}.character`, h.character))}${label("Life Event", input(`sharedHistories.${i}.event`, h.event))}${label("Skill +5", select(`sharedHistories.${i}.skill`, allSkills, h.skill))}${label("What happened", input(`sharedHistories.${i}.story`, h.story))}</div>`).join("")}</fieldset>`;
       case 6: {
         const pool = CAREERS[d.career] ?? [0, 0, 0, 0, 0];
-        return `<p>Choose or roll a previous career. Spend each category's pool in that category; record career Talents and custom -wises or Languages. Spellweavers also choose magical focus and Strand levels.</p><div class="tbe-creator-grid">${label("Career", select("career", Object.keys(CAREERS), d.career))}<button type="button" data-roll-choice="career">Roll career (d10)</button>${label("Career silver (sp)", input("careerCoin", d.careerCoin, "number", "readonly"))}<button type="button" data-roll-choice="careerCoin">Roll career coin</button>${d.careerWise.slice(0, careerCustomCount(d.career)).map((v, i) => label(careerCustomLabel(d.career, i), input(`careerWise.${i}`, v))).join("")}${d.careerTalents.map((v, i) => label(`Career Talent ${i + 1}`, select(`careerTalents.${i}`, careerRequirements[d.career]?.[i]?.length ? careerRequirements[d.career][i] : careerTalentCategories(d.career, i).length ? talentEntries.filter(e => careerTalentCategories(d.career, i).includes(e.system?.category)).map(e => e.name).sort() : talentNames, v))).join("")}${label("Swap one career Talent for +2 Status", select("swapCareerTalent", ["None", "First", "Second"], d.swapCareerTalent))}</div>${CATEGORIES.map((c, i) => this._rowFields(d.career === "Godbound" && c === "Binds" ? "Piety" : c, "careerSkills", pool[i])).join("")}${d.career === "Spellweaver" ? `<fieldset><legend>Spellweaver focus</legend><div class="tbe-creator-grid">${d.focusBinds.map((v, i) => label(`Focus Bind ${i + 1} (+10)`, select(`focusBinds.${i}`, GROUPS.Binds, v))).join("")}${d.focusStrands.map((v, i) => label(`Focus Strand ${i + 1}`, select(`focusStrands.${i}`, GROUPS.Strands, v))).join("")}${d.thin.map((v, i) => label(`Thin Strand ${i + 1}`, select(`thin.${i}`, GROUPS.Strands, v))).join("")}${label("Bind Expertise", select("bindExpertise", GROUPS.Binds, d.bindExpertise))}${label("d8 Thread item", select("thread", game.packs.get("world.tbe-threads")?.index?.contents?.map(e => e.name).sort() ?? [], d.thread))}${label("True Name", input("trueName", d.trueName))}${d.race === "Bolg Fiir" ? label("Bolg Bind +10", select("bolgBind", GROUPS.Binds, d.bolgBind)) : ""}</div>${this._rowFields("Strands", "strandCareer", "10 focus levels")}${this._rowFields("Strands", "strandExtra", "3 additional levels")}</fieldset>` : ""}`;
+        return `<p>Choose or roll a previous career. Spend each category's pool in that category; record career Talents and custom -wises or Languages. Spellweavers also choose magical focus and Strand levels.</p><div class="tbe-creator-grid">${label("Career", select("career", Object.keys(CAREERS), d.career))}<button type="button" data-roll-choice="career">Roll career (d10)</button>${label("Career silver (sp)", input("careerCoin", d.careerCoin, "number", "readonly"))}<button type="button" data-roll-choice="careerCoin">Roll career coin</button>${d.careerWise.slice(0, careerCustomCount(d.career)).map((v, i) => label(careerCustomLabel(d.career, i), input(`careerWise.${i}`, v))).join("")}${d.careerTalents.map((v, i) => label(`Career Talent ${i + 1}`, `${d.career === "Warrior" && i === 0 ? `<small class="tbe-creator-career-note">Special: prerequisites not required</small>` : ""}${select(`careerTalents.${i}`, careerRequirements[d.career]?.[i]?.length ? careerRequirements[d.career][i] : careerTalentCategories(d.career, i).length ? talentEntries.filter(e => careerTalentCategories(d.career, i).includes(e.system?.category)).map(e => e.name).sort() : talentNames, v)}`)).join("")}${label("Swap one career Talent for +2 Status", select("swapCareerTalent", ["None", "First", "Second"], d.swapCareerTalent))}</div>${CATEGORIES.map((c, i) => this._rowFields(d.career === "Godbound" && c === "Binds" ? "Piety" : c, "careerSkills", pool[i])).join("")}${d.career === "Spellweaver" ? `<fieldset><legend>Spellweaver focus</legend><div class="tbe-creator-grid">${d.focusBinds.map((v, i) => label(`Focus Bind ${i + 1} (+10)`, select(`focusBinds.${i}`, GROUPS.Binds, v))).join("")}${d.focusStrands.map((v, i) => label(`Focus Strand ${i + 1}`, select(`focusStrands.${i}`, GROUPS.Strands, v))).join("")}${d.thin.map((v, i) => label(`Thin Strand ${i + 1}`, select(`thin.${i}`, GROUPS.Strands, v))).join("")}${label("Bind Expertise", select("bindExpertise", GROUPS.Binds, d.bindExpertise))}${label("d8 Thread item", select("thread", game.packs.get("world.tbe-threads")?.index?.contents?.map(e => e.name).sort() ?? [], d.thread))}${label("True Name", input("trueName", d.trueName))}${d.race === "Bolg Fiir" ? label("Bolg Bind +10", select("bolgBind", GROUPS.Binds, d.bolgBind)) : ""}</div>${this._rowFields("Strands", "strandCareer", "10 focus levels")}${this._rowFields("Strands", "strandExtra", "3 additional levels")}</fieldset>` : ""}`;
       }
       case 7: return `<p>Choose your age, one bonus (Talent, +1 Status, or 100 sp), and three Savvy skills. Spend the age pool on skills; Strand levels cost five points each. Young also receive +20 Endurance and +1 DT; Old receive -20 Endurance, -2 DT, 30 Lore points, and one Expertise level.</p><fieldset><legend>Age benefits</legend><div class="tbe-creator-grid">${label("Age", select("age", ["Young", "Adult", "Old"], d.age))}${d.age === "Old" ? label("Old age Expertise", select("oldExpertise", allSkills, d.oldExpertise)) : ""}</div></fieldset><fieldset><legend>Bonus choice</legend><div class="tbe-creator-grid">${label("Bonus choice", select("roundingChoice", ["Talent", "Status", "Silver"], d.roundingChoice))}${d.roundingChoice === "Talent" ? label("Bonus Talent", select("roundingTalent", talentNames, d.roundingTalent)) : ""}</div></fieldset><div class="tbe-creator-grid">${d.savvy.map((v, i) => label(`Savvy ${i + 1}`, select(`savvy.${i}`, allSkills.filter(n => n !== "Piety"), v))).join("")}</div>${CATEGORIES.map(c => this._rowFields(c, "roundingSkills")).join("")}${d.career === "Godbound" ? label("Piety rounding points", num("roundingSkills.Piety", d.roundingSkills.Piety, 100)) : ""}${d.career === "Spellweaver" ? this._rowFields("Strands", "roundingStrands", "5 points per level") : ""}${d.age === "Old" ? this._rowFields("Lore", "oldLore", "30 Lore points") : ""}${d.career === "Civilian" ? ["Adventuring", "Social", "Lore"].map(c => this._rowFields(c, "civilianExtra", "30 Civilian extra points total")).join("") : ""}`;
       case 8: {
@@ -571,11 +589,154 @@ export class CharacterCreator extends App {
     if (tables.length !== 1) { ui.notifications.warn(`Import the private Life Event: ${["Origin", "Youth", "Recent"][index]} RollTable first.`); return; }
     const entries = [...tables[0].results].sort((a, b) => a.range[0] - b.range[0]);
     const result = await foundry.applications.api.DialogV2.input({ window: { title: `Choose ${tables[0].name}` },
-      content: `<select name="result"><option value="">Choose…</option>${entries.map(e => `<option value="${html(e.id)}">${html(e.range.join("–"))}: ${html(e.text?.slice(0, 90))}</option>`).join("")}</select>`, ok: { label: "Choose" } });
+      content: `<select name="result"><option value="">Choose…</option>${entries.map(e => `<option value="${html(e.id)}">${html(e.range.join("–"))}: ${html(decodeEventText(e.text).slice(0, 90))}</option>`).join("")}</select>`, ok: { label: "Choose" } });
     const entry = entries.find(e => e.id === result?.result);
     if (!entry) return;
     this._applyEventResult(index, entry.text ?? "", tables[0].name);
     await this._rerenderAtEvent(index);
+  }
+  async _randomCharacter() {
+    if (this._busy) return;
+    if (this.draft.name || Object.values(this.draft.starting).some(Boolean)) {
+      const replace = await foundry.applications.api.DialogV2.confirm({
+        window: { title: "Replace wizard choices?" },
+        content: "Generate a new character and replace the choices in this open wizard? The character sheet is not changed until you finish.",
+        yes: { label: "Generate character" }, no: { label: "Keep choices" }
+      });
+      if (!replace) return;
+    }
+    const tables = await Promise.all([0, 1, 2].map(i => this._tablesFor(i)));
+    if (tables.some(matches => matches.length !== 1)) { ui.notifications.warn("Import the three private Life Event RollTables before generating a character."); return; }
+    const talents = game.packs.get("world.tbe-talents")?.index?.contents ?? [];
+    const armor = game.packs.get("world.tbe-equipment")?.index?.contents?.filter(item => item.type === "armor") ?? [];
+    const threads = game.packs.get("world.tbe-threads")?.index?.contents ?? [];
+    if (!talents.length || armor.length < 4 || !threads.length) { ui.notifications.warn("Wait for the Talent, Equipment and Thread compendiums to load."); return; }
+    const original = this.draft, originalStep = this.step;
+    this._busy = true;
+    try {
+      const eligibleTalent = entries => randomOne(entries.filter(entry => !entry.system?.requirements))?.name || randomOne(entries)?.name;
+      const addPoints = (bucket, names, amount, step) => {
+        for (let remaining = amount; remaining > 0; remaining -= 5) {
+          const candidates = names.filter(name => {
+            this.draft[bucket][name] = (this.draft[bucket][name] || 0) + 5;
+            const valid = !skillOverflow(this.draft, step);
+            this.draft[bucket][name] -= 5;
+            return valid;
+          });
+          if (!candidates.length) throw new Error(`No room for ${bucket} points.`);
+          const selected = randomOne(candidates);
+          this.draft[bucket][selected] = (this.draft[bucket][selected] || 0) + 5;
+        }
+      };
+      let completed = false, lastError;
+      for (let attempt = 0; attempt < 100 && !completed; attempt++) {
+        const d = this.draft = fresh();
+        try {
+          for (const category of CATEGORIES.slice(0, 4)) d.starting[category] = randomOne(GROUPS[category]);
+          d.race = raceForRoll(randomDie(100));
+          d.region = randomOne(Object.keys(HOMELANDS).filter(name => name !== "Other homeland"));
+          d.language = racialLanguage(d.race) || randomOne(HOMELANDS[d.region].languages);
+          if (["Human", "The Replaced"].includes(d.race)) {
+            d.raceSavvy = randomOne(allSkills.filter(n => n !== "Piety"));
+            d.raceExpertise = randomOne(allSkills.filter(n => n !== "Piety"));
+            d.raceTalent = eligibleTalent(talents);
+          }
+          if (d.race === "Bolg Fiir") d.bolgSavvy = randomOne(["Melee: Light", "Missile", "Ancient Lore", "Arcana", "Naturewise"]);
+          d.abilities = Array.from({ length: 2 }, () => {
+            const name = Object.keys(ABILITIES)[randomDie(6) - 1];
+            return { name, descriptor: randomOne(descriptorSuggestions[name]), expertise: randomOne(ABILITIES[name].skills), talent: randomOne(ABILITIES[name].talents) };
+          });
+          d.randomizedAttributes.initiative = Math.random() < .5;
+          if (d.randomizedAttributes.initiative) d.initiativeBase = 6 + randomDie(6);
+          d.randomizedAttributes.dt = Math.random() < .5;
+          if (d.randomizedAttributes.dt) d.dtBase = 15 + randomDie(4) + randomDie(4);
+          for (let n = 0; n < 5; n++) {
+            const name = randomOne(["Resolve", "Initiative", ...(d.randomizedAttributes.dt ? [] : ["Death Threshold"]), ...((d.attributes.Toughness <= 2 && n < 4) ? ["Toughness"] : [])]);
+            if (name === "Toughness") { d.attributes.Toughness += 2; n++; } else d.attributes[name]++;
+          }
+          d.culture = cultureForRoll(randomDie(10));
+          if (d.race === "Ogre" && d.culture.startsWith("Civilized") || d.race === "Bolg Fiir" && d.culture === "Civilized, Urban") d.culture = "Barbarian";
+          for (const [, names] of culturePlan[d.culture].choices) {
+            const options = names.filter(name => !d.cultureSelections.includes(name) && !(() => {
+              const previous = d.cultureSelections; d.cultureSelections = [...previous, name];
+              const overflow = skillOverflow(d, 4); d.cultureSelections = previous;
+              return overflow;
+            })());
+            if (!options.length) throw new Error("No legal cultural skill choice.");
+            d.cultureSelections.push(randomOne(options));
+          }
+          d.cultureExpertise = [fixedCultureExpertise[d.culture] || randomOne(d.culture === "Civilized, Urban" ? GROUPS.Adventuring : [...GROUPS.Adventuring, ...GROUPS.Lore]), randomOne(d.culture === "Civilized, Urban" ? GROUPS.Lore : [...GROUPS.Adventuring, ...GROUPS.Lore])];
+          d.cultureCoin = randomCoin(cultureCoinFormula[d.culture]); d.rolled.cultureCoin = true;
+          if (d.culture === "Wanderer") d.wandererLanguage = "Traveler’s Cant";
+          for (let index = 0; index < 3; index++) {
+            const table = tables[index][0], results = [...table.results];
+            const weighted = results.flatMap(result => Array.from({ length: Math.max(1, result.range[1] - result.range[0] + 1) }, () => result));
+            let selected = false;
+            for (let eventAttempt = 0; eventAttempt < 100 && !selected; eventAttempt++) {
+              this._applyEventResult(index, randomOne(weighted).text, table.name);
+              const options = eventBenefits(d.events[index].text);
+              for (const type of randomDistinct(options.types, options.types.length)) {
+                this._setEventBenefit(index, type);
+                const event = d.events[index];
+                if (type === "skill") {
+                  const possible = options.skills.filter(name => {
+                    event.skill = name; const valid = !skillOverflow(d, 5); event.skill = ""; return valid;
+                  });
+                  if (!possible.length) continue;
+                  event.skill = randomOne(possible);
+                }
+                if (type === "strand") event.strand = randomOne(options.strands);
+                if (type === "custom" && !event.customName) event.customName = "Road-wise";
+                selected = true; break;
+              }
+              if (!options.types.length) selected = true;
+            }
+            if (!selected) throw new Error("No eligible Life Event result.");
+            d.events[index].story = `A ${["formative encounter", "turning point", "recent challenge"][index]} shaped this character.`;
+          }
+          d.career = careerForRoll(randomDie(10));
+          if (["Ogre", "The Replaced"].includes(d.race) && d.career === "Spellweaver") d.career = "Ranger";
+          d.careerCoin = randomCoin(coinFormula[d.career]); d.rolled.careerCoin = true;
+          d.careerWise = ["Road-wise", "Harbor-wise", "Herbalist-wise"];
+          d.careerTalents = careerRequirements[d.career].map((fixed, i) => fixed.length ? randomOne(fixed) : eligibleTalent(talents.filter(entry => !careerTalentCategories(d.career, i).length || careerTalentCategories(d.career, i).includes(entry.system?.category))));
+          if (d.careerTalents.some(name => !name)) throw new Error("Career Talent unavailable.");
+          if (d.career === "Spellweaver") {
+            d.focusBinds = randomDistinct(GROUPS.Binds, 2);
+            d.focusStrands = randomDistinct(GROUPS.Strands, 4);
+            d.thin = randomDistinct(GROUPS.Strands.filter(name => !d.focusStrands.includes(name)), 2);
+            d.bindExpertise = randomOne(GROUPS.Binds); d.thread = randomOne(threads).name; d.trueName = "The Unfinished Pattern";
+            if (d.race === "Bolg Fiir") d.bolgBind = randomOne(GROUPS.Binds);
+            for (let n = 0; n < 10; n++) { const possible = d.focusStrands.filter(name => (d.strandCareer[name] || 0) < 5); const name = randomOne(possible); d.strandCareer[name] = (d.strandCareer[name] || 0) + 1; }
+            for (let n = 0; n < 3; n++) { const possible = GROUPS.Strands.filter(name => !d.thin.includes(name) && (d.strandCareer[name] || 0) + (d.strandExtra[name] || 0) < 5); const name = randomOne(possible); d.strandExtra[name] = (d.strandExtra[name] || 0) + 1; }
+          }
+          CAREERS[d.career].forEach((budget, i) => addPoints("careerSkills", i === 4 ? d.career === "Godbound" ? ["Piety"] : GROUPS.Binds : GROUPS[CATEGORIES[i]], budget, 6));
+          d.age = randomOne(["Young", "Adult", "Old"]);
+          d.roundingChoice = randomOne(["Talent", "Status", "Silver"]);
+          if (d.roundingChoice === "Talent") d.roundingTalent = eligibleTalent(talents);
+          d.savvy = randomDistinct(allSkills.filter(name => name !== "Piety"), 3);
+          if (d.age === "Old") { d.oldExpertise = randomOne(allSkills.filter(name => name !== "Piety")); addPoints("oldLore", GROUPS.Lore, 30, 7); }
+          if (d.career === "Civilian") addPoints("civilianExtra", [...GROUPS.Adventuring, ...GROUPS.Social, ...GROUPS.Lore], 30, 7);
+          addPoints("roundingSkills", [...CATEGORIES.slice(0, 4).flatMap(c => GROUPS[c]), ...(d.career === "Godbound" ? ["Piety"] : []), ...(d.career === "Spellweaver" ? GROUPS.Binds : [])], d.age === "Young" ? 70 : 100, 7);
+          d.equipmentCoin = (randomDie(4) + randomDie(4)) * 50; d.rolled.equipmentCoin = true;
+          d.freeArmorCount = randomDie(3) + 1; d.rolled.freeArmor = true;
+          d.freeArmor = randomDistinct(armor.map(item => item.name), d.freeArmorCount);
+          d.name = `${randomOne(["Arlen", "Brenna", "Corin", "Dara", "Edrin", "Fenna", "Garrick", "Mara"])} ${randomOne(["Ash", "Briar", "Cairn", "Hollow", "Kirkwood", "Vale"] )}`;
+          d.concept = `${d.age} ${d.race} ${d.career.toLowerCase()} from ${d.region}.`;
+          d.personality = ["Restless", "Loyal", "Wary"]; d.goals = ["Find a place to belong", "Protect an old friend"];
+          for (this.step = 0; this.step < STEPS.length; this.step++) this._validateStep();
+          completed = true;
+        } catch (error) { lastError = error; }
+      }
+      if (!completed) throw lastError || new Error("Could not generate a valid character.");
+      this.step = STEPS.length - 1;
+      await this.render();
+      ui.notifications.info("Random character generated. Review the steps before finishing.");
+    } catch (error) {
+      this.draft = original; this.step = originalStep;
+      console.error("TBE random character", error);
+      ui.notifications.error(`Random character: ${error.message}`);
+      await this.render();
+    } finally { this._busy = false; }
   }
   _validateStep() {
     const d = this.draft, required = (condition, message) => { if (!condition) throw new Error(message); };
